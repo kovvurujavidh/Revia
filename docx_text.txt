@@ -1,0 +1,427 @@
+Small Business Customer Return SaaS — Product Plan
+
+1. Problem
+
+Restaurants, businesss, hotels and other small businesses lose repeat customers and often don't notice when regular customers stop visiting.
+
+2. Core Solution
+
+The restaurant, business, hotel or small-business owner records each customer visit quickly. The system tracks customer behavior and tells the owner who is becoming inactive and what action to take.
+
+3. Core Promise
+
+“Enter your customer visits. Every day, we tell you who you're losing and what to do about it.”
+
+4. Fast Data Entry
+
+Name + WhatsApp number + amount spent + visit. Existing customers should take about 5–10 seconds to record.
+
+5. Customer Intelligence
+
+Track visits, total spending, average bill, visit frequency, last visit, and customer lifetime history.
+
+6. Customer Segments
+
+New, Regular, VIP, Becoming Inactive, and Inactive.
+
+7. Dashboard
+
+Show daily revenue, customer count, returning customers, new customers, average spend, and customers needing attention.
+
+8. Daily AI Analysis
+
+Explain what changed, possible reasons, important customer trends, and what the owner should do next.
+
+9. Action Center
+
+Don't only display problems. Give clear, one-click actions such as generating a comeback message for inactive customers.
+
+10. WhatsApp
+
+Generate personalized thank-you, comeback, reminder, and offer messages. Start with WhatsApp links; add official WhatsApp API automation later.
+
+11. Campaign Tracking
+
+Track messages sent, replies, customer returns, and revenue associated with campaigns.
+
+12. ROI Tracking
+
+Show revenue or customer visits generated through the system. This is the key business metric and strongest sales argument.
+
+13. Smart Alerts
+
+Alert the owner when regular customers have not visited within their normal expected timeframe.
+
+14. Multi-User SaaS
+
+Every business gets a separate account, dashboard, customers, visits, analytics, and data. One business must never see another business's data.
+
+15. Authentication
+
+Real signup/login, password reset, secure sessions, and proper password protection.
+
+16. Super Admin
+
+Private admin panel to manage businesses, trials, subscriptions, account status, and basic usage/support information.
+
+17. Security
+
+Secure authentication, tenant/data isolation, encrypted passwords, backups, and minimum necessary access.
+
+18. Mobile-First
+
+Design primarily for phones because restaurant, business, hotel and small-business owners and staff are likely to record visits on mobile.
+
+19. Trial & Pricing
+
+Start with a 14-day free trial. Test approximately ₹299–₹699/month, then adjust based on demonstrated ROI.
+
+20. MVP Scope
+
+Login → Add Visit → Customers → Customer Segments → Dashboard → Analytics → Daily AI Report → Action Center → WhatsApp message generation.
+
+21. What NOT to Build Initially
+
+No POS, inventory, billing, reservations, payroll, or giant restaurant-management suite. Keep the product focused on customer retention.
+
+22. Validation
+
+Test with 3–5 real businesss before spending heavily on APIs or infrastructure. Measure whether the product actually produces additional visits/revenue.
+
+23. Later Features
+
+Official WhatsApp API, POS integrations, automated campaigns, loyalty/rewards, advanced customer-return prediction, and deeper analytics.
+
+24. Positioning
+
+Do not sell “AI” as the main product. Sell the outcome: helping businesss bring back customers who are disappearing. AI is the engine underneath.
+
+25. Success Metric
+
+The most important metric is additional customer visits and revenue generated for each business.
+
+Build Sequence
+
+1. Build multi-business authentication and database structure.
+
+2. Build fast customer/visit entry.
+
+3. Build customer history and segmentation.
+
+4. Build dashboard and analytics calculations.
+
+5. Add daily AI analysis and recommendations.
+
+6. Add WhatsApp message generation.
+
+7. Test with 3–5 businesss.
+
+8. Measure customer returns and revenue generated.
+
+9. Fix the workflow based on real usage.
+
+10. Add paid subscriptions and advanced integrations only after validation.
+
+Final Product Flow
+
+Login → Business setup → Add customer/visit → Customer history → Dashboard → Daily analysis → Opportunities → WhatsApp action → Admin panel
+
+Final Screen/Workflow Requirements
+
+Login: Real signup, login, password reset, secure sessions, and role-based access.
+
+Business setup: Business name, owner details, contact information, business settings, and initial configuration.
+
+Add customer/visit: Fast mobile-first entry for customer name, WhatsApp number, amount spent, and visit. Existing customers should be recognized automatically.
+
+Customer history: Complete visit timeline, total visits, total spending, average spend, visit frequency, and last visit.
+
+Dashboard: Daily revenue, customer count, new vs returning customers, average spend, inactive customers, and key alerts.
+
+Daily analysis: Automatic daily report explaining important changes, customer trends, possible issues, and recommended actions. Core business calculations must be deterministic; AI should interpret the results rather than invent numbers.
+
+Opportunities: Prioritized customers who may be worth contacting, with clear reasons and recommended next actions.
+
+WhatsApp action: Generate personalized messages and open WhatsApp for sending. Official WhatsApp API automation can be added later.
+
+Admin panel: Private Super Admin area for managing businesses, trials, subscriptions, account status, and basic usage/support information.
+
+Data isolation: Each business has completely separate customers, visits, analytics, and business data. One business must never access another business's data.
+
+Production quality: Mobile-first responsive UI, polished interactions and animations, loading/empty/error states, validation, accessibility, secure authorization, and scalable architecture.
+
+SaaS Account, Trial & Subscription Requirements
+
+Google Login: Provide “Continue with Google” using Supabase Auth. Keep the normal email/password option as a fallback.
+
+Business ownership: Every account must belong to a specific business/workspace. The authenticated owner can access only data belonging to their own business.
+
+Strict data isolation: Enforce ownership at the database level with Supabase Row Level Security (RLS), not only in frontend code.
+
+Business setup: On first login, require business/business setup before entering the main dashboard. Store the business/workspace ID against the owner account.
+
+Future staff support: Structure the data model so an owner can later invite staff members with limited roles without redesigning the database.
+
+14-day free trial: Start the trial automatically when a new business completes setup. Store trial start and end timestamps server-side.
+
+Trial countdown: Show remaining trial time clearly inside the app, including a warning as the trial approaches expiry.
+
+Feature access during trial: Allow the full MVP feature set during the trial so the business can experience the product's value.
+
+Trial expiry: When the 14-day trial ends, automatically restrict paid features. Do not delete the business's customer or visit data.
+
+Subscription gate: After expiry, show a clear upgrade screen with pricing and a secure subscription/checkout flow. The owner must subscribe to continue using paid features.
+
+Graceful read-only state: Until a subscription is active, optionally allow access to account/billing information and a safe read-only view of existing data, while blocking new paid-feature usage.
+
+Subscription status: Store and verify subscription state server-side (trialing, active, past_due, canceled, expired) and never rely solely on a client-side flag.
+
+Webhook-driven billing state: When payment subscriptions are implemented, use payment-provider webhooks to update subscription status reliably.
+
+Access control: Gate protected routes and server actions/functions based on authenticated user, business ownership, and current subscription/trial status.
+
+Billing page: Show current plan, trial/subscription dates, status, renewal information, and upgrade/manage billing action.
+
+Account settings: Allow the owner to update business profile, account details, notification preferences, and logout securely.
+
+Password/security: Support secure password reset for email/password accounts; Google accounts should use Google authentication.
+
+Session security: Use secure authentication/session handling, protected server operations, input validation, and rate limiting where appropriate.
+
+Deletion/export: Provide a practical path for the owner to request account/data deletion and export essential business data.
+
+Backups/recovery: Use the database provider's backup/recovery capabilities and avoid destructive data deletion when a trial expires.
+
+Recommended Features Worth Adding
+
+Onboarding checklist: Guide the restaurant, business, hotel or small-business owner through setup and the first few customer visits so the product reaches value quickly.
+
+Demo/sample data option: Let the owner preview the dashboard with clearly labeled sample data before entering real data.
+
+Import later, not required for MVP: Keep CSV import as an optional convenience after the manual-entry flow is proven.
+
+Notifications: In-app alerts first. Add email notifications later if they improve follow-up without creating unnecessary complexity.
+
+Audit basics: Record important business actions such as account creation, subscription changes, and major settings changes for troubleshooting.
+
+Usage limits: Define sensible trial/plan limits server-side so pricing can evolve without rebuilding the application.
+
+Final End-to-End User Journey
+
+Landing page → Google/email signup → Business setup → 14-day trial starts → Add customer/visit → Customer history → Dashboard → Daily analysis → Opportunities → WhatsApp action → Trial countdown → Trial expires → Subscription required → Payment confirmed → Paid access continues
+
+Additional Practical Requirements
+
+Onboarding: After signup, guide the owner through business setup and the first customer entry with a short checklist.
+
+Quick customer entry: Search by phone number first. Existing customer = one-tap visit entry; new customer = minimum details.
+
+Data export: Allow the owner to export essential customer and visit data as CSV.
+
+Notifications: Start with useful in-app alerts. Add email/WhatsApp notifications later only when they provide clear value.
+
+Subscription failure handling: Use a short billing grace period and clear messages. Never delete customer data because payment failed.
+
+Privacy and consent: Include a privacy policy and design customer-data collection and WhatsApp messaging around applicable privacy, consent, and messaging requirements.
+
+When the Business Does Not Collect Customer Details
+
+The product must not assume that every business already records customer phone numbers. Customer identification should be optional and the system must still provide useful business analytics.
+
+Anonymous visit mode: Record a visit and amount without name or phone number so revenue and visit analytics still work.
+
+No forced data collection: Staff should not have to stop a queue to collect customer details.
+
+Customer QR opt-in: Provide a counter/table QR code that customers can scan to voluntarily join the business's customer/loyalty program.
+
+Optional incentive: Let the business offer a small reward or loyalty benefit for customers who voluntarily join.
+
+Customer self-entry: Where appropriate, use a QR after purchase so customers enter their own details instead of staff typing them.
+
+Progressive identification: An anonymous customer can become identifiable later; never guess or weakly match identities.
+
+Analytics without identities: Revenue, visits, average spend, and overall trends work without phone numbers. Customer-specific recovery requires an identifiable customer.
+
+Privacy-first messaging: Never invent, scrape, or purchase customer phone numbers for unsolicited WhatsApp messaging.
+
+Recommended Customer Capture Flow
+
+Purchase/visit → anonymous visit recorded → QR shown to customer → voluntary signup → name + WhatsApp captured → future visits recognized → retention analysis → appropriate WhatsApp action.
+
+Updated Product Positioning — Multi-Industry
+
+This product is not a coffee-only or single-industry-only system. It is a customer-return and retention SaaS for small businesses that depend on repeat customers, including restaurants, businesss, hotels, retail stores, gyms and studios, salons and spas, clinics and wellness businesses, and other local service businesses.
+
+Industry-Neutral Core Promise
+
+Track customer visits, identify customers who are becoming inactive, understand repeat-business opportunities, and take action to bring customers back — without requiring a full POS system.
+
+Website Visual Direction
+
+The website should NOT look like a coffee brand. Use a premium, human-designed B2B SaaS identity that can naturally represent restaurants, businesss, hotels and other small businesses. Avoid coffee-specific hero imagery, coffee cups as the primary visual, single-industry-only language, and single-industry-only navigation.
+
+Recommended alternative palette: deep forest green #123C35, muted teal #2F6F68, warm sand #F4EFE6, soft stone #E8E5DE, charcoal #18201F, and restrained copper #B7794B for highlights. Use the copper sparingly; the main visual identity should be forest/teal with warm neutral backgrounds.
+
+Hero / Brand Message
+
+Suggested direction: “Turn First-Time Visitors Into Loyal Customers.” Supporting message: “One simple system for restaurants, businesss, hotels and small businesses to understand customers, find who is disappearing, and bring them back.”
+
+FINAL WEBSITE COLOR & VISUAL DESIGN SYSTEM
+
+Primary Background — White/Lilac
+
+Color: #F8F8F9
+
+Use for the main page background. It should create a clean, premium, spacious feel.
+
+Secondary Background — White
+
+Color: #FFFFFF
+
+Use for cards, forms, tables, modals, dashboard panels and content areas.
+
+Primary Brand — Dark Navy Blue
+
+Color: #111439
+
+Use for the sidebar, major headings, navigation, strong text and important brand elements. This is the main trust/professional color.
+
+Primary Accent — Purple
+
+Color: #6C4DFF
+
+Use for primary buttons, active navigation, selected tabs, links, key metrics and important actions.
+
+Secondary Accent — Blue
+
+Color: #3B82F6
+
+Use for charts, information states, secondary actions and supporting UI elements.
+
+Brand Gradient — Purple → Blue
+
+Color: linear-gradient(135deg, #6C4DFF, #3B82F6)
+
+Use sparingly for hero highlights, major CTA buttons, selected cards, upgrade sections and visual emphasis. Do not put gradients on every component.
+
+Success — Green
+
+Color: #16A34A
+
+Use for increased revenue, returning customers, successful actions, completed tasks and positive trends.
+
+Warning — Amber
+
+Color: #F59E0B
+
+Use for customers requiring attention, trial reminders and medium-priority opportunities.
+
+Danger — Red
+
+Color: #EF4444
+
+Use for inactive/at-risk customers, errors, failed actions and critical alerts.
+
+Primary Text
+
+Color: #111439
+
+Use for readable headings and important body text.
+
+Secondary Text — Slate Gray
+
+Color: #667085
+
+Use for supporting descriptions, labels, timestamps and secondary information.
+
+Final Color Usage Ratio
+
+• 70% — #F8F8F9 White/Lilac• 20% — #FFFFFF White• 8% — #111439 Dark Navy• 2% — Purple/Blue gradient and accent colors
+
+Final Design Rules
+
+The interface must look like a premium, human-designed B2B SaaS product, not an AI-generated template.
+
+Keep most of the interface white/lilac and white, with dark navy providing structure and readability.
+
+Use the purple/blue gradient as a controlled brand accent rather than covering every button, card, chart or section.
+
+Use generous whitespace, clean typography, subtle shadows, consistent rounded corners and restrained animations.
+
+Keep the product visually industry-neutral. It must work equally well for restaurants, cafés, hotels, retail stores, gyms and fitness businesses, salons and spas, clinics and wellness businesses, and other small businesses.
+
+Do not make coffee imagery, coffee cups, restaurant food or any single industry the dominant visual identity.
+
+Use realistic sample business names, customers, visits, revenue and analytics so the product feels like real production software.
+
+Maintain the product hierarchy: KPI overview → customer behavior → opportunities → action.
+
+Keep WhatsApp outreach visually close to customer insights so the user can understand the flow from problem → recommendation → action.
+
+The numbered feature/product-tour section should clearly explain every major tab and its purpose.
+
+Design mobile-first while maintaining a polished desktop dashboard experience.
+
+Final Main Navigation / Tabs
+
+1. Dashboard
+
+Business overview: revenue, total customers, visits, returning/new customers, at-risk customers, trends, top opportunities, recent visits, daily analysis and next actions.
+
+2. Customers
+
+Search, filter and manage customers; view total visits, total spend, average spend, last visit, segment and complete customer history.
+
+3. Add Visit
+
+Fast visit entry. Search an existing customer first; otherwise create a new customer. Support anonymous visits when customer details are unavailable.
+
+4. Opportunities
+
+Prioritized customers who may need attention, including at-risk, high-value, new and win-back opportunities, with reasons and recommended actions.
+
+5. WhatsApp
+
+Create personalized messages, use templates, select individual customers or segments, open/send through WhatsApp, and track message history.
+
+6. Reports
+
+Detailed revenue, visits, customers, popular items/services and segment reports, with CSV export.
+
+7. Analytics
+
+Advanced customer behavior, visit patterns, revenue trends, customer growth, repeat rate, average spend, predictions and retention insights.
+
+8. Settings
+
+Business profile, staff/access, WhatsApp settings, notifications, subscription/billing, security, data export and account controls.
+
+9. Profile / Subscription
+
+Owner profile, current plan, trial/subscription status, billing dates, upgrade/manage billing and account security.
+
+10. Super Admin
+
+Private platform administration for businesses, trials, subscriptions, account status, usage and support; never expose passwords or unnecessary private customer data.
+
+Final Product Flow
+
+Landing page → Google/email signup → Business setup → 14-day trial starts → Add customer/visit → Customer history → Dashboard → Daily analysis → Opportunities → WhatsApp action → Trial countdown → Trial expiry → Subscription → Continued use.
+
+Final Positioning
+
+Do not sell AI as the product. Sell the outcome: help small businesses understand their customers, find customers who are disappearing, bring them back, and measure the additional visits and revenue generated. AI should operate underneath the product as an interpretation and recommendation engine.
+
+Final Google Login / Authentication UX
+
+The login page must include a clearly visible “Continue with Google” button with the official Google icon, alongside the normal email/password option.
+
+When the user clicks “Continue with Google,” use Google's official web authentication UI in popup mode so the familiar Google account-selection/sign-in window opens without an unnecessary full-page custom redirect.
+
+For the web implementation, prefer Google Identity Services popup UX (ux_mode=popup) and securely pass the Google credential to Supabase Auth using signInWithIdToken. Do not build or imitate Google's account-selection or password UI.
+
+After successful authentication: Google → authenticated user → Supabase Auth user → business/workspace mapping → RLS-protected application data. Google authentication identifies the user; it does not create a separate database for that business.
+
+Configure the Google OAuth client, authorized JavaScript origins, callback/redirect configuration, production site URL, and Supabase Google provider correctly.
+
+Security requirements: never store Google passwords, never expose client secrets, validate authentication through Supabase Auth, use secure sessions, and allow redirects only to approved application URLs.
