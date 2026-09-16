@@ -1,5 +1,5 @@
 // Importers/Callers: src/app/dashboard/page.tsx
-// Affected API: GymDashboard React component for gym & fitness studio tenants (Attendance metrics, member renewals, QR check-in counter, WhatsApp expiry alerts)
+// Affected API: GymDashboard React component for gym & fitness studio tenants (Attendance metrics, member renewals, WhatsApp expiry alerts)
 // Data Schemas: Business, Customer, Visit, GymMember, GymAttendanceRecord from src/lib/types.ts
 // User's Verbatim Instruction: "c:\AI\Revia_Final_All_Three_Business_Updates_Claude_Code_Prompt.docx now this make todo and complete updaate"
 
@@ -14,21 +14,15 @@ import {
   AlertTriangle,
   Clock,
   PlusCircle,
-  QrCode,
   CheckCircle2,
   MessageCircle,
   Search,
   X,
   Sparkles,
-  Download,
-  Printer,
-  ExternalLink,
   Flame,
   ArrowRight,
   ShieldAlert,
 } from "lucide-react";
-import Link from "next/link";
-import { QRCodeSVG } from "qrcode.react";
 import { parseGymMember, ParsedGymMember, calculateGymDaysLeft } from "@/lib/gymUtils";
 import { buildWhatsAppLink } from "@/lib/intelligence";
 
@@ -39,7 +33,6 @@ export function GymDashboard() {
   const [filterStatus, setFilterStatus] = useState<"all" | "active" | "expiring_soon" | "expired">("all");
   const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
   const [isRenewModalOpen, setIsRenewModalOpen] = useState(false);
-  const [isQRModalOpen, setIsQRModalOpen] = useState(false);
   const [selectedMemberForRenew, setSelectedMemberForRenew] = useState<ParsedGymMember | null>(null);
 
   // Quick Member form state
@@ -73,11 +66,6 @@ export function GymDashboard() {
   });
 
   const currencySymbol = activeBusiness?.currency_symbol || "₹";
-
-  // Check-in URL for Counter QR
-  const checkinUrl = typeof window !== "undefined"
-    ? `${window.location.origin}/gym-checkin/${activeBusiness.id}`
-    : `https://revia.app/gym-checkin/${activeBusiness.id}`;
 
   const filteredMembers = members.filter((m) => {
     const matchesSearch =
@@ -239,13 +227,6 @@ export function GymDashboard() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
-          <button
-            onClick={() => setIsQRModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold shadow-lg shadow-orange-500/20 transition-all cursor-pointer"
-          >
-            <QrCode className="h-4 w-4" />
-            <span>Counter QR Check-in</span>
-          </button>
           <button
             onClick={() => setIsAddMemberModalOpen(true)}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#6C4DFF] hover:bg-[#5835FF] text-white text-xs font-bold shadow-lg shadow-purple-500/20 transition-all cursor-pointer"
@@ -508,56 +489,6 @@ export function GymDashboard() {
           </table>
         </div>
       </div>
-
-      {/* Counter QR Check-in Modal */}
-      {isQRModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#111439]/60 backdrop-blur-xs p-4 animate-fade-in">
-          <div className="w-full max-w-sm rounded-3xl border border-[#EAECF0] bg-[#FFFFFF] p-6 shadow-2xl space-y-5 text-center">
-            <div className="flex items-center justify-between border-b border-[#EAECF0] pb-3">
-              <div className="text-left">
-                <h3 className="text-sm font-bold text-[#111439]">Gym Check-in QR Code</h3>
-                <p className="text-[11px] text-[#667085]">Place at the gym front desk / entrance counter</p>
-              </div>
-              <button
-                onClick={() => setIsQRModalOpen(false)}
-                className="rounded-full p-1.5 text-[#667085] hover:bg-[#F1F1F4]"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-
-            <div className="p-4 bg-white border-2 border-orange-500 rounded-2xl inline-block shadow-md">
-              <QRCodeSVG value={checkinUrl} size={200} level="H" includeMargin />
-            </div>
-
-            <div className="space-y-1">
-              <p className="text-xs font-black text-[#111439]">{activeBusiness.name}</p>
-              <p className="text-[11px] text-[#667085]">
-                Members scan with phone camera → Enter mobile number → Instant attendance logged!
-              </p>
-            </div>
-
-            <div className="flex items-center gap-2 pt-2">
-              <button
-                onClick={() => window.print()}
-                className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-[#EAECF0] bg-[#F8F8F9] text-xs font-bold text-[#111439] hover:bg-[#F1F1F4]"
-              >
-                <Printer className="h-3.5 w-3.5" />
-                <span>Print QR</span>
-              </button>
-              <a
-                href={checkinUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold shadow-md"
-              >
-                <ExternalLink className="h-3.5 w-3.5" />
-                <span>Open Page</span>
-              </a>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Renew Membership Modal */}
       {isRenewModalOpen && selectedMemberForRenew && (

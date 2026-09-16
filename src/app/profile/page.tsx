@@ -19,7 +19,6 @@ import {
   ArrowRight,
   Receipt,
   Gift,
-  QrCode,
   Copy,
   ExternalLink,
   CheckCircle2,
@@ -29,12 +28,12 @@ import {
   Smartphone,
   Info,
   HelpCircle,
+  Phone,
 } from "lucide-react";
 import { SUBSCRIPTION_PLANS } from "@/lib/seedData";
 import {
   generateUpiUri,
   generateAppSpecificUpiLinks,
-  generateUpiQrCodeUrl,
   validateUtrNumber,
   DEFAULT_FOUNDER_UPI,
 } from "@/lib/upi";
@@ -65,6 +64,7 @@ export default function ProfilePage() {
 
   const founderUpiId = platformSettings?.upi_id || DEFAULT_FOUNDER_UPI.upi_id;
   const founderUpiName = platformSettings?.upi_name || DEFAULT_FOUNDER_UPI.upi_name;
+  const supportPhone = platformSettings?.support_whatsapp || "919876543210";
 
   const handleOpenUpiModal = (plan: any) => {
     setSelectedPlanForUpi(plan);
@@ -330,7 +330,7 @@ export default function ProfilePage() {
                       <span>Current Active Plan</span>
                     ) : (
                       <>
-                        <QrCode className="h-4 w-4" />
+                        <CreditCard className="h-4 w-4" />
                         <span>Pay with UPI (₹{calculatePlanAmount(plan)})</span>
                       </>
                     )}
@@ -417,7 +417,7 @@ export default function ProfilePage() {
             <div className="sticky top-0 z-10 bg-white/90 backdrop-blur-sm px-5 pt-4 pb-2 flex items-center justify-between border-b border-[#EAECF0]">
               <div className="flex items-center gap-2.5">
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl brand-gradient text-white shadow-xs">
-                  <QrCode className="h-4.5 w-4.5" />
+                  <CreditCard className="h-4.5 w-4.5" />
                 </div>
                 <div>
                   <h2 className="text-sm font-black text-[#111439]">UPI Payment</h2>
@@ -435,17 +435,8 @@ export default function ProfilePage() {
             </div>
 
             <div className="p-5 space-y-5">
-              {/* Dynamic UPI URI & Live QR Code */}
               {(() => {
                 const amount = calculatePlanAmount(selectedPlanForUpi);
-                const upiUri = generateUpiUri({
-                  upiId: founderUpiId,
-                  name: founderUpiName,
-                  amount,
-                  transactionNote: "Revia Subscription",
-                });
-                const appLinks = generateAppSpecificUpiLinks(upiUri);
-                const qrCodeUrl = generateUpiQrCodeUrl(upiUri, 240);
 
                 return (
                   <div className="space-y-4">
@@ -457,21 +448,40 @@ export default function ProfilePage() {
                       <span className="text-2xl font-black text-[#111439]">₹{amount}</span>
                     </div>
 
-                    {/* Method 1: Direct Transfer */}
+                    {/* Phone Number */}
                     <div className="rounded-2xl border-2 border-[#6C4DFF]/20 bg-[#6C4DFF]/5 p-3.5 space-y-2.5">
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-[11px] font-black text-[#111439] flex items-center gap-1">
-                          <Sparkles className="h-3.5 w-3.5 text-[#6C4DFF]" />
-                          Direct Transfer
+                          <Phone className="h-3.5 w-3.5 text-[#6C4DFF]" />
+                          Contact to Pay
                         </span>
                         <span className="rounded-full bg-[#16A34A]/10 text-[#16A34A] text-[9px] font-bold px-2 py-0.5 border border-[#16A34A]/20">
-                          Zero Failure
+                          Direct
                         </span>
                       </div>
 
                       <div className="rounded-xl border border-[#EAECF0] bg-white p-2.5 flex items-center justify-between gap-2">
                         <div className="min-w-0">
-                          <span className="text-[9px] font-bold uppercase text-[#94A3B8] block">UPI ID</span>
+                          <span className="text-[9px] font-bold uppercase text-[#94A3B8] block">Phone Number</span>
+                          <span className="text-xs font-black font-mono text-[#111439] truncate block">+{supportPhone}</span>
+                        </div>
+                        <a
+                          href={`https://wa.me/${supportPhone}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#25D366] text-white text-[11px] font-bold cursor-pointer hover:opacity-90 shrink-0"
+                        >
+                          <Phone className="h-3 w-3" />
+                          <span>WhatsApp</span>
+                        </a>
+                      </div>
+                    </div>
+
+                    {/* UPI ID */}
+                    <div className="rounded-2xl border border-[#EAECF0] bg-[#F8F8F9] p-3.5 space-y-2.5">
+                      <span className="text-[11px] font-black text-[#111439]">UPI ID</span>
+                      <div className="rounded-xl border border-[#EAECF0] bg-white p-2.5 flex items-center justify-between gap-2">
+                        <div className="min-w-0">
                           <span className="text-xs font-black font-mono text-[#111439] truncate block">{founderUpiId}</span>
                         </div>
                         <button
@@ -483,43 +493,40 @@ export default function ProfilePage() {
                           <span>{copiedUpi ? "Copied" : "Copy"}</span>
                         </button>
                       </div>
+                    </div>
 
-                      <ol className="text-[10px] text-[#667085] space-y-0.5 list-decimal list-inside font-medium bg-white/70 p-2.5 rounded-xl border border-[#EAECF0]/60">
-                        <li>Open GPay/PhonePe/Paytm → <strong>"Pay UPI ID"</strong></li>
-                        <li>Enter UPI ID & amount <strong>₹{amount}</strong></li>
-                        <li>Copy <strong>12-digit UTR</strong> from receipt below</li>
+                    {/* Step-by-Step Instructions */}
+                    <div className="rounded-2xl border border-[#EAECF0] bg-white p-3.5 space-y-2.5">
+                      <span className="text-[11px] font-black text-[#111439] flex items-center gap-1">
+                        <Info className="h-3.5 w-3.5 text-[#6C4DFF]" />
+                        How to Pay
+                      </span>
+                      <ol className="text-[10px] text-[#667085] space-y-1.5 list-none font-medium">
+                        <li className="flex items-start gap-2">
+                          <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#6C4DFF] text-white text-[8px] font-black shrink-0 mt-0.5">1</span>
+                          <span>Open <strong>GPay / PhonePe / Paytm / BHIM</strong> on your phone</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#6C4DFF] text-white text-[8px] font-black shrink-0 mt-0.5">2</span>
+                          <span>Tap <strong>"Pay UPI ID"</strong> or <strong>"Send Money"</strong></span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#6C4DFF] text-white text-[8px] font-black shrink-0 mt-0.5">3</span>
+                          <span>Enter UPI ID: <strong className="font-mono text-[#111439]">{founderUpiId}</strong></span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#6C4DFF] text-white text-[8px] font-black shrink-0 mt-0.5">4</span>
+                          <span>Enter amount: <strong>₹{amount}</strong> and complete payment</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#6C4DFF] text-white text-[8px] font-black shrink-0 mt-0.5">5</span>
+                          <span>Copy the <strong>12-digit UTR</strong> from payment receipt</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#6C4DFF] text-white text-[8px] font-black shrink-0 mt-0.5">6</span>
+                          <span>Paste UTR below and tap <strong>"Submit for Activation"</strong></span>
+                        </li>
                       </ol>
-                    </div>
-
-                    {/* Method 2: Scan QR */}
-                    <div className="rounded-2xl border border-[#EAECF0] bg-[#F8F8F9] p-3.5 text-center space-y-2">
-                      <span className="text-[11px] font-bold text-[#667085]">Scan QR Code</span>
-                      <div className="flex justify-center p-2 bg-white rounded-xl border border-[#EAECF0]">
-                        <img src={qrCodeUrl} alt="UPI QR" className="w-40 h-40 object-contain rounded-lg" />
-                      </div>
-                    </div>
-
-                    {/* UPI App Links */}
-                    <div className="space-y-2">
-                      <span className="text-[10px] font-bold text-[#667085] uppercase tracking-wider">Open App Directly</span>
-                      <div className="grid grid-cols-4 gap-1.5">
-                        <a href={appLinks.gpay} className="py-2 px-1 rounded-xl border border-[#EAECF0] bg-white text-[10px] font-bold text-[#111439] flex flex-col items-center gap-1">
-                          <Smartphone className="h-3.5 w-3.5 text-[#4285F4]" />
-                          GPay
-                        </a>
-                        <a href={appLinks.phonepe} className="py-2 px-1 rounded-xl border border-[#EAECF0] bg-white text-[10px] font-bold text-[#111439] flex flex-col items-center gap-1">
-                          <Smartphone className="h-3.5 w-3.5 text-[#5f259f]" />
-                          PhonePe
-                        </a>
-                        <a href={appLinks.paytm} className="py-2 px-1 rounded-xl border border-[#EAECF0] bg-white text-[10px] font-bold text-[#111439] flex flex-col items-center gap-1">
-                          <Smartphone className="h-3.5 w-3.5 text-[#00b9f5]" />
-                          Paytm
-                        </a>
-                        <a href={appLinks.generic} className="py-2 px-1 rounded-xl brand-gradient text-white text-[10px] font-bold flex flex-col items-center gap-1">
-                          <ExternalLink className="h-3.5 w-3.5" />
-                          Any UPI
-                        </a>
-                      </div>
                     </div>
 
                     {/* UTR Form */}
