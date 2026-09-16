@@ -1,7 +1,7 @@
 // Importers/Callers: DailyAIReport component, Store live opportunities generator, Analytics page, src/app/whatsapp/page.tsx, src/app/opportunities/page.tsx.
 // Affected API: Deterministic customer segmentation, live opportunity generation, Daily AI Report generator, WhatsApp custom date personalization engine.
 // Data Schemas: Business, Customer, Visit, Opportunity, DailyAIReportData, CustomerSegment, WhatsAppCustomData from src/lib/types.ts.
-// User's Verbatim Instruction: "An update I want to do that for the Whatsapp reminders are all at I need to Add Customise data option so the user can And select dates or enter a personalised date so he can send a reminder According to IT"
+// User's Verbatim Instruction: "Personalized Message Composer ... only change this and dont make complicated just put user frendli and the tempelate suggest them according to waht business they have"
 
 import {
   Business,
@@ -316,13 +316,22 @@ export function formatWhatsAppMessage(
   defaultTomorrow.setDate(defaultTomorrow.getDate() + 1);
   const defaultAppointment = defaultTomorrow.toLocaleDateString("en-IN", { month: 'short', day: 'numeric' }) + " at 11:00 AM";
 
-  const discountToUse = customData?.customOfferDiscount || business.default_comeback_discount || 15;
+  let discountStr = String(customData?.customOfferDiscount || business.default_comeback_discount || 15).trim();
+  let msg = templateMessage;
 
-  let msg = templateMessage
+  // Handle textual perks vs percentage cleanly
+  if (discountStr.endsWith("%")) {
+    discountStr = discountStr.slice(0, -1);
+  } else if (isNaN(Number(discountStr.replace(/[^0-9]/g, '')))) {
+    // Non-numeric perk (e.g. Free Dessert, Free PT Session, Flat 500 Off)
+    msg = msg.replace(/{offer_discount}%\s*(OFF|off)?/g, discountStr);
+  }
+
+  msg = msg
     .replace(/{customer_name}/g, customer.name || "Valued Guest")
     .replace(/{business_name}/g, business.name)
     .replace(/{days_since_last_visit}/g, daysSinceLast.toString())
-    .replace(/{offer_discount}/g, discountToUse.toString())
+    .replace(/{offer_discount}/g, discountStr)
     .replace(
       /{favorite_item}/g,
       customer.favorite_items && customer.favorite_items.length > 0

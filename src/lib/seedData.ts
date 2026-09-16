@@ -1,7 +1,7 @@
 // Importers/Callers: AppStore, context, seed initializers, WhatsApp Hub, Pricing components.
 // Affected API: SUBSCRIPTION_PLANS, DEFAULT_WHATSAPP_TEMPLATES, mock data for local fallback.
 // Data Schemas: SubscriptionPlan, WhatsAppTemplate from src/lib/types.ts.
-// User's Verbatim Instruction: "c:\AI\Revia_Final_All_Three_Business_Updates_Claude_Code_Prompt.docx now this make todo and complete updaate"
+// User's Verbatim Instruction: "Personalized Message Composer ... only change this and dont make complicated just put user frendli and the tempelate suggest them according to waht business they have"
 
 import {
   Business,
@@ -368,30 +368,40 @@ export const DEFAULT_WHATSAPP_TEMPLATES: WhatsAppTemplate[] = [
     id: "tpl-clothing-newstock",
     business_id: null,
     industry: "clothing",
-    name: "New Stock / Collection Arrival",
+    name: "New Stock / Collection Arrival Alert",
     category: "festival",
     message:
-      "Hi {customer_name}! 👋 New collection has arrived at {business_name}. Visit us to check out the latest styles and trendy designs. See you soon! 😊",
+      "Hi {customer_name}! 👋 Our fresh new collection has just arrived at {business_name}. Visit us before {valid_until} to check out the latest styles and trendy designs. See you soon! 😊👗",
     is_default: true,
   },
   {
     id: "tpl-clothing-festival",
     business_id: null,
     industry: "clothing",
-    name: "Festival Offer & Season Sale ({offer_discount}% OFF)",
+    name: "Festive Season Wardrobe Sale ({offer_discount}% OFF)",
     category: "festival",
     message:
-      "Hey {customer_name}! 🌟 Celebrate the festive season in style with {business_name}. Enjoy special festive discounts of {offer_discount}% OFF on your favorite outfits this week! 🛍️✨",
+      "Hey {customer_name}! 🌟 Celebrate the festive season in style with {business_name}. Enjoy special discounts of {offer_discount}% OFF on your favorite outfits this week until {valid_until}! 🛍️✨",
+    is_default: true,
+  },
+  {
+    id: "tpl-clothing-thankyou",
+    business_id: null,
+    industry: "clothing",
+    name: "Shopping Thank You & Next Visit Perk",
+    category: "thank_you",
+    message:
+      "Hi {customer_name}! 🛍️ Thank you for shopping with {business_name}. Hope you love your new styles! Show this message on your next visit before {valid_until} for a special {offer_discount}% OFF! ✨👗",
     is_default: true,
   },
   {
     id: "tpl-clothing-loyal",
     business_id: null,
     industry: "clothing",
-    name: "VIP Loyal Shopper Preview Perk",
+    name: "VIP Loyal Shopper Preview & Perk",
     category: "vip_offer",
     message:
-      "Dear {customer_name}, as one of our most valued shoppers at {business_name}, enjoy an exclusive VIP preview and special member discount on our new arrivals! 💖👗",
+      "Dear {customer_name}, as one of our most valued shoppers at {business_name}, enjoy an exclusive VIP preview and special {offer_discount}% member discount on our new arrivals! 💖👗",
     is_default: true,
   },
   {
@@ -401,7 +411,7 @@ export const DEFAULT_WHATSAPP_TEMPLATES: WhatsAppTemplate[] = [
     name: "Inactive Shopper Comeback ({offer_discount}% OFF)",
     category: "comeback",
     message:
-      "Hi {customer_name}, we missed you at {business_name}! It's been {days_since_last_visit} days. Refresh your wardrobe with {offer_discount}% OFF on your next visit! 👗✨",
+      "Hi {customer_name}, we missed you at {business_name}! It's been {days_since_last_visit} days. Refresh your wardrobe with {offer_discount}% OFF valid until {valid_until}! 👗✨",
     is_default: true,
   },
 
@@ -413,7 +423,7 @@ export const DEFAULT_WHATSAPP_TEMPLATES: WhatsAppTemplate[] = [
     name: "Monthly Rent Due Reminder",
     category: "reminder",
     message:
-      "Hi {customer_name}, this is a gentle reminder from {business_name} that your PG rent is due soon. Please clear your dues at the earliest. Thank you! 🏠",
+      "Hi {customer_name}, this is a gentle reminder from {business_name} that your monthly rent is due by {valid_until}. Please clear your dues at the earliest. Thank you! 🏠",
     is_default: true,
   },
   {
@@ -434,6 +444,26 @@ export const DEFAULT_WHATSAPP_TEMPLATES: WhatsAppTemplate[] = [
     category: "thank_you",
     message:
       "Welcome to {business_name}, {customer_name}! 🏠 We are thrilled to have you with us. If you need any assistance with your room or facilities, please reach out anytime!",
+    is_default: true,
+  },
+  {
+    id: "tpl-pg-renewal",
+    business_id: null,
+    industry: "pg_hostel",
+    name: "Stay Renewal & Early Bird Perk",
+    category: "vip_offer",
+    message:
+      "Hi {customer_name}! We love having you at {business_name}. Renew your stay before {valid_until} and enjoy {offer_discount}% OFF on your next month's rent! 🌟🏢",
+    is_default: true,
+  },
+  {
+    id: "tpl-pg-referral",
+    business_id: null,
+    industry: "pg_hostel",
+    name: "Resident Friend Referral Reward",
+    category: "comeback",
+    message:
+      "Hey {customer_name}! Know a friend looking for a great PG/hostel? Refer them to {business_name} and get {offer_discount} off your next rent once they check in! 🏠🤝",
     is_default: true,
   },
 
