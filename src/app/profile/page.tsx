@@ -411,192 +411,156 @@ export default function ProfilePage() {
 
       {/* DYNAMIC UPI QR SCANNER PAYMENT MODAL */}
       {selectedPlanForUpi && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
-          <div className="brand-card w-full max-w-xs w-[92vw] p-4 sm:p-6 bg-white shadow-2xl relative max-h-[92vh] overflow-y-auto space-y-6">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs animate-fade-in">
+          <div className="brand-card w-full sm:max-w-sm sm:mx-4 rounded-t-3xl sm:rounded-3xl bg-white shadow-2xl relative max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
             {/* Close button */}
-            <button
-              onClick={handleCloseUpiModal}
-              className="absolute right-4 top-4 p-2 rounded-xl text-[#94A3B8] hover:text-[#111439] hover:bg-[#F1F1F4] transition-colors cursor-pointer"
-            >
-              <X className="h-5 w-5" />
-            </button>
-
-            {/* Modal Header */}
-            <div className="text-center space-y-1">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl brand-gradient text-white shadow-md shadow-purple-500/20 mb-3">
-                <QrCode className="h-6 w-6" />
+            <div className="sticky top-0 z-10 bg-white/90 backdrop-blur-sm px-5 pt-4 pb-2 flex items-center justify-between border-b border-[#EAECF0]">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl brand-gradient text-white shadow-xs">
+                  <QrCode className="h-4.5 w-4.5" />
+                </div>
+                <div>
+                  <h2 className="text-sm font-black text-[#111439]">UPI Payment</h2>
+                  <p className="text-[10px] text-[#667085]">
+                    {selectedPlanForUpi.name} • {billingCycle === "monthly" ? "Monthly" : "Yearly"}
+                  </p>
+                </div>
               </div>
-              <h2 className="text-xl font-black text-[#111439]">
-                Direct UPI Payment
-              </h2>
-              <p className="text-xs text-[#667085]">
-                Upgrade to <strong>{selectedPlanForUpi.name}</strong> (
-                {billingCycle === "monthly" ? "1 Month" : "1 Year - 20% OFF"})
-              </p>
+              <button
+                onClick={handleCloseUpiModal}
+                className="p-2 rounded-xl text-[#94A3B8] hover:text-[#111439] hover:bg-[#F1F1F4] transition-colors cursor-pointer"
+              >
+                <X className="h-5 w-5" />
+              </button>
             </div>
 
-            {/* Dynamic UPI URI & Live QR Code */}
-            {(() => {
-              const amount = calculatePlanAmount(selectedPlanForUpi);
-              const upiUri = generateUpiUri({
-                upiId: founderUpiId,
-                name: founderUpiName,
-                amount,
-                transactionNote: "Revia Subscription",
-              });
-              const appLinks = generateAppSpecificUpiLinks(upiUri);
-              const qrCodeUrl = generateUpiQrCodeUrl(upiUri, 280);
+            <div className="p-5 space-y-5">
+              {/* Dynamic UPI URI & Live QR Code */}
+              {(() => {
+                const amount = calculatePlanAmount(selectedPlanForUpi);
+                const upiUri = generateUpiUri({
+                  upiId: founderUpiId,
+                  name: founderUpiName,
+                  amount,
+                  transactionNote: "Revia Subscription",
+                });
+                const appLinks = generateAppSpecificUpiLinks(upiUri);
+                const qrCodeUrl = generateUpiQrCodeUrl(upiUri, 240);
 
-              return (
-                <div className="space-y-4">
-                  {/* Total Amount Badge */}
-                  <div className="rounded-2xl bg-[#F8F8F9] border border-[#EAECF0] p-4 text-center">
-                    <span className="text-xs font-bold text-[#667085] uppercase tracking-wider block">
-                      Payable Subscription Amount
-                    </span>
-                    <span className="text-3xl font-black text-[#111439]">
-                      ₹{amount}
-                    </span>
-                  </div>
-
-                  {/* Step A: 100% Guaranteed Direct Transfer Option */}
-                  <div className="rounded-2xl border-2 border-[#6C4DFF]/30 bg-[#6C4DFF]/5 p-4 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-black text-[#111439] flex items-center gap-1.5">
-                        <Sparkles className="h-4 w-4 text-[#6C4DFF]" />
-                        <span>Method 1: Direct Transfer (100% Guaranteed)</span>
+                return (
+                  <div className="space-y-4">
+                    {/* Amount Badge */}
+                    <div className="rounded-2xl bg-[#F8F8F9] border border-[#EAECF0] p-3 text-center">
+                      <span className="text-[10px] font-bold text-[#667085] uppercase tracking-wider block">
+                        Total Amount
                       </span>
-                      <span className="rounded-full bg-[#16A34A]/10 text-[#16A34A] text-[10px] font-bold px-2 py-0.5 border border-[#16A34A]/20">
-                        Zero Failure
-                      </span>
+                      <span className="text-2xl font-black text-[#111439]">₹{amount}</span>
                     </div>
 
-                    <div className="rounded-xl border border-[#EAECF0] bg-white p-3 flex items-center justify-between gap-2 shadow-xs">
-                      <div>
-                        <span className="text-[10px] font-bold uppercase text-[#94A3B8] block">
-                          Founder UPI ID
+                    {/* Method 1: Direct Transfer */}
+                    <div className="rounded-2xl border-2 border-[#6C4DFF]/20 bg-[#6C4DFF]/5 p-3.5 space-y-2.5">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[11px] font-black text-[#111439] flex items-center gap-1">
+                          <Sparkles className="h-3.5 w-3.5 text-[#6C4DFF]" />
+                          Direct Transfer
                         </span>
-                        <span className="text-sm font-black font-mono text-[#111439]">
-                          {founderUpiId}
+                        <span className="rounded-full bg-[#16A34A]/10 text-[#16A34A] text-[9px] font-bold px-2 py-0.5 border border-[#16A34A]/20">
+                          Zero Failure
                         </span>
                       </div>
+
+                      <div className="rounded-xl border border-[#EAECF0] bg-white p-2.5 flex items-center justify-between gap-2">
+                        <div className="min-w-0">
+                          <span className="text-[9px] font-bold uppercase text-[#94A3B8] block">UPI ID</span>
+                          <span className="text-xs font-black font-mono text-[#111439] truncate block">{founderUpiId}</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleCopyUpiId}
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg brand-gradient text-white text-[11px] font-bold cursor-pointer hover:opacity-90 shrink-0"
+                        >
+                          {copiedUpi ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                          <span>{copiedUpi ? "Copied" : "Copy"}</span>
+                        </button>
+                      </div>
+
+                      <ol className="text-[10px] text-[#667085] space-y-0.5 list-decimal list-inside font-medium bg-white/70 p-2.5 rounded-xl border border-[#EAECF0]/60">
+                        <li>Open GPay/PhonePe/Paytm → <strong>"Pay UPI ID"</strong></li>
+                        <li>Enter UPI ID & amount <strong>₹{amount}</strong></li>
+                        <li>Copy <strong>12-digit UTR</strong> from receipt below</li>
+                      </ol>
+                    </div>
+
+                    {/* Method 2: Scan QR */}
+                    <div className="rounded-2xl border border-[#EAECF0] bg-[#F8F8F9] p-3.5 text-center space-y-2">
+                      <span className="text-[11px] font-bold text-[#667085]">Scan QR Code</span>
+                      <div className="flex justify-center p-2 bg-white rounded-xl border border-[#EAECF0]">
+                        <img src={qrCodeUrl} alt="UPI QR" className="w-40 h-40 object-contain rounded-lg" />
+                      </div>
+                    </div>
+
+                    {/* UPI App Links */}
+                    <div className="space-y-2">
+                      <span className="text-[10px] font-bold text-[#667085] uppercase tracking-wider">Open App Directly</span>
+                      <div className="grid grid-cols-4 gap-1.5">
+                        <a href={appLinks.gpay} className="py-2 px-1 rounded-xl border border-[#EAECF0] bg-white text-[10px] font-bold text-[#111439] flex flex-col items-center gap-1">
+                          <Smartphone className="h-3.5 w-3.5 text-[#4285F4]" />
+                          GPay
+                        </a>
+                        <a href={appLinks.phonepe} className="py-2 px-1 rounded-xl border border-[#EAECF0] bg-white text-[10px] font-bold text-[#111439] flex flex-col items-center gap-1">
+                          <Smartphone className="h-3.5 w-3.5 text-[#5f259f]" />
+                          PhonePe
+                        </a>
+                        <a href={appLinks.paytm} className="py-2 px-1 rounded-xl border border-[#EAECF0] bg-white text-[10px] font-bold text-[#111439] flex flex-col items-center gap-1">
+                          <Smartphone className="h-3.5 w-3.5 text-[#00b9f5]" />
+                          Paytm
+                        </a>
+                        <a href={appLinks.generic} className="py-2 px-1 rounded-xl brand-gradient text-white text-[10px] font-bold flex flex-col items-center gap-1">
+                          <ExternalLink className="h-3.5 w-3.5" />
+                          Any UPI
+                        </a>
+                      </div>
+                    </div>
+
+                    {/* UTR Form */}
+                    <form onSubmit={handleConfirmUpiPayment} className="space-y-3 pt-3 border-t border-[#EAECF0]">
+                      <div>
+                        <label className="block text-[11px] font-bold text-[#111439] uppercase tracking-wider mb-1 flex items-center gap-1">
+                          <Info className="h-3 w-3 text-[#6C4DFF]" />
+                          12-Digit UTR Number *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          inputMode="numeric"
+                          maxLength={12}
+                          disabled={isSubmittingUtr}
+                          value={utrInput}
+                          onChange={(e) => setUtrInput(e.target.value.replace(/[^0-9]/g, ""))}
+                          placeholder="e.g. 423892718291"
+                          className="w-full rounded-xl border border-[#EAECF0] bg-[#F8F8F9] px-3.5 py-2.5 text-xs font-mono font-bold text-[#111439] placeholder-[#94A3B8] focus:bg-[#FFFFFF] focus:border-[#6C4DFF] focus:outline-none transition-colors"
+                        />
+                      </div>
+
                       <button
-                        type="button"
-                        onClick={handleCopyUpiId}
-                        className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl brand-gradient text-white text-xs font-bold cursor-pointer hover:opacity-90 shadow-xs transition-transform active:scale-95"
+                        type="submit"
+                        disabled={isSubmittingUtr}
+                        className="w-full py-3 rounded-xl brand-gradient text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md shadow-purple-500/20 hover:opacity-95 transition-all cursor-pointer disabled:opacity-50 btn-interactive"
                       >
-                        {copiedUpi ? (
-                          <>
-                            <Check className="h-3.5 w-3.5" />
-                            <span>Copied!</span>
-                          </>
+                        {isSubmittingUtr ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
                         ) : (
                           <>
-                            <Copy className="h-3.5 w-3.5" />
-                            <span>Copy UPI ID</span>
+                            <span>Submit UTR for Verification</span>
+                            <ArrowRight className="h-4 w-4" />
                           </>
                         )}
                       </button>
-                    </div>
-
-                    <ol className="text-[11px] text-[#667085] space-y-1 list-decimal list-inside font-medium bg-white/70 p-2.5 rounded-xl border border-[#EAECF0]/60">
-                      <li>Copy the UPI ID above: <strong className="text-[#111439]">{founderUpiId}</strong></li>
-                      <li>Open GPay / PhonePe / Paytm &rarr; Tap <strong>&quot;Pay UPI ID&quot;</strong></li>
-                      <li>Enter amount <strong>₹{amount}</strong> &amp; complete payment</li>
-                      <li>Copy the <strong>12-digit UTR number</strong> from receipt and paste below</li>
-                    </ol>
+                    </form>
                   </div>
-
-                  {/* Step B: Dynamic QR Scanner Option */}
-                  <div className="rounded-2xl border border-[#EAECF0] bg-[#F8F8F9] p-4 space-y-3 text-center">
-                    <span className="text-xs font-bold text-[#667085] block">
-                      Method 2: Scan QR Code with Any UPI App
-                    </span>
-                    <div className="flex flex-col items-center justify-center p-3 bg-white rounded-xl border border-[#EAECF0] shadow-xs inline-block mx-auto">
-                      <img
-                        src={qrCodeUrl}
-                        alt="UPI QR Scanner"
-                        className="w-48 h-48 object-contain rounded-lg"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Mobile Direct Deep Links */}
-                  <div className="space-y-2">
-                    <div className="text-[11px] font-bold text-[#667085] uppercase tracking-wider">
-                      Tap to Launch App Directly:
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <a
-                        href={appLinks.gpay}
-                        className="py-2.5 px-3 rounded-xl border border-[#EAECF0] bg-[#F8F8F9] hover:bg-[#F1F1F4] text-xs font-bold text-[#111439] flex items-center justify-center gap-2 transition-colors"
-                      >
-                        <Smartphone className="h-3.5 w-3.5 text-[#4285F4]" />
-                        <span>Google Pay</span>
-                      </a>
-                      <a
-                        href={appLinks.phonepe}
-                        className="py-2.5 px-3 rounded-xl border border-[#EAECF0] bg-[#F8F8F9] hover:bg-[#F1F1F4] text-xs font-bold text-[#111439] flex items-center justify-center gap-2 transition-colors"
-                      >
-                        <Smartphone className="h-3.5 w-3.5 text-[#5f259f]" />
-                        <span>PhonePe</span>
-                      </a>
-                      <a
-                        href={appLinks.paytm}
-                        className="py-2.5 px-3 rounded-xl border border-[#EAECF0] bg-[#F8F8F9] hover:bg-[#F1F1F4] text-xs font-bold text-[#111439] flex items-center justify-center gap-2 transition-colors"
-                      >
-                        <Smartphone className="h-3.5 w-3.5 text-[#00b9f5]" />
-                        <span>Paytm</span>
-                      </a>
-                      <a
-                        href={appLinks.generic}
-                        className="py-2.5 px-3 rounded-xl brand-gradient text-white text-xs font-bold flex items-center justify-center gap-2 shadow-xs"
-                      >
-                        <ExternalLink className="h-3.5 w-3.5" />
-                        <span>Any UPI App</span>
-                      </a>
-                    </div>
-                  </div>
-
-                  {/* Step C: Enter UTR reference */}
-                  <form onSubmit={handleConfirmUpiPayment} className="space-y-3 pt-2 border-t border-[#EAECF0]">
-                    <div>
-                      <label className="block text-xs font-bold text-[#111439] uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                        <Info className="h-3.5 w-3.5 text-[#6C4DFF]" />
-                        <span>Enter 12-Digit UPI Ref / UTR Number *</span>
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        disabled={isSubmittingUtr}
-                        value={utrInput}
-                        onChange={(e) => setUtrInput(e.target.value)}
-                        placeholder="e.g. 423892718291"
-                        className="w-full rounded-xl border border-[#EAECF0] bg-[#F8F8F9] px-3.5 py-2.5 text-xs font-mono font-bold text-[#111439] placeholder-[#94A3B8] focus:bg-[#FFFFFF] focus:border-[#6C4DFF] focus:outline-none transition-colors"
-                      />
-                      <p className="text-[10px] text-[#667085] mt-1">
-                        Found in your GPay / PhonePe / Paytm transaction receipt under <strong>UPI Transaction ID / Ref No.</strong>
-                      </p>
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={isSubmittingUtr}
-                      className="w-full py-3.5 rounded-xl brand-gradient text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md shadow-purple-500/20 hover:opacity-95 transition-all cursor-pointer disabled:opacity-50 btn-interactive"
-                    >
-                      {isSubmittingUtr ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <>
-                          <span>Submit Payment UTR for Verification</span>
-                          <ArrowRight className="h-4 w-4" />
-                        </>
-                      )}
-                    </button>
-                  </form>
-                </div>
-              );
-            })()}
+                );
+              })()}
+            </div>
           </div>
         </div>
       )}
