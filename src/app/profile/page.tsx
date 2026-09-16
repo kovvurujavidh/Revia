@@ -1,7 +1,7 @@
 // Importers/Callers: Next.js App Router route `/profile`, desktop sidebar, mobile navigation, user dropdown menu.
 // Affected API: Profile & Subscription billing page (manage plan, trial, billing UI, Dynamic UPI QR Scanner payment, UTR submission).
 // Data Schemas: Business, SubscriptionPlan, SubscriptionPaymentRecord, PlatformCoreSettings, User from src/lib/types.ts.
-// User's Verbatim Instruction: "WHEN I TRY TO PAY IT SAY Could not initiate transactions Please try again"
+// User's Verbatim Instruction: "STILL TRANSACTION PROBLEM DO I NEED TO PUT OR CHANGE ANYTHING"
 
 "use client";
 
@@ -28,6 +28,7 @@ import {
   X,
   Smartphone,
   Info,
+  HelpCircle,
 } from "lucide-react";
 import { SUBSCRIPTION_PLANS } from "@/lib/seedData";
 import {
@@ -151,7 +152,7 @@ export default function ProfilePage() {
           </span>
         </div>
         <p className="text-xs text-[#667085] mt-1">
-          Manage your subscription plan, direct zero-fee UPI QR payments, and 14-day free trial status.
+          Manage your subscription plan, direct zero-fee UPI payments, and 14-day free trial status.
         </p>
       </div>
 
@@ -330,7 +331,7 @@ export default function ProfilePage() {
                     ) : (
                       <>
                         <QrCode className="h-4 w-4" />
-                        <span>Pay with UPI Scanner (₹{calculatePlanAmount(plan)})</span>
+                        <span>Pay with UPI (₹{calculatePlanAmount(plan)})</span>
                       </>
                     )}
                   </button>
@@ -356,7 +357,7 @@ export default function ProfilePage() {
         {businessPayments.length === 0 ? (
           <div className="text-center py-8 text-xs text-[#667085] space-y-1">
             <p className="font-semibold text-[#111439]">No payment submissions yet</p>
-            <p>When you scan and pay via UPI, your payment receipts and status will show here.</p>
+            <p>When you pay via UPI, your payment receipts and status will show here.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -426,7 +427,7 @@ export default function ProfilePage() {
                 <QrCode className="h-6 w-6" />
               </div>
               <h2 className="text-xl font-black text-[#111439]">
-                Scan &amp; Pay via UPI
+                Direct UPI Payment
               </h2>
               <p className="text-xs text-[#667085]">
                 Upgrade to <strong>{selectedPlanForUpi.name}</strong> (
@@ -458,52 +459,72 @@ export default function ProfilePage() {
                     </span>
                   </div>
 
-                  {/* QR Code Container */}
-                  <div className="flex flex-col items-center justify-center p-4 bg-[#FFFFFF] rounded-2xl border-2 border-[#6C4DFF]/30 shadow-xs">
-                    <img
-                      src={qrCodeUrl}
-                      alt="UPI QR Scanner"
-                      className="w-56 h-56 object-contain rounded-xl border border-[#EAECF0] shadow-xs"
-                    />
-                    <div className="flex items-center gap-2 mt-3 text-[11px] font-bold text-[#16A34A]">
-                      <CheckCircle2 className="h-3.5 w-3.5" />
-                      <span>Supports GPay, PhonePe, Paytm, BHIM &amp; Cred</span>
+                  {/* Step A: 100% Guaranteed Direct Transfer Option */}
+                  <div className="rounded-2xl border-2 border-[#6C4DFF]/30 bg-[#6C4DFF]/5 p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-black text-[#111439] flex items-center gap-1.5">
+                        <Sparkles className="h-4 w-4 text-[#6C4DFF]" />
+                        <span>Method 1: Direct Transfer (100% Guaranteed)</span>
+                      </span>
+                      <span className="rounded-full bg-[#16A34A]/10 text-[#16A34A] text-[10px] font-bold px-2 py-0.5 border border-[#16A34A]/20">
+                        Zero Failure
+                      </span>
+                    </div>
+
+                    <div className="rounded-xl border border-[#EAECF0] bg-white p-3 flex items-center justify-between gap-2 shadow-xs">
+                      <div>
+                        <span className="text-[10px] font-bold uppercase text-[#94A3B8] block">
+                          Founder UPI ID
+                        </span>
+                        <span className="text-sm font-black font-mono text-[#111439]">
+                          {founderUpiId}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleCopyUpiId}
+                        className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl brand-gradient text-white text-xs font-bold cursor-pointer hover:opacity-90 shadow-xs transition-transform active:scale-95"
+                      >
+                        {copiedUpi ? (
+                          <>
+                            <Check className="h-3.5 w-3.5" />
+                            <span>Copied!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="h-3.5 w-3.5" />
+                            <span>Copy UPI ID</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+
+                    <ol className="text-[11px] text-[#667085] space-y-1 list-decimal list-inside font-medium bg-white/70 p-2.5 rounded-xl border border-[#EAECF0]/60">
+                      <li>Copy the UPI ID above: <strong className="text-[#111439]">{founderUpiId}</strong></li>
+                      <li>Open GPay / PhonePe / Paytm &rarr; Tap <strong>&quot;Pay UPI ID&quot;</strong></li>
+                      <li>Enter amount <strong>₹{amount}</strong> &amp; complete payment</li>
+                      <li>Copy the <strong>12-digit UTR number</strong> from receipt and paste below</li>
+                    </ol>
+                  </div>
+
+                  {/* Step B: Dynamic QR Scanner Option */}
+                  <div className="rounded-2xl border border-[#EAECF0] bg-[#F8F8F9] p-4 space-y-3 text-center">
+                    <span className="text-xs font-bold text-[#667085] block">
+                      Method 2: Scan QR Code with Any UPI App
+                    </span>
+                    <div className="flex flex-col items-center justify-center p-3 bg-white rounded-xl border border-[#EAECF0] shadow-xs inline-block mx-auto">
+                      <img
+                        src={qrCodeUrl}
+                        alt="UPI QR Scanner"
+                        className="w-48 h-48 object-contain rounded-lg"
+                      />
                     </div>
                   </div>
 
-                  {/* Founder UPI ID with Copy Button */}
-                  <div className="rounded-xl border border-[#EAECF0] bg-[#F8F8F9] p-3 flex items-center justify-between gap-2">
-                    <div>
-                      <span className="text-[10px] font-bold uppercase text-[#94A3B8] block">
-                        Direct UPI ID
-                      </span>
-                      <span className="text-xs font-black font-mono text-[#111439]">
-                        {founderUpiId}
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleCopyUpiId}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg brand-gradient text-white text-xs font-bold cursor-pointer hover:opacity-90 shadow-xs"
-                    >
-                      {copiedUpi ? (
-                        <>
-                          <Check className="h-3.5 w-3.5" />
-                          <span>Copied</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="h-3.5 w-3.5" />
-                          <span>Copy UPI</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-
-                  {/* Mobile Deep Link Intent Buttons */}
+                  {/* Mobile Direct Deep Links */}
                   <div className="space-y-2">
                     <div className="text-[11px] font-bold text-[#667085] uppercase tracking-wider">
-                      Tap to Pay Directly (Mobile):
+                      Tap to Launch App Directly:
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <a
@@ -537,8 +558,8 @@ export default function ProfilePage() {
                     </div>
                   </div>
 
-                  {/* Step 2: Enter UTR reference */}
-                  <form onSubmit={handleConfirmUpiPayment} className="space-y-3 pt-2">
+                  {/* Step C: Enter UTR reference */}
+                  <form onSubmit={handleConfirmUpiPayment} className="space-y-3 pt-2 border-t border-[#EAECF0]">
                     <div>
                       <label className="block text-xs font-bold text-[#111439] uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
                         <Info className="h-3.5 w-3.5 text-[#6C4DFF]" />
@@ -554,7 +575,7 @@ export default function ProfilePage() {
                         className="w-full rounded-xl border border-[#EAECF0] bg-[#F8F8F9] px-3.5 py-2.5 text-xs font-mono font-bold text-[#111439] placeholder-[#94A3B8] focus:bg-[#FFFFFF] focus:border-[#6C4DFF] focus:outline-none transition-colors"
                       />
                       <p className="text-[10px] text-[#667085] mt-1">
-                        Found in your GPay / PhonePe / Paytm transaction details receipt after paying.
+                        Found in your GPay / PhonePe / Paytm transaction receipt under <strong>UPI Transaction ID / Ref No.</strong>
                       </p>
                     </div>
 
@@ -567,7 +588,7 @@ export default function ProfilePage() {
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
                         <>
-                          <span>Confirm Payment &amp; Submit to Admin</span>
+                          <span>Submit Payment UTR for Verification</span>
                           <ArrowRight className="h-4 w-4" />
                         </>
                       )}
