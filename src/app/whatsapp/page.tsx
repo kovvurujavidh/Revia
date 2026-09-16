@@ -1,7 +1,7 @@
 // Importers/Callers: Next.js route `/whatsapp`, AppSidebar, MobileNav
 // Affected API: WhatsAppPage React component (Industry Presets, Category Tabs, Token Chips, Live Chat Simulator, 1-Click Dispatch)
 // Data Schemas: WhatsAppTemplate, Customer, Business, WhatsAppLog from src/lib/types.ts
-// User's Verbatim Instruction: "In Whatsapp tab there is no presets templates So make and show according to the business they have the template should be shown there AND the website colours As I shown in customer returns"
+// User's Verbatim Instruction: "AFTER LOGIN THE LEFT SIDE BAR IS GOOD NOT FIT FOR MOBILE OK SEE THE WHOLE DOT CHANGECONCEPTOR CODE PLESE CHECH MOBILE FRENDLY AND THE COLORS WE CHOOSE NOW AND REQUIREMETS DOC IS DIFFERENT KEEP ANIMATIONS ONLY CHANGE COLORS TO MACTH PRODUCTION LEVEL WEBSITE"
 
 "use client";
 
@@ -39,7 +39,7 @@ const INDUSTRY_META: Record<IndustryType, { label: string; icon: React.ReactNode
   gym:        { label: "Gym",        icon: <Dumbbell className="h-3.5 w-3.5" />,    color: "#16A34A" },
   retail:     { label: "Retail",     icon: <ShoppingBag className="h-3.5 w-3.5" />,  color: "#3B82F6" },
   clinic:     { label: "Clinic",     icon: <HeartPulse className="h-3.5 w-3.5" />,   color: "#6C4DFF" },
-  hotel:      { label: "Hotel",      icon: <Building2 className="h-3.5 m-3.5" />,    color: "#06b6d4" },
+  hotel:      { label: "Hotel",      icon: <Building2 className="h-3.5 w-3.5" />,    color: "#06b6d4" },
   other:      { label: "General",    icon: <Tag className="h-3.5 w-3.5" />,          color: "#667085" },
 };
 
@@ -162,12 +162,12 @@ export default function WhatsAppPage() {
   const industryColor = INDUSTRY_META[industry]?.color || "#6C4DFF";
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-8 animate-fade-in">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-8 animate-fade-in text-[#111439]">
       {/* ── Header ── */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-black text-[#111439] tracking-tight">
               WhatsApp Outreach Hub
             </h1>
             <span
@@ -218,11 +218,11 @@ export default function WhatsAppPage() {
                     setCategoryFilter(cat);
                     setSelectedTemplateId("");
                   }}
-                  className="rounded-xl px-3 py-1.5 text-[11px] font-bold border transition-all btn-interactive"
+                  className="rounded-xl px-3 py-1.5 text-[11px] font-bold border transition-all btn-interactive cursor-pointer"
                   style={{
-                    backgroundColor: isActive ? `${meta.color}20` : "transparent",
-                    borderColor: isActive ? `${meta.color}50` : "rgba(255,255,255,0.08)",
-                    color: isActive ? meta.color : "#a1a1aa",
+                    backgroundColor: isActive ? `${meta.color}15` : "#FFFFFF",
+                    borderColor: isActive ? `${meta.color}60` : "#EAECF0",
+                    color: isActive ? meta.color : "#667085",
                   }}
                 >
                   {meta.label}
@@ -237,7 +237,7 @@ export default function WhatsAppPage() {
               <Sparkles className="h-3.5 w-3.5 text-[#6C4DFF]" />
               Preset Templates
             </h2>
-            <span className="text-xs font-bold text-[#6C4DFF] bg-[#6C4DFF]/15 border border-[#6C4DFF]/30 px-2 py-0.5 rounded-full tabular-nums">
+            <span className="text-xs font-bold text-[#6C4DFF] bg-[#6C4DFF]/10 border border-[#6C4DFF]/20 px-2 py-0.5 rounded-full tabular-nums">
               {filteredTemplates.length} Ready
             </span>
           </div>
@@ -245,7 +245,7 @@ export default function WhatsAppPage() {
           {/* Template Cards */}
           <div className="space-y-2.5">
             {filteredTemplates.length === 0 ? (
-              <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 text-center">
+              <div className="brand-card p-6 text-center">
                 <p className="text-xs text-[#667085]">
                   No presets for this category yet.
                 </p>
@@ -263,18 +263,18 @@ export default function WhatsAppPage() {
                     }}
                     className={`rounded-2xl border p-4 cursor-pointer transition-all duration-200 btn-interactive ${
                       isSelected
-                        ? "border-[#6C4DFF]/50 bg-[#6C4DFF]/10 shadow-md shadow-[#6C4DFF]/10"
-                        : "border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/[0.12]"
+                        ? "border-[#6C4DFF] bg-[#6C4DFF]/10 shadow-md shadow-[#6C4DFF]/10"
+                        : "border-[#EAECF0] bg-[#FFFFFF] hover:bg-[#F8F8F9] hover:border-[#6C4DFF]/30"
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1.5">
-                      <p className={`text-xs font-bold ${isSelected ? "text-white" : "text-white/90"}`}>
+                      <p className={`text-xs font-bold ${isSelected ? "text-[#111439]" : "text-[#111439]/90"}`}>
                         {tpl.name}
                       </p>
                       <span
                         className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border"
                         style={{
-                          backgroundColor: `${catColor}18`,
+                          backgroundColor: `${catColor}15`,
                           borderColor: `${catColor}40`,
                           color: catColor,
                         }}
@@ -301,9 +301,9 @@ export default function WhatsAppPage() {
         <div className="lg:col-span-2 space-y-6">
           {/* Composer Card */}
           <div className="brand-card p-6 sm:p-7 space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/[0.08] pb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#EAECF0] pb-4">
               <div>
-                <h3 className="text-sm font-bold text-white tracking-tight flex items-center gap-2">
+                <h3 className="text-sm font-bold text-[#111439] tracking-tight flex items-center gap-2">
                   <Zap className="h-4 w-4 text-[#F59E0B]" />
                   Personalized Message Composer
                 </h3>
@@ -318,24 +318,24 @@ export default function WhatsAppPage() {
                 <select
                   value={targetSegment}
                   onChange={(e) => setTargetSegment(e.target.value)}
-                  className="rounded-xl border border-white/[0.08] bg-[#18181b] px-3 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-[#6C4DFF]/50 transition-colors"
+                  className="rounded-xl border border-[#EAECF0] bg-[#F8F8F9] px-3 py-1.5 text-xs font-bold text-[#111439] focus:outline-none focus:border-[#6C4DFF] transition-colors"
                 >
-                  <option className="bg-[#18181b] text-white" value="all">
+                  <option value="all">
                     All Customers ({customers.length})
                   </option>
-                  <option className="bg-[#18181b] text-white" value="vip">
+                  <option value="vip">
                     VIP Members
                   </option>
-                  <option className="bg-[#18181b] text-white" value="regular">
+                  <option value="regular">
                     Regulars
                   </option>
-                  <option className="bg-[#18181b] text-white" value="becoming_inactive">
+                  <option value="becoming_inactive">
                     Becoming Inactive
                   </option>
-                  <option className="bg-[#18181b] text-white" value="inactive">
+                  <option value="inactive">
                     Inactive Win-Back
                   </option>
-                  <option className="bg-[#18181b] text-white" value="new">
+                  <option value="new">
                     New First-Timers
                   </option>
                 </select>
@@ -352,10 +352,10 @@ export default function WhatsAppPage() {
                   <button
                     key={st.token}
                     onClick={() => insertToken(st.token)}
-                    className="inline-flex items-center gap-1 rounded-lg border border-white/[0.08] bg-white/[0.03] px-2.5 py-1 text-[10px] font-bold text-[#a1a1aa] hover:text-white hover:border-[#6C4DFF]/40 hover:bg-[#6C4DFF]/10 transition-all btn-interactive"
+                    className="inline-flex items-center gap-1 rounded-lg border border-[#EAECF0] bg-[#F8F8F9] px-2.5 py-1 text-[10px] font-bold text-[#667085] hover:text-[#111439] hover:border-[#6C4DFF]/40 hover:bg-[#6C4DFF]/10 transition-all btn-interactive cursor-pointer"
                   >
-                    <span className="text-[#6C4DFF]">{st.token}</span>
-                    <span className="hidden sm:inline">{st.label}</span>
+                    <span className="text-[#6C4DFF] font-black">{st.token}</span>
+                    <span className="hidden sm:inline font-medium">({st.label})</span>
                   </button>
                 ))}
               </div>
@@ -371,7 +371,7 @@ export default function WhatsAppPage() {
                 value={customMessage || activeTemplate?.message || ""}
                 onChange={(e) => setCustomMessage(e.target.value)}
                 placeholder="Type your WhatsApp message or select a preset template..."
-                className="w-full rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4 text-xs font-medium text-white placeholder:text-[#52525b] focus:border-[#6C4DFF]/50 focus:bg-white/[0.06] focus:outline-none transition-all leading-relaxed"
+                className="w-full rounded-2xl border border-[#EAECF0] bg-[#F8F8F9] p-4 text-xs font-medium text-[#111439] placeholder:text-[#94A3B8] focus:border-[#6C4DFF] focus:bg-[#FFFFFF] focus:outline-none transition-all leading-relaxed"
               />
               <p className="text-[10px] text-[#667085] mt-1">
                 {activeTemplate && (
@@ -387,14 +387,14 @@ export default function WhatsAppPage() {
 
           {/* ── Live WhatsApp Chat Simulator ── */}
           <div className="brand-card p-6 sm:p-7 space-y-4">
-            <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
-              <h3 className="text-sm font-bold text-white tracking-tight flex items-center gap-2">
+            <div className="flex items-center justify-between border-b border-[#EAECF0] pb-4">
+              <h3 className="text-sm font-bold text-[#111439] tracking-tight flex items-center gap-2">
                 <MessageCircle className="h-4 w-4 text-[#25D366]" />
                 Live Chat Simulator
               </h3>
               <button
                 onClick={handleCopy}
-                className="inline-flex items-center gap-1 text-[11px] font-bold text-[#667085] hover:text-white transition-colors btn-interactive"
+                className="inline-flex items-center gap-1 text-[11px] font-bold text-[#667085] hover:text-[#111439] transition-colors btn-interactive cursor-pointer"
               >
                 {copied ? (
                   <Check className="h-3.5 w-3.5 text-[#16A34A]" />
@@ -406,12 +406,12 @@ export default function WhatsAppPage() {
             </div>
 
             {/* Phone Frame */}
-            <div className="mx-auto max-w-sm">
+            <div className="mx-auto max-w-sm rounded-3xl overflow-hidden border border-[#EAECF0] shadow-xl">
               {/* Status bar */}
-              <div className="rounded-t-2xl bg-[#1f2c34] px-4 py-2 flex items-center justify-between text-[10px] text-[#8696a0]">
+              <div className="bg-[#075e54] px-4 py-2.5 flex items-center justify-between text-[11px] text-white/90">
                 <span>9:41</span>
                 <span className="flex items-center gap-1">
-                  <span className="font-bold text-white text-[11px]">
+                  <span className="font-bold text-white text-xs">
                     {activeBusiness?.name || "Business"}
                   </span>
                 </span>
@@ -419,9 +419,9 @@ export default function WhatsAppPage() {
               </div>
 
               {/* Chat area */}
-              <div className="bg-[#0b141a] px-3 py-4 space-y-3 min-h-[280px]">
+              <div className="bg-[#efeae2] px-3 py-4 space-y-3 min-h-[280px]">
                 {/* Date line */}
-                <div className="text-center text-[10px] text-[#8696a0] bg-[#182c34] rounded-lg px-3 py-1 mx-auto w-fit">
+                <div className="text-center text-[10px] text-[#667085] bg-[#FFFFFF] shadow-sm rounded-lg px-3 py-1 mx-auto w-fit font-medium">
                   Today
                 </div>
 
@@ -429,15 +429,15 @@ export default function WhatsAppPage() {
                 {previewCustomer && (
                   <div className="flex gap-2 max-w-[85%]">
                     <div className="h-7 w-7 rounded-full bg-[#25D366]/20 flex items-center justify-center shrink-0 mt-1">
-                      <User className="h-3.5 w-3.5 text-[#25D366]" />
+                      <User className="h-3.5 w-3.5 text-[#075e54]" />
                     </div>
                     <div>
-                      <div className="bg-[#1f2c34] rounded-2xl rounded-tl-sm px-3.5 py-2.5">
-                        <p className="text-[11px] text-[#e9edef] leading-relaxed">
+                      <div className="bg-[#FFFFFF] rounded-2xl rounded-tl-sm px-3.5 py-2.5 shadow-sm">
+                        <p className="text-[11px] text-[#111439] leading-relaxed font-medium">
                           Hi! I&apos;m a customer at {activeBusiness?.name || "your store"}. 😊
                         </p>
                       </div>
-                      <span className="text-[9px] text-[#8696a0] ml-1">9:42 AM</span>
+                      <span className="text-[9px] text-[#667085] ml-1">9:42 AM</span>
                     </div>
                   </div>
                 )}
@@ -445,15 +445,15 @@ export default function WhatsAppPage() {
                 {/* Outgoing message bubble */}
                 <div className="flex justify-end">
                   <div className="max-w-[85%]">
-                    <div className="bg-[#005c4b] rounded-2xl rounded-tr-sm px-3.5 py-2.5 shadow-lg">
-                      <p className="text-[11px] text-[#e9edef] whitespace-pre-wrap leading-relaxed">
+                    <div className="bg-[#d9fdd3] rounded-2xl rounded-tr-sm px-3.5 py-2.5 shadow-sm">
+                      <p className="text-[11px] text-[#111439] whitespace-pre-wrap leading-relaxed font-medium">
                         {finalMessageBody || "Select a template or type a message..."}
                       </p>
                       <div className="text-right flex items-center justify-end gap-1 mt-1">
-                        <span className="text-[9px] text-[#8696a0] tabular-nums">
+                        <span className="text-[9px] text-[#667085] tabular-nums">
                           {new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                         </span>
-                        <span className="text-[9px] text-[#53bdeb] font-bold">✓✓</span>
+                        <span className="text-[9px] text-[#34B7F1] font-bold">✓✓</span>
                       </div>
                     </div>
                   </div>
@@ -461,11 +461,11 @@ export default function WhatsAppPage() {
               </div>
 
               {/* Input bar */}
-              <div className="rounded-b-2xl bg-[#1f2c34] px-3 py-2 flex items-center gap-2 border-t border-[#0b141a]">
-                <div className="flex-1 bg-[#2a3942] rounded-full px-4 py-1.5 text-[11px] text-[#8696a0]">
+              <div className="bg-[#f0f2f5] px-3 py-2 flex items-center gap-2 border-t border-[#EAECF0]">
+                <div className="flex-1 bg-[#FFFFFF] border border-[#EAECF0] rounded-full px-4 py-1.5 text-[11px] text-[#667085]">
                   Type a message
                 </div>
-                <div className="h-8 w-8 rounded-full bg-[#25D366] flex items-center justify-center">
+                <div className="h-8 w-8 rounded-full bg-[#25D366] flex items-center justify-center text-white shadow-sm">
                   <Send className="h-3.5 w-3.5 text-white" />
                 </div>
               </div>
@@ -474,8 +474,8 @@ export default function WhatsAppPage() {
 
           {/* ── Quick Send Table ── */}
           <div className="brand-card p-6 sm:p-7 space-y-4">
-            <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
-              <h3 className="text-sm font-bold text-white tracking-tight flex items-center gap-2">
+            <div className="flex items-center justify-between border-b border-[#EAECF0] pb-4">
+              <h3 className="text-sm font-bold text-[#111439] tracking-tight flex items-center gap-2">
                 <Filter className="h-4 w-4 text-[#3B82F6]" />
                 Send to Customer
               </h3>
@@ -484,7 +484,7 @@ export default function WhatsAppPage() {
               </span>
             </div>
 
-            <div className="max-h-60 overflow-y-auto border border-white/[0.08] rounded-2xl divide-y divide-white/[0.04] bg-white/[0.02]">
+            <div className="max-h-60 overflow-y-auto border border-[#EAECF0] rounded-2xl divide-y divide-[#EAECF0] bg-[#FFFFFF]">
               {segmentCustomers.length === 0 ? (
                 <div className="p-6 text-center text-xs text-[#667085]">
                   No customers found in this segment.
@@ -493,14 +493,14 @@ export default function WhatsAppPage() {
                 segmentCustomers.map((cust) => (
                   <div
                     key={cust.id}
-                    className="flex items-center justify-between p-3.5 hover:bg-white/[0.03] transition-colors"
+                    className="flex items-center justify-between p-3.5 hover:bg-[#F8F8F9] transition-colors"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-[#a1a1aa]">
+                      <div className="h-8 w-8 rounded-xl bg-[#F8F8F9] border border-[#EAECF0] flex items-center justify-center text-[#667085]">
                         <User className="h-3.5 w-3.5" />
                       </div>
                       <div>
-                        <p className="text-xs font-bold text-white">{cust.name}</p>
+                        <p className="text-xs font-bold text-[#111439]">{cust.name}</p>
                         <p className="text-[10px] text-[#667085] tabular-nums">{cust.phone}</p>
                       </div>
                       <span
@@ -538,7 +538,7 @@ export default function WhatsAppPage() {
 
                     <button
                       onClick={() => handleSendToCustomer(cust)}
-                      className="inline-flex items-center gap-1.5 rounded-xl bg-[#25D366] px-3.5 py-1.5 text-xs font-bold text-white shadow-md shadow-[#25D366]/20 hover:brightness-110 transition-all btn-interactive"
+                      className="inline-flex items-center gap-1.5 rounded-xl bg-[#25D366] px-3.5 py-1.5 text-xs font-bold text-white shadow-md shadow-[#25D366]/20 hover:brightness-105 transition-all btn-interactive cursor-pointer"
                     >
                       <Send className="h-3 w-3" />
                       <span>Send</span>
@@ -553,9 +553,9 @@ export default function WhatsAppPage() {
 
       {/* ────────────────────── Campaign History ────────────────────── */}
       <div className="brand-card p-6 sm:p-7">
-        <div className="flex items-center gap-2 mb-4 border-b border-white/[0.08] pb-4">
+        <div className="flex items-center gap-2 mb-4 border-b border-[#EAECF0] pb-4">
           <History className="h-4 w-4 text-[#6C4DFF]" />
-          <h2 className="text-sm font-bold text-white tracking-tight">
+          <h2 className="text-sm font-bold text-[#111439] tracking-tight">
             Recent Outreach History
           </h2>
         </div>
@@ -565,7 +565,7 @@ export default function WhatsAppPage() {
             No messages sent yet. Send your first campaign above!
           </p>
         ) : (
-          <div className="divide-y divide-white/[0.04]">
+          <div className="divide-y divide-[#EAECF0]">
             {whatsappLogs.map((log) => (
               <div
                 key={log.id}
@@ -573,8 +573,8 @@ export default function WhatsAppPage() {
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <p className="text-xs font-bold text-white">{log.customer_name}</p>
-                    <span className="rounded-full bg-white/[0.05] border border-white/[0.08] px-2 py-0.5 text-[10px] font-semibold text-[#667085] tabular-nums">
+                    <p className="text-xs font-bold text-[#111439]">{log.customer_name}</p>
+                    <span className="rounded-full bg-[#F8F8F9] border border-[#EAECF0] px-2 py-0.5 text-[10px] font-semibold text-[#667085] tabular-nums">
                       {log.customer_phone}
                     </span>
                     <span className="rounded-full bg-[#16A34A]/15 border border-[#16A34A]/30 px-2 py-0.5 text-[10px] font-bold text-[#16A34A]">

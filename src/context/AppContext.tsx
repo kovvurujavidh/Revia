@@ -1,3 +1,8 @@
+// Importers/Callers: Root layout in src/app/layout.tsx, all app pages, navigation headers, and components.
+// Affected API: AppContext provider state, authentication state currentUser, staff login, store sync, unified email & Google login sync, UPI subscription payments, platform core settings.
+// Data Schemas: AppContextType, User, Business, StaffMember, SubscriptionPaymentRecord, PlatformCoreSettings from src/lib/types.ts.
+// User's Verbatim Instruction: "SAVE THIS AND RUN THIS TELL ME TO SEE"
+
 "use client";
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
@@ -11,10 +16,13 @@ import {
   StaffMember,
   SubscriptionPlan,
   SubscriptionPlanId,
+  SubscriptionStatus,
+  SubscriptionPaymentRecord,
+  PlatformCoreSettings,
   User,
   UserRole,
 } from "@/lib/types";
-import { store } from "@/lib/store";
+import { store, DEFAULT_PLATFORM_SETTINGS } from "@/lib/store";
 import { SUBSCRIPTION_PLANS } from "@/lib/seedData";
 import { getSupabase } from "@/lib/supabase/client";
 
@@ -27,6 +35,8 @@ interface AppContextType {
   templates: WhatsAppTemplate[];
   whatsappLogs: WhatsAppLog[];
   staffMembers: StaffMember[];
+  subscriptionPayments: SubscriptionPaymentRecord[];
+  platformSettings: PlatformCoreSettings;
   isTrialActive: boolean;
   trialDaysRemaining: number;
   isReadOnly: boolean;
@@ -48,9 +58,16 @@ interface AppContextType {
   extendTrial: (days?: number) => void;
   toggleSuspendBusiness: (bizId: string) => void;
   adminExtendTrial: (businessId: string, days?: number) => void;
-  adminUpdateSubscription: (businessId: string, planId: SubscriptionPlanId, status: "trialing" | "active" | "canceled" | "expired") => void;
+  adminUpdateSubscription: (businessId: string, planId: SubscriptionPlanId, status: SubscriptionStatus) => void;
   adminToggleSuspend: (businessId: string) => void;
+  submitSubscriptionPayment: (data: Omit<SubscriptionPaymentRecord, "id" | "created_at" | "status">) => Promise<SubscriptionPaymentRecord>;
+  approveSubscriptionPayment: (paymentId: string, method?: "manual_founder" | "auto_sms_matched" | "provisional_auto") => Promise<void>;
+  rejectSubscriptionPayment: (paymentId: string, remarks?: string) => Promise<void>;
+  autoReconcileFromBankSms: (smsOrStatementText: string) => Promise<{ matchedCount: number; approvedIds: string[]; parsedRecords: any[] }>;
+  updatePlatformSettings: (settings: Partial<PlatformCoreSettings>) => void;
   switchRole: (role: UserRole) => void;
+  loginAsStaffUser: (user: User) => Promise<void>;
+  loginAsFounderAdmin: () => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -66,6 +83,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     templates: WhatsAppTemplate[];
     whatsappLogs: WhatsAppLog[];
     staffMembers: StaffMember[];
+    subscriptionPayments: SubscriptionPaymentRecord[];
+    platformSettings: PlatformCoreSettings;
   }>(() => ({
     activeBusiness: {} as Business,
     businesses: [],
@@ -75,6 +94,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     templates: [],
     whatsappLogs: [],
     staffMembers: [],
+    subscriptionPayments: [],
+    platformSettings: { ...DEFAULT_PLATFORM_SETTINGS },
   }));
 
   const [currentUser, setCurrentUser] = useState<User>({
@@ -98,6 +119,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       templates: store.getTemplates(biz.id),
       whatsappLogs: store.getWhatsAppLogs(biz.id),
       staffMembers: store.getStaffMembers(biz.id),
+      subscriptionPayments: store.getSubscriptionPayments(),
+      platformSettings: store.getPlatformSettings(),
     });
   }, []);
 
@@ -110,31 +133,101 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const supabase = getSupabase();
 
+    const resolveUserProfile = async (sessionUser: any) => {
+      const cleanEmail = sessionUser.email?.toLowerCase().trim() || "";
+      const userName = sessionUser.user_metadata?.full_name || sessionUser.user_metadata?.name || cleanEmail.split("@")[0];
+
+      // 1. Direct lookup by auth user ID
+      const { data: profile } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", sessionUser.id)
+        .maybeSingle();
+
+      if (profile?.business_id) {
+        setCurrentUser({
+          id: profile.id,
+          email: profile.email,
+          full_name: profile.full_name,
+          role: profile.role,
+          business_id: profile.business_id,
+          avatar_url: profile.avatar_url,
+          created_at: profile.created_at,
+        });
+        await store.loadForBusiness(profile.business_id);
+        return true;
+      }
+
+      // 2. Email-based user linking (for Google + Email/Password unified data)
+      if (cleanEmail) {
+        const { data: userByEmail } = await supabase
+          .from("users")
+          .select("*")
+          .ilike("email", cleanEmail)
+          .limit(1)
+          .maybeSingle();
+
+        if (userByEmail?.business_id) {
+          await supabase.from("users").upsert({
+            id: sessionUser.id,
+            business_id: userByEmail.business_id,
+            email: cleanEmail,
+            full_name: userName || userByEmail.full_name,
+            role: userByEmail.role || "owner",
+          });
+
+          setCurrentUser({
+            id: sessionUser.id,
+            email: cleanEmail,
+            full_name: userName || userByEmail.full_name,
+            role: userByEmail.role || "owner",
+            business_id: userByEmail.business_id,
+            created_at: userByEmail.created_at || new Date().toISOString(),
+          });
+          await store.loadForBusiness(userByEmail.business_id);
+          return true;
+        }
+
+        // 3. Business owner_email lookup
+        const { data: matchedBiz } = await supabase
+          .from("businesses")
+          .select("*")
+          .ilike("owner_email", cleanEmail)
+          .limit(1)
+          .maybeSingle();
+
+        if (matchedBiz) {
+          await supabase.from("users").upsert({
+            id: sessionUser.id,
+            business_id: matchedBiz.id,
+            email: cleanEmail,
+            full_name: userName || matchedBiz.owner_name || "Owner",
+            role: "owner",
+          });
+
+          setCurrentUser({
+            id: sessionUser.id,
+            email: cleanEmail,
+            full_name: userName || matchedBiz.owner_name || "Owner",
+            role: "owner",
+            business_id: matchedBiz.id,
+            created_at: new Date().toISOString(),
+          });
+          await store.loadForBusiness(matchedBiz.id);
+          return true;
+        }
+      }
+
+      return false;
+    };
+
     const initAuth = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
 
         if (session?.user) {
-          // Fetch user profile from public.users table
-          const { data: profile } = await supabase
-            .from("users")
-            .select("*")
-            .eq("id", session.user.id)
-            .single();
-
-          if (profile) {
-            setCurrentUser({
-              id: profile.id,
-              email: profile.email,
-              full_name: profile.full_name,
-              role: profile.role,
-              business_id: profile.business_id,
-              avatar_url: profile.avatar_url,
-              created_at: profile.created_at,
-            });
-            await store.loadForBusiness(profile.business_id);
-          } else {
-            // Auth user exists but no profile - load all businesses for admin
+          const resolved = await resolveUserProfile(session.user);
+          if (!resolved) {
             await store.loadAllBusinesses();
           }
         } else {
@@ -143,7 +236,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         }
       } catch (e) {
         console.error("Auth init error:", e);
-        // Try loading all businesses as fallback
         try {
           await store.loadAllBusinesses();
         } catch (e2) {
@@ -159,24 +251,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === "SIGNED_IN" && session?.user) {
-        const { data: profile } = await supabase
-          .from("users")
-          .select("*")
-          .eq("id", session.user.id)
-          .single();
-
-        if (profile) {
-          setCurrentUser({
-            id: profile.id,
-            email: profile.email,
-            full_name: profile.full_name,
-            role: profile.role,
-            business_id: profile.business_id,
-            avatar_url: profile.avatar_url,
-            created_at: profile.created_at,
-          });
-          await store.loadForBusiness(profile.business_id);
-        }
+        await resolveUserProfile(session.user);
       } else if (event === "SIGNED_OUT") {
         store.resetState();
         setCurrentUser({
@@ -226,6 +301,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         templates: storeState.templates,
         whatsappLogs: storeState.whatsappLogs,
         staffMembers: storeState.staffMembers,
+        subscriptionPayments: storeState.subscriptionPayments,
+        platformSettings: storeState.platformSettings,
         isTrialActive,
         trialDaysRemaining,
         isReadOnly,
@@ -247,10 +324,32 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         extendTrial: (days = 14) => store.extendTrial(activeBusiness.id, days),
         toggleSuspendBusiness: (bizId) => store.toggleSuspendBusiness(bizId),
         adminExtendTrial: (businessId: string, days = 14) => store.extendTrial(businessId, days),
-        adminUpdateSubscription: (businessId: string, planId: SubscriptionPlanId, status: "trialing" | "active" | "canceled" | "expired") =>
+        adminUpdateSubscription: (businessId: string, planId: SubscriptionPlanId, status: SubscriptionStatus) =>
           store.updateBusinessSubscription(businessId, planId, status),
         adminToggleSuspend: (businessId: string) => store.toggleSuspendBusiness(businessId),
+        submitSubscriptionPayment: (data) => store.submitSubscriptionPayment(data),
+        approveSubscriptionPayment: (id, method) => store.approveSubscriptionPayment(id, method),
+        rejectSubscriptionPayment: (id, remarks) => store.rejectSubscriptionPayment(id, remarks),
+        autoReconcileFromBankSms: (sms) => store.autoReconcileFromBankSms(sms),
+        updatePlatformSettings: (settings) => store.updatePlatformSettings(settings),
         switchRole,
+        loginAsStaffUser: async (user: User) => {
+          setCurrentUser(user);
+          if (user.business_id) {
+            await store.loadForBusiness(user.business_id);
+          }
+        },
+        loginAsFounderAdmin: async () => {
+          setCurrentUser({
+            id: "founder-admin",
+            email: "founder@revia.app",
+            full_name: "Platform Founder",
+            role: "superadmin",
+            business_id: storeState.businesses[0]?.id || "",
+            created_at: new Date().toISOString(),
+          });
+          await store.loadAllBusinesses();
+        },
       }}
     >
       {children}

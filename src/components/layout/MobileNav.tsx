@@ -1,7 +1,7 @@
-// Importers/Callers: Root layout (`src/app/layout.tsx`)
+// Importers/Callers: AppLayoutWrapper (`src/components/layout/AppLayoutWrapper.tsx`)
 // Affected API: MobileNav React component
 // Data Schemas: Opportunity, User { role: "owner" | "staff" | "manager" | "superadmin" }
-// User's Verbatim Instruction: "Revenue Over Time +584% Growth Interactive revenue timeline compared with prior period IS OVERFLOWING AND Preview Role Owner ONLY GIVE THERE OWNER AND STAFF WHEN THE STAF LOGIN USING GAMIL THEY CAN OLY ENTER DATA MAKE IT LIKE OWNER CAN ONLY SEE THE ANALYTICS AND REPORT AND THE ADMIN BUTTON GIVE IN THE PROFIE SECTION LIKE YOU GAVE SUPER ADMIN PANNLE IN THE LEFT SILE AND WHEN USER OR I FOUNDER OF THIS WEB CLICK ON THIS A SECRETE KET NEED TO PUT THEN ONLY UNLOACK THE ADMIN PANNLE AND IN ADMIN PLANNER SHOW GROWTH AND ANALYTICS"
+// User's Verbatim Instruction: "AFTER LOGIN THE LEFT SIDE BAR IS GOOD NOT FIT FOR MOBILE OK SEE THE WHOLE DOT CHANGECONCEPTOR CODE PLESE CHECH MOBILE FRENDLY AND THE COLORS WE CHOOSE NOW AND REQUIREMETS DOC IS DIFFERENT KEEP ANIMATIONS ONLY CHANGE COLORS TO MACTH PRODUCTION LEVEL WEBSITE"
 
 "use client";
 
@@ -31,7 +31,12 @@ export function MobileNav({ onOpenQR }: { onOpenQR?: () => void }) {
   const [isMoreOpen, setIsMoreOpen] = useState(false);
 
   // Hide on public / landing / join / auth pages
-  if (pathname === "/" || pathname?.startsWith("/join") || pathname?.startsWith("/auth") || pathname?.startsWith("/onboarding")) {
+  if (
+    pathname === "/" ||
+    pathname?.startsWith("/join") ||
+    pathname?.startsWith("/auth") ||
+    pathname?.startsWith("/onboarding")
+  ) {
     return null;
   }
 
@@ -42,15 +47,15 @@ export function MobileNav({ onOpenQR }: { onOpenQR?: () => void }) {
     <>
       {/* "More" Drawer Modal for Mobile */}
       {isMoreOpen && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md md:hidden animate-fade-in flex flex-col justify-end">
-          <div className="bg-[#121215] border-t border-white/[0.1] rounded-t-3xl p-5 space-y-4 max-h-[80vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
-              <h3 className="font-bold text-sm text-white">
-                {isStaff ? "Staff Actions" : "All Features"}
+        <div className="fixed inset-0 z-50 bg-[#111439]/60 backdrop-blur-xs md:hidden animate-fade-in flex flex-col justify-end">
+          <div className="bg-[#FFFFFF] border-t border-[#EAECF0] rounded-t-3xl p-5 space-y-4 max-h-[80vh] overflow-y-auto shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[#EAECF0] pb-3">
+              <h3 className="font-bold text-sm text-[#111439]">
+                {isStaff ? "Staff Quick Actions" : "All Features & Shortcuts"}
               </h3>
               <button
                 onClick={() => setIsMoreOpen(false)}
-                className="p-1.5 rounded-full bg-white/[0.06] text-[#a1a1aa] hover:text-white"
+                className="p-1.5 rounded-full bg-[#F8F8F9] text-[#667085] hover:text-[#111439] hover:bg-[#F1F1F4]"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -62,9 +67,9 @@ export function MobileNav({ onOpenQR }: { onOpenQR?: () => void }) {
                   setIsMoreOpen(false);
                   if (onOpenQR) onOpenQR();
                 }}
-                className="flex items-center gap-3 p-3 rounded-xl border border-white/[0.08] bg-white/[0.03] text-xs font-semibold text-white text-left hover:bg-white/[0.06] transition-colors"
+                className="flex items-center gap-3 p-3 rounded-xl border border-[#EAECF0] bg-[#F8F8F9] text-xs font-semibold text-[#111439] text-left hover:bg-[#F1F1F4] hover:border-[#D0D5DD] transition-all"
               >
-                <QrCode className="h-4 w-4 text-purple-400" />
+                <QrCode className="h-4 w-4 text-[#6C4DFF]" />
                 <span>Counter QR</span>
               </button>
 
@@ -73,41 +78,41 @@ export function MobileNav({ onOpenQR }: { onOpenQR?: () => void }) {
                   <Link
                     href="/whatsapp"
                     onClick={() => setIsMoreOpen(false)}
-                    className="flex items-center gap-3 p-3 rounded-xl border border-white/[0.08] bg-white/[0.03] text-xs font-semibold text-white hover:bg-white/[0.06] transition-colors"
+                    className="flex items-center gap-3 p-3 rounded-xl border border-[#EAECF0] bg-[#F8F8F9] text-xs font-semibold text-[#111439] hover:bg-[#F1F1F4] hover:border-[#D0D5DD] transition-all"
                   >
-                    <MessageCircle className="h-4 w-4 text-purple-400" />
+                    <MessageCircle className="h-4 w-4 text-[#6C4DFF]" />
                     <span>WhatsApp</span>
                   </Link>
                   <Link
                     href="/reports"
                     onClick={() => setIsMoreOpen(false)}
-                    className="flex items-center gap-3 p-3 rounded-xl border border-white/[0.08] bg-white/[0.03] text-xs font-semibold text-white hover:bg-white/[0.06] transition-colors"
+                    className="flex items-center gap-3 p-3 rounded-xl border border-[#EAECF0] bg-[#F8F8F9] text-xs font-semibold text-[#111439] hover:bg-[#F1F1F4] hover:border-[#D0D5DD] transition-all"
                   >
-                    <BarChart2 className="h-4 w-4 text-blue-400" />
+                    <BarChart2 className="h-4 w-4 text-[#3B82F6]" />
                     <span>Reports</span>
                   </Link>
                   <Link
                     href="/analytics"
                     onClick={() => setIsMoreOpen(false)}
-                    className="flex items-center gap-3 p-3 rounded-xl border border-white/[0.08] bg-white/[0.03] text-xs font-semibold text-white hover:bg-white/[0.06] transition-colors"
+                    className="flex items-center gap-3 p-3 rounded-xl border border-[#EAECF0] bg-[#F8F8F9] text-xs font-semibold text-[#111439] hover:bg-[#F1F1F4] hover:border-[#D0D5DD] transition-all"
                   >
-                    <TrendingUp className="h-4 w-4 text-emerald-400" />
+                    <TrendingUp className="h-4 w-4 text-[#16A34A]" />
                     <span>Analytics</span>
                   </Link>
                   <Link
                     href="/profile"
                     onClick={() => setIsMoreOpen(false)}
-                    className="flex items-center gap-3 p-3 rounded-xl border border-white/[0.08] bg-white/[0.03] text-xs font-semibold text-white hover:bg-white/[0.06] transition-colors"
+                    className="flex items-center gap-3 p-3 rounded-xl border border-[#EAECF0] bg-[#F8F8F9] text-xs font-semibold text-[#111439] hover:bg-[#F1F1F4] hover:border-[#D0D5DD] transition-all"
                   >
-                    <CreditCard className="h-4 w-4 text-amber-400" />
+                    <CreditCard className="h-4 w-4 text-[#F59E0B]" />
                     <span>Subscription</span>
                   </Link>
                   <Link
                     href="/settings"
                     onClick={() => setIsMoreOpen(false)}
-                    className="flex items-center gap-3 p-3 rounded-xl border border-white/[0.08] bg-white/[0.03] text-xs font-semibold text-white hover:bg-white/[0.06] transition-colors"
+                    className="flex items-center gap-3 p-3 rounded-xl border border-[#EAECF0] bg-[#F8F8F9] text-xs font-semibold text-[#111439] hover:bg-[#F1F1F4] hover:border-[#D0D5DD] transition-all"
                   >
-                    <Settings className="h-4 w-4 text-[#a1a1aa]" />
+                    <Settings className="h-4 w-4 text-[#667085]" />
                     <span>Settings</span>
                   </Link>
                 </>
@@ -118,15 +123,15 @@ export function MobileNav({ onOpenQR }: { onOpenQR?: () => void }) {
       )}
 
       {/* Main Mobile Bottom Bar */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#09090b]/95 backdrop-blur-xl border-t border-white/[0.08] md:hidden pb-safe">
-        <div className={`grid ${isStaff ? "grid-cols-3" : "grid-cols-5"} items-center px-2 py-1.5`}>
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#FFFFFF]/95 backdrop-blur-xl border-t border-[#EAECF0] md:hidden pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.04)]">
+        <div className={`grid ${isStaff ? "grid-cols-2" : "grid-cols-5"} items-center px-2 py-1.5`}>
           {!isStaff && (
             <Link
               href="/dashboard"
-              className={`flex flex-col items-center py-1 rounded-xl text-[10px] font-semibold transition-colors ${
+              className={`flex flex-col items-center py-1 rounded-xl text-[10px] font-bold transition-colors ${
                 pathname === "/dashboard"
-                  ? "text-purple-400"
-                  : "text-[#71717a] hover:text-white"
+                  ? "text-[#6C4DFF]"
+                  : "text-[#667085] hover:text-[#111439]"
               }`}
             >
               <LayoutDashboard className="h-4 w-4 mb-0.5" />
@@ -137,10 +142,10 @@ export function MobileNav({ onOpenQR }: { onOpenQR?: () => void }) {
           {!isStaff && (
             <Link
               href="/customers"
-              className={`flex flex-col items-center py-1 rounded-xl text-[10px] font-semibold transition-colors ${
+              className={`flex flex-col items-center py-1 rounded-xl text-[10px] font-bold transition-colors ${
                 pathname === "/customers"
-                  ? "text-purple-400"
-                  : "text-[#71717a] hover:text-white"
+                  ? "text-[#6C4DFF]"
+                  : "text-[#667085] hover:text-[#111439]"
               }`}
             >
               <Users className="h-4 w-4 mb-0.5" />
@@ -152,7 +157,7 @@ export function MobileNav({ onOpenQR }: { onOpenQR?: () => void }) {
           <div className="flex justify-center -mt-3">
             <Link
               href="/add-visit"
-              className="flex h-11 w-11 items-center justify-center rounded-full brand-gradient text-white shadow-lg shadow-purple-500/30 active:scale-95 transition-transform"
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-[#6C4DFF] to-[#3B82F6] text-white shadow-lg shadow-purple-500/30 active:scale-95 transition-transform"
               title="Add Visit"
             >
               <PlusCircle className="h-5 w-5" />
@@ -162,16 +167,16 @@ export function MobileNav({ onOpenQR }: { onOpenQR?: () => void }) {
           {!isStaff && (
             <Link
               href="/opportunities"
-              className={`relative flex flex-col items-center py-1 rounded-xl text-[10px] font-semibold transition-colors ${
+              className={`relative flex flex-col items-center py-1 rounded-xl text-[10px] font-bold transition-colors ${
                 pathname === "/opportunities"
-                  ? "text-purple-400"
-                  : "text-[#71717a] hover:text-white"
+                  ? "text-[#6C4DFF]"
+                  : "text-[#667085] hover:text-[#111439]"
               }`}
             >
               <div className="relative">
                 <Megaphone className="h-4 w-4 mb-0.5" />
                 {pendingOpportunitiesCount > 0 && (
-                  <span className="absolute -top-1 -right-2 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-red-500 px-1 text-[8px] font-bold text-white tabular-nums">
+                  <span className="absolute -top-1 -right-2 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-[#EF4444] px-1 text-[8px] font-bold text-white tabular-nums">
                     {pendingOpportunitiesCount}
                   </span>
                 )}
@@ -182,7 +187,7 @@ export function MobileNav({ onOpenQR }: { onOpenQR?: () => void }) {
 
           <button
             onClick={() => setIsMoreOpen(true)}
-            className="flex flex-col items-center py-1 rounded-xl text-[10px] font-semibold text-[#71717a] hover:text-white"
+            className="flex flex-col items-center py-1 rounded-xl text-[10px] font-bold text-[#667085] hover:text-[#111439]"
           >
             <Menu className="h-4 w-4 mb-0.5" />
             <span>More</span>

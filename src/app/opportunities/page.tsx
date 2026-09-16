@@ -1,7 +1,7 @@
-// Importers/Callers: Next.js App Router route /opportunities, Dashboard quick actions, AppSidebar
-// Affected API: Retention action center (at-risk regulars, win-back, VIP appreciation, 2nd-visit conversion)
+// Importers/Callers: Next.js App Router route /opportunities, Dashboard quick actions, AppSidebar, MobileNav
+// Affected API: OpportunitiesPage React page component for Retention Action Center
 // Data Schemas: Opportunity, Customer, WhatsAppTemplate, User from src/lib/types.ts
-// User's Verbatim Instruction: "https://emilkowal.ski/skill https://github.com/emilkowalski/skills https://www.ui-skills.com/skills INSTALL AND AUTOMATICALLY USE THIS SKILLS AND REDESIGH MY WEBSITE CONCEPT IS SAME CODE IS SAME JUST DESINE AND LOOK IF YOU HAVE PROBLEM MAKE A V1 VERSION AND SAVE ALL OLD VERSION AND USE THE NEW VERSION TO TEST"
+// User's Verbatim Instruction: "AFTER LOGIN THE LEFT SIDE BAR IS GOOD NOT FIT FOR MOBILE OK SEE THE WHOLE DOT CHANGECONCEPTOR CODE PLESE CHECH MOBILE FRENDLY AND THE COLORS WE CHOOSE NOW AND REQUIREMETS DOC IS DIFFERENT KEEP ANIMATIONS ONLY CHANGE COLORS TO MACTH PRODUCTION LEVEL WEBSITE"
 
 "use client";
 
@@ -42,32 +42,32 @@ export default function OpportunitiesPage() {
     return (
       <div className="min-h-[80vh] flex items-center justify-center p-4 animate-fade-in">
         <div className="max-w-md w-full brand-card p-8 text-center space-y-6">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-purple-500/15 border border-purple-500/30 text-purple-400">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#6C4DFF]/10 border border-[#6C4DFF]/20 text-[#6C4DFF]">
             <Lock className="h-8 w-8" />
           </div>
 
           <div className="space-y-2">
-            <h1 className="text-xl font-black text-white tracking-tight">Staff Access Restricted</h1>
-            <p className="text-xs text-[#71717a] leading-relaxed">
+            <h1 className="text-xl font-black text-[#111439] tracking-tight">Staff Access Restricted</h1>
+            <p className="text-xs text-[#667085] leading-relaxed">
               Customer win-back opportunities and marketing campaigns are managed exclusively by Store Owners. Staff accounts are configured for counter visit entry.
             </p>
           </div>
 
-          <div className="rounded-xl bg-white/[0.03] p-4 text-left border border-white/[0.08] space-y-2">
-            <div className="flex items-center justify-between text-xs font-bold text-white">
+          <div className="rounded-xl bg-[#F8F8F9] p-4 text-left border border-[#EAECF0] space-y-2">
+            <div className="flex items-center justify-between text-xs font-bold text-[#111439]">
               <span>Current Role:</span>
-              <span className="capitalize px-2.5 py-0.5 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-400 text-[10px] font-bold">
+              <span className="capitalize px-2.5 py-0.5 rounded-full bg-[#3B82F6]/10 border border-[#3B82F6]/20 text-[#3B82F6] text-[10px] font-bold">
                 {currentUser.role}
               </span>
             </div>
-            <p className="text-[11px] text-[#71717a]">
-              Logged in as <strong className="text-white">{currentUser.email}</strong>
+            <p className="text-[11px] text-[#667085]">
+              Logged in as <strong className="text-[#111439]">{currentUser.email}</strong>
             </p>
           </div>
 
           <Link
             href="/add-visit"
-            className="w-full flex items-center justify-center gap-2 rounded-xl brand-gradient py-3 text-xs font-bold text-white shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 hover:opacity-95 transition-all btn-interactive"
+            className="w-full flex items-center justify-center gap-2 rounded-xl brand-gradient py-3 text-xs font-bold text-white shadow-lg shadow-purple-500/20 hover:shadow-purple-500/35 hover:opacity-95 transition-all btn-interactive"
           >
             <span>Go to Add Visit Entry</span>
             <ArrowRight className="h-4 w-4" />
@@ -90,31 +90,31 @@ export default function OpportunitiesPage() {
         return {
           label: "At-Risk Regular",
           icon: AlertTriangle,
-          color: "text-red-400 bg-red-500/15 border-red-500/30",
+          color: "text-[#EF4444] bg-[#EF4444]/10 border-[#EF4444]/20",
         };
       case "inactive_winback":
         return {
           label: "Win-Back Offer",
           icon: Clock,
-          color: "text-amber-400 bg-amber-500/15 border-amber-500/30",
+          color: "text-[#F59E0B] bg-[#F59E0B]/10 border-[#F59E0B]/20",
         };
       case "vip_appreciation":
         return {
           label: "VIP Appreciation",
           icon: Star,
-          color: "text-purple-400 bg-purple-500/15 border-purple-500/30",
+          color: "text-[#6C4DFF] bg-[#6C4DFF]/10 border-[#6C4DFF]/20",
         };
       case "new_customer_retention":
         return {
           label: "2nd Visit Incentive",
           icon: UserCheck,
-          color: "text-emerald-400 bg-emerald-500/15 border-emerald-500/30",
+          color: "text-[#16A34A] bg-[#16A34A]/10 border-[#16A34A]/20",
         };
       default:
         return {
           label: "Opportunity",
           icon: Sparkles,
-          color: "text-blue-400 bg-blue-500/15 border-blue-500/30",
+          color: "text-[#3B82F6] bg-[#3B82F6]/10 border-[#3B82F6]/20",
         };
     }
   };
@@ -159,12 +159,12 @@ export default function OpportunitiesPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">Retention Action Center</h1>
-            <span className="rounded-full bg-red-500/15 border border-red-500/30 px-2.5 py-0.5 text-xs font-bold text-red-400 tabular-nums">
+            <h1 className="text-2xl sm:text-3xl font-black text-[#111439] tracking-tight">Retention Action Center</h1>
+            <span className="rounded-full bg-[#EF4444]/10 border border-[#EF4444]/25 px-2.5 py-0.5 text-xs font-bold text-[#EF4444] tabular-nums">
               {pendingOpportunities.length} Pending Actions
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-[#71717a] mt-1">
+          <p className="text-xs sm:text-sm text-[#667085] mt-1 font-medium">
             Prioritized retention actions with 1-click personalized WhatsApp offers.
           </p>
         </div>
@@ -176,8 +176,8 @@ export default function OpportunitiesPage() {
           onClick={() => setActiveTab("all")}
           className={`rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer btn-interactive whitespace-nowrap ${
             activeTab === "all"
-              ? "bg-purple-500 text-white shadow-md shadow-purple-500/25"
-              : "bg-white/[0.03] text-[#a1a1aa] border border-white/[0.08] hover:bg-white/[0.06] hover:text-white"
+              ? "brand-gradient text-white shadow-md shadow-purple-500/20"
+              : "bg-[#F8F8F9] text-[#667085] border border-[#EAECF0] hover:bg-[#F1F1F4] hover:text-[#111439]"
           }`}
         >
           All Actions ({pendingOpportunities.length})
@@ -186,8 +186,8 @@ export default function OpportunitiesPage() {
           onClick={() => setActiveTab("at_risk")}
           className={`rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer btn-interactive whitespace-nowrap ${
             activeTab === "at_risk"
-              ? "bg-red-500 text-white shadow-md shadow-red-500/25"
-              : "bg-white/[0.03] text-[#a1a1aa] border border-white/[0.08] hover:bg-white/[0.06] hover:text-white"
+              ? "bg-[#EF4444] text-white shadow-md shadow-red-500/20"
+              : "bg-[#F8F8F9] text-[#667085] border border-[#EAECF0] hover:bg-[#F1F1F4] hover:text-[#111439]"
           }`}
         >
           At-Risk Regulars
@@ -196,8 +196,8 @@ export default function OpportunitiesPage() {
           onClick={() => setActiveTab("inactive_winback")}
           className={`rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer btn-interactive whitespace-nowrap ${
             activeTab === "inactive_winback"
-              ? "bg-amber-500 text-white shadow-md shadow-amber-500/25"
-              : "bg-white/[0.03] text-[#a1a1aa] border border-white/[0.08] hover:bg-white/[0.06] hover:text-white"
+              ? "bg-[#F59E0B] text-white shadow-md shadow-amber-500/20"
+              : "bg-[#F8F8F9] text-[#667085] border border-[#EAECF0] hover:bg-[#F1F1F4] hover:text-[#111439]"
           }`}
         >
           Win-Back Inactive
@@ -206,8 +206,8 @@ export default function OpportunitiesPage() {
           onClick={() => setActiveTab("vip_appreciation")}
           className={`rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer btn-interactive whitespace-nowrap ${
             activeTab === "vip_appreciation"
-              ? "bg-purple-500 text-white shadow-md shadow-purple-500/25"
-              : "bg-white/[0.03] text-[#a1a1aa] border border-white/[0.08] hover:bg-white/[0.06] hover:text-white"
+              ? "bg-[#6C4DFF] text-white shadow-md shadow-purple-500/20"
+              : "bg-[#F8F8F9] text-[#667085] border border-[#EAECF0] hover:bg-[#F1F1F4] hover:text-[#111439]"
           }`}
         >
           VIP Retention
@@ -216,8 +216,8 @@ export default function OpportunitiesPage() {
           onClick={() => setActiveTab("new_customer_retention")}
           className={`rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer btn-interactive whitespace-nowrap ${
             activeTab === "new_customer_retention"
-              ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/25"
-              : "bg-white/[0.03] text-[#a1a1aa] border border-white/[0.08] hover:bg-white/[0.06] hover:text-white"
+              ? "bg-[#16A34A] text-white shadow-md shadow-emerald-500/20"
+              : "bg-[#F8F8F9] text-[#667085] border border-[#EAECF0] hover:bg-[#F1F1F4] hover:text-[#111439]"
           }`}
         >
           2nd-Visit Conversion
@@ -227,11 +227,11 @@ export default function OpportunitiesPage() {
       {/* Opportunities List */}
       {filteredOpportunities.length === 0 ? (
         <div className="brand-card p-12 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 mb-4">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#16A34A]/10 border border-[#16A34A]/25 text-[#16A34A] mb-4">
             <CheckCircle2 className="h-8 w-8" />
           </div>
-          <h2 className="text-lg font-bold text-white">No pending actions in this category!</h2>
-          <p className="text-xs text-[#71717a] mt-1 max-w-md mx-auto">
+          <h2 className="text-lg font-bold text-[#111439]">No pending actions in this category!</h2>
+          <p className="text-xs text-[#667085] mt-1 max-w-md mx-auto">
             You are completely caught up. When customers miss their expected visit rhythm, new opportunities will automatically show up here.
           </p>
         </div>
@@ -245,7 +245,7 @@ export default function OpportunitiesPage() {
             return (
               <div
                 key={opp.id}
-                className="brand-card p-5 sm:p-6 flex flex-col justify-between hover:border-purple-500/30 transition-all duration-200"
+                className="brand-card brand-card-hover p-5 sm:p-6 flex flex-col justify-between transition-all duration-200"
               >
                 <div>
                   <div className="flex items-start justify-between gap-3 mb-3">
@@ -256,45 +256,45 @@ export default function OpportunitiesPage() {
                       <span>{badge.label}</span>
                     </span>
 
-                    <span className="rounded-lg bg-white/[0.03] px-2.5 py-1 text-xs font-black text-white border border-white/[0.08] tabular-nums">
+                    <span className="rounded-lg bg-[#FFFFFF] px-2.5 py-1 text-xs font-black text-[#111439] border border-[#EAECF0] tabular-nums shadow-xs">
                       ₹{opp.potential_revenue?.toLocaleString()} at stake
                     </span>
                   </div>
 
-                  <h3 className="text-base font-bold text-white">
+                  <h3 className="text-base font-bold text-[#111439]">
                     {customer ? customer.name : opp.customer_name || "Customer"}{" "}
-                    <span className="text-xs text-[#71717a] font-normal tabular-nums">
+                    <span className="text-xs text-[#667085] font-normal tabular-nums">
                       ({customer?.phone || opp.customer_phone})
                     </span>
                   </h3>
 
-                  <p className="text-xs text-[#a1a1aa] mt-1.5 leading-relaxed">
+                  <p className="text-xs text-[#667085] mt-1.5 leading-relaxed font-medium">
                     {opp.reason}
                   </p>
 
-                  <div className="mt-3.5 rounded-xl bg-white/[0.03] p-3.5 border border-white/[0.06]">
-                    <p className="text-[11px] font-bold text-purple-400 uppercase tracking-wider">
+                  <div className="mt-3.5 rounded-xl bg-[#F8F8F9] p-3.5 border border-[#EAECF0]">
+                    <p className="text-[11px] font-bold text-[#6C4DFF] uppercase tracking-wider">
                       Suggested Action:
                     </p>
-                    <p className="text-xs font-semibold text-white/90 mt-0.5">
+                    <p className="text-xs font-semibold text-[#111439] mt-0.5 leading-relaxed">
                       {opp.recommended_action}
                     </p>
                   </div>
                 </div>
 
                 {/* Actions Footer */}
-                <div className="mt-5 pt-4 border-t border-white/[0.08] flex items-center justify-between gap-3">
+                <div className="mt-5 pt-4 border-t border-[#EAECF0] flex items-center justify-between gap-3">
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => resolveOpportunity(opp.id, "dismissed")}
-                      className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-2.5 text-[#71717a] hover:bg-white/[0.06] hover:text-red-400 hover:border-red-500/30 transition-all btn-interactive"
+                      className="rounded-xl border border-[#EAECF0] bg-[#FFFFFF] p-2.5 text-[#94A3B8] hover:bg-[#F8F8F9] hover:text-[#EF4444] hover:border-[#EF4444]/30 transition-all btn-interactive shadow-xs"
                       title="Dismiss"
                     >
                       <XCircle className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => resolveOpportunity(opp.id, "contacted")}
-                      className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-2.5 text-[#71717a] hover:bg-white/[0.06] hover:text-emerald-400 hover:border-emerald-500/30 transition-all btn-interactive"
+                      className="rounded-xl border border-[#EAECF0] bg-[#FFFFFF] p-2.5 text-[#94A3B8] hover:bg-[#F8F8F9] hover:text-[#16A34A] hover:border-[#16A34A]/30 transition-all btn-interactive shadow-xs"
                       title="Mark as Handled"
                     >
                       <CheckCircle2 className="h-4 w-4" />
@@ -303,7 +303,7 @@ export default function OpportunitiesPage() {
 
                   <button
                     onClick={() => handleSendWhatsApp(opp)}
-                    className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-[#25D366] py-2.5 text-xs font-bold text-zinc-950 shadow-lg shadow-emerald-500/20 hover:brightness-105 transition-all btn-interactive"
+                    className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-[#25D366] py-2.5 text-xs font-bold text-white shadow-md shadow-[#25D366]/20 hover:brightness-105 transition-all btn-interactive"
                   >
                     <MessageCircle className="h-4 w-4" />
                     <span>Send 1-Click WhatsApp</span>

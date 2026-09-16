@@ -1,16 +1,11 @@
-// Importers/Callers: App layout (`src/app/layout.tsx`)
-// Affected API: AppSidebar React component
+// Importers/Callers: App layout (`src/components/layout/AppLayoutWrapper.tsx`)
+// Affected API: AppSidebar React component (supporting desktop fixed & mobile sliding drawer)
 // Data Schemas: Opportunity, User { role: "owner" | "manager" | "staff" | "superadmin" }
-// User's Verbatim Instruction: "Customer Directory In this directory when I click VIP or any other Category it not showing related category Template LibraryOnly show the life in libraries according to their company or a business Show discounts and EverythingIn settings there is a staff and permissions what is that and When I click in on Google login when I click on it I have access to the super admin So I is that only for me or is that available for any user if it is available for any user it is a loss for me right It needs to be only for Me and Build the Analytics tab for our Customer Return SaaS exactly in the style and information hierarchy of the provided analytics reference."
-
-// Importers/Callers: App layout (`src/app/layout.tsx`)
-// Affected API: AppSidebar React component
-// Data Schemas: Opportunity, User { role: "owner" | "manager" | "staff" | "superadmin" }
-// User's Verbatim Instruction: "Customer Directory In this directory when I click VIP or any other Category it not showing related category Template LibraryOnly show the life in libraries according to their company or a business Show discounts and EverythingIn settings there is a staff and permissions what is that and When I click in on Google login when I click on it I have access to the super admin So I is that only for me or is that available for any user if it is available for any user it is a loss for me right It needs to be only for Me and Build the Analytics tab for our Customer Return SaaS exactly in the style and information hierarchy of the provided analytics reference."
+// User's Verbatim Instruction: "AFTER LOGIN THE LEFT SIDE BAR IS GOOD NOT FIT FOR MOBILE OK SEE THE WHOLE DOT CHANGECONCEPTOR CODE PLESE CHECH MOBILE FRENDLY AND THE COLORS WE CHOOSE NOW AND REQUIREMETS DOC IS DIFFERENT KEEP ANIMATIONS ONLY CHANGE COLORS TO MACTH PRODUCTION LEVEL WEBSITE"
 
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useApp } from "@/context/AppContext";
@@ -25,14 +20,33 @@ import {
   Settings,
   CreditCard,
   ShieldCheck,
+  X,
+  Zap,
 } from "lucide-react";
 
-export function AppSidebar() {
+interface AppSidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
+export function AppSidebar({ isOpen = false, onClose }: AppSidebarProps) {
   const pathname = usePathname();
   const { opportunities, currentUser } = useApp();
 
+  // Auto-close mobile drawer on route change
+  useEffect(() => {
+    if (onClose) {
+      onClose();
+    }
+  }, [pathname]);
+
   // Hide on public / landing / join / auth pages
-  if (pathname === "/" || pathname?.startsWith("/join") || pathname?.startsWith("/auth") || pathname?.startsWith("/onboarding")) {
+  if (
+    pathname === "/" ||
+    pathname?.startsWith("/join") ||
+    pathname?.startsWith("/auth") ||
+    pathname?.startsWith("/onboarding")
+  ) {
     return null;
   }
 
@@ -75,12 +89,12 @@ export function AppSidebar() {
     ];
   }
 
-  return (
-    <aside className="hidden w-64 flex-col border-r border-white/[0.08] bg-[#0c0c0f]/95 backdrop-blur-xl md:flex z-40 fixed h-screen left-0 top-0 pt-16">
+  const sidebarNavContent = (
+    <div className="flex h-full flex-col justify-between">
       {/* Scrollable Nav Area */}
       <div className="flex-1 overflow-y-auto py-5 px-3">
         <nav className="space-y-1">
-          <p className="px-3 mb-3 text-[10px] font-bold uppercase tracking-widest text-[#52525b]">
+          <p className="px-3 mb-3 text-[10px] font-bold uppercase tracking-widest text-[#94A3B8]">
             {isStaff ? "Staff Actions" : "Main Menu"}
           </p>
           {navItems.map((item) => {
@@ -89,16 +103,17 @@ export function AppSidebar() {
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={onClose}
                 className={`group flex items-center justify-between rounded-xl px-3 py-2.5 text-[13px] font-semibold transition-all duration-200 ${
                   isActive
-                    ? "bg-purple-500/15 text-white shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]"
-                    : "text-[#a1a1aa] hover:bg-white/[0.05] hover:text-white"
+                    ? "bg-[#6C4DFF] text-white shadow-md shadow-[#6C4DFF]/25"
+                    : "text-[#E2E8F0] hover:bg-white/10 hover:text-white"
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <item.icon
-                    className={`h-[18px] w-[18px] ${
-                      isActive ? "text-purple-400" : "text-[#52525b] group-hover:text-[#a1a1aa]"
+                    className={`h-[18px] w-[18px] transition-colors ${
+                      isActive ? "text-white" : "text-[#94A3B8] group-hover:text-white"
                     }`}
                   />
                   <span>{item.name}</span>
@@ -107,8 +122,8 @@ export function AppSidebar() {
                   <span
                     className={`flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold tabular-nums ${
                       isActive
-                        ? "bg-purple-500 text-white"
-                        : "bg-red-500/90 text-white"
+                        ? "bg-white text-[#6C4DFF]"
+                        : "bg-[#EF4444] text-white"
                     }`}
                   >
                     {item.badge}
@@ -122,7 +137,7 @@ export function AppSidebar() {
 
       {/* Bottom Nav Area */}
       {!isStaff && (
-        <div className="border-t border-white/[0.06] p-3">
+        <div className="border-t border-white/10 p-3">
           <nav className="space-y-1">
             {bottomNavItems.map((item) => {
               const isActive = pathname === item.href;
@@ -130,15 +145,16 @@ export function AppSidebar() {
                 <Link
                   key={item.href}
                   href={item.href}
+                  onClick={onClose}
                   className={`group flex items-center gap-3 rounded-xl px-3 py-2 text-[13px] font-medium transition-all duration-200 ${
                     isActive
-                      ? "bg-white/[0.06] text-white"
-                      : "text-[#71717a] hover:bg-white/[0.04] hover:text-[#a1a1aa]"
+                      ? "bg-white/15 text-white"
+                      : "text-[#94A3B8] hover:bg-white/10 hover:text-white"
                   }`}
                 >
                   <item.icon
                     className={`h-4 w-4 ${
-                      isActive ? "text-purple-400" : "text-[#52525b] group-hover:text-[#71717a]"
+                      isActive ? "text-[#6C4DFF]" : "text-[#94A3B8] group-hover:text-white"
                     }`}
                   />
                   <span>{item.name}</span>
@@ -148,6 +164,53 @@ export function AppSidebar() {
           </nav>
         </div>
       )}
-    </aside>
+    </div>
+  );
+
+  return (
+    <>
+      {/* Desktop Fixed Sidebar */}
+      <aside className="hidden w-64 flex-col bg-[#111439] text-white md:flex z-40 fixed h-screen left-0 top-0 pt-16 border-r border-[#111439]/50 shadow-sm">
+        {sidebarNavContent}
+      </aside>
+
+      {/* Mobile Sliding Drawer & Backdrop */}
+      {isOpen && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-[#111439]/60 backdrop-blur-xs transition-opacity duration-300 animate-fade-in"
+            onClick={onClose}
+          />
+
+          {/* Drawer Sheet */}
+          <div className="fixed inset-y-0 left-0 w-72 max-w-[85vw] bg-[#111439] text-white shadow-2xl flex flex-col z-50 transform transition-transform duration-300 ease-out animate-slide-in">
+            {/* Mobile Drawer Header */}
+            <div className="flex h-16 items-center justify-between px-4 border-b border-white/10 shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-[#6C4DFF] to-[#3B82F6] text-white shadow-md">
+                  <Zap className="h-4 w-4" />
+                </div>
+                <span className="text-lg font-black tracking-tight text-white">
+                  Revia
+                </span>
+              </div>
+              <button
+                onClick={onClose}
+                className="p-1.5 rounded-lg text-[#94A3B8] hover:text-white hover:bg-white/10 transition-colors"
+                aria-label="Close navigation"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto">
+              {sidebarNavContent}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

@@ -1,7 +1,7 @@
 // Importers/Callers: src/app/dashboard/page.tsx
 // Affected API: MetricsGrid React component
 // Data Schemas: Customer, Visit, Opportunity, Business from src/lib/types.ts
-// User's Verbatim Instruction: "https://emilkowal.ski/skill https://github.com/emilkowalski/skills https://www.ui-skills.com/skills INSTALL AND AUTOMATICALLY USE THIS SKILLS AND REDESIGH MY WEBSITE CONCEPT IS SAME CODE IS SAME JUST DESINE AND LOOK IF YOU HAVE PROBLEM MAKE A V1 VERSION AND SAVE ALL OLD VERSION AND USE THE NEW VERSION TO TEST"
+// User's Verbatim Instruction: "AFTER LOGIN THE LEFT SIDE BAR IS GOOD NOT FIT FOR MOBILE OK SEE THE WHOLE DOT CHANGECONCEPTOR CODE PLESE CHECH MOBILE FRENDLY AND THE COLORS WE CHOOSE NOW AND REQUIREMETS DOC IS DIFFERENT KEEP ANIMATIONS ONLY CHANGE COLORS TO MACTH PRODUCTION LEVEL WEBSITE"
 
 "use client";
 
@@ -58,8 +58,8 @@ export function MetricsGrid() {
       trend: revenueGrowth.toFixed(1) + "%",
       isPositive: revenueGrowth >= 0,
       subtext: "vs yesterday",
-      colorClass: "text-blue-400",
-      bgClass: "bg-blue-500/10 border border-blue-500/20",
+      colorClass: "text-[#3B82F6]",
+      bgClass: "bg-[#3B82F6]/10 border border-[#3B82F6]/20",
     },
     {
       title: "Total Customers",
@@ -68,8 +68,8 @@ export function MetricsGrid() {
       trend: "+12",
       isPositive: true,
       subtext: "this week",
-      colorClass: "text-purple-400",
-      bgClass: "bg-purple-500/10 border border-purple-500/20",
+      colorClass: "text-[#6C4DFF]",
+      bgClass: "bg-[#6C4DFF]/10 border border-[#6C4DFF]/20",
     },
     {
       title: "Avg. Customer Spend",
@@ -78,8 +78,8 @@ export function MetricsGrid() {
       trend: "+5%",
       isPositive: true,
       subtext: "vs last month",
-      colorClass: "text-emerald-400",
-      bgClass: "bg-emerald-500/10 border border-emerald-500/20",
+      colorClass: "text-[#16A34A]",
+      bgClass: "bg-[#16A34A]/10 border border-[#16A34A]/20",
     },
     {
       title: "At-Risk Alert",
@@ -87,9 +87,9 @@ export function MetricsGrid() {
       icon: AlertTriangle,
       trend: "Action Required",
       isPositive: atRiskCount === 0,
-      subtext: "missed exact return cycle",
-      colorClass: "text-red-400",
-      bgClass: "bg-red-500/10 border border-red-500/20",
+      subtext: "missed return cycle",
+      colorClass: "text-[#EF4444]",
+      bgClass: "bg-[#EF4444]/10 border border-[#EF4444]/20",
     },
   ];
 
@@ -104,10 +104,10 @@ export function MetricsGrid() {
             <div
               className={`flex items-center gap-1 text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-full tabular-nums ${
                 metric.title === "At-Risk Alert" && !metric.isPositive
-                  ? "bg-red-500/15 text-red-400 border border-red-500/20"
+                  ? "bg-[#EF4444]/10 text-[#EF4444] border border-[#EF4444]/20"
                   : metric.isPositive
-                  ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20"
-                  : "bg-red-500/15 text-red-400 border border-red-500/20"
+                  ? "bg-[#16A34A]/10 text-[#16A34A] border border-[#16A34A]/20"
+                  : "bg-[#EF4444]/10 text-[#EF4444] border border-[#EF4444]/20"
               }`}
             >
               {metric.title === "At-Risk Alert" ? null : metric.isPositive ? (
@@ -119,13 +119,13 @@ export function MetricsGrid() {
             </div>
           </div>
           <div className="mt-4">
-            <p className="text-[11px] sm:text-xs font-semibold text-[#a1a1aa] uppercase tracking-wider">
+            <p className="text-[11px] sm:text-xs font-bold text-[#667085] uppercase tracking-wider">
               {metric.title}
             </p>
-            <p className="text-xl sm:text-2xl font-black text-white mt-1 tabular-nums tracking-tight">
+            <p className="text-xl sm:text-2xl font-black text-[#111439] mt-1 tabular-nums tracking-tight">
               {metric.value}
             </p>
-            <p className="text-[11px] text-[#71717a] mt-1">{metric.subtext}</p>
+            <p className="text-[11px] text-[#94A3B8] mt-1 font-medium">{metric.subtext}</p>
           </div>
         </div>
       ))}

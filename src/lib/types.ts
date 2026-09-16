@@ -1,7 +1,7 @@
 // Importers/Callers: App-wide data types across models, services, components, pages.
-// Affected API: Data Schemas (IndustryType, Business, User, Customer, Visit, StaffMember, WhatsAppTemplate, etc.).
+// Affected API: Data Schemas (IndustryType, Business, User, Customer, Visit, StaffMember, SubscriptionPaymentRecord, PlatformCoreSettings).
 // Data Schemas: All core data models.
-// User's Verbatim Instruction: "WHEN THE OWNER ADD ANY STAFF WITH SPECIFIC MOBILE NUMBER IN HOME PAGE ADD BUTTON STAFF BY USING THE SAME NUMBER CONNECT THE OWNER AND STAFF TOGETHER"
+// User's Verbatim Instruction: "Master key: FOUNDER2026 REMOVE THIS AND PAYMENT GATEWAY IS BAD JUST TELL ME WHAT I NEED TO DO FOR THIS SEE TOTALLY REMOVE THE RAZOR PAY AMD WHEN USER CLICK THE SUBSCRIPTION Can you make you like open the UPI and automatically create scanner of related subscription and they can just pay the scanner and the amount will be credited into my account and in my admin panel I can see what subscription they done and I can manage that subscriptions and users of mine in admin panel only give me the core core website options that I can change and manipulate them only I can do with admin panel and don't give the admin panel password on there and at the admin panel I said don't keep the admin panel in subscription button keep in the home page there a small admin option in top so I can log in with their and the password must be like in capital letters JAVIDH786"
 
 export type IndustryType =
   | "restaurant"
@@ -174,4 +174,32 @@ export interface StaffMember {
   role: "manager" | "staff";
   status: "active" | "invited";
   created_at: string;
+}
+
+export interface SubscriptionPaymentRecord {
+  id: string;
+  business_id: string;
+  business_name?: string;
+  owner_email?: string;
+  owner_phone?: string;
+  plan_id: SubscriptionPlanId;
+  billing_cycle: "monthly" | "yearly";
+  amount_inr: number;
+  utr_reference: string;
+  status: "pending" | "approved" | "rejected";
+  verification_method?: "manual_founder" | "auto_sms_matched" | "provisional_auto";
+  created_at: string;
+  approved_at?: string;
+  remarks?: string;
+}
+
+export interface PlatformCoreSettings {
+  id: string;
+  upi_id: string;
+  upi_name: string;
+  default_trial_days: number;
+  announcement_banner: string | null;
+  support_email: string;
+  support_whatsapp: string;
+  auto_verification_mode?: "manual_approval" | "provisional_instant_access";
 }

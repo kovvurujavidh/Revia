@@ -1,7 +1,7 @@
 // Importers/Callers: Next.js App Router route /dashboard, AppHeader, AppSidebar, MobileNav.
 // Affected API: Store Dashboard (KPI grid, AI Daily report, Recent visits feed, Quick Add Staff modal, Counter QR opt-in).
 // Data Schemas: Business, Opportunity, StaffMember, User from src/lib/types.ts.
-// User's Verbatim Instruction: "https://emilkowal.ski/skill https://github.com/emilkowalski/skills https://www.ui-skills.com/skills INSTALL AND AUTOMATICALLY USE THIS SKILLS AND REDESIGH MY WEBSITE CONCEPT IS SAME CODE IS SAME JUST DESINE AND LOOK IF YOU HAVE PROBLEM MAKE A V1 VERSION AND SAVE ALL OLD VERSION AND USE THE NEW VERSION TO TEST"
+// User's Verbatim Instruction: "AFTER LOGIN THE LEFT SIDE BAR IS GOOD NOT FIT FOR MOBILE OK SEE THE WHOLE DOT CHANGECONCEPTOR CODE PLESE CHECH MOBILE FRENDLY AND THE COLORS WE CHOOSE NOW AND REQUIREMETS DOC IS DIFFERENT KEEP ANIMATIONS ONLY CHANGE COLORS TO MACTH PRODUCTION LEVEL WEBSITE"
 
 "use client";
 
@@ -67,35 +67,35 @@ export default function DashboardPage() {
 
       {/* Quick Add Staff Modal */}
       {isAddStaffOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4 animate-fade-in">
-          <div className="w-full max-w-md rounded-2xl border border-white/[0.1] bg-[#121215] p-6 shadow-2xl space-y-5 text-white">
-            <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#111439]/60 backdrop-blur-xs p-4 animate-fade-in">
+          <div className="w-full max-w-md rounded-2xl border border-[#EAECF0] bg-[#FFFFFF] p-6 shadow-2xl space-y-5 text-[#111439]">
+            <div className="flex items-center justify-between border-b border-[#EAECF0] pb-3">
               <div className="flex items-center gap-2.5">
-                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-500/15 border border-blue-500/25 text-blue-400">
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#3B82F6]/10 border border-[#3B82F6]/20 text-[#3B82F6]">
                   <UserPlus className="h-4 w-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-white">Add Staff Member</h3>
-                  <p className="text-[11px] text-[#71717a]">Staff can log in with their phone to log visits</p>
+                  <h3 className="text-sm font-bold text-[#111439]">Add Staff Member</h3>
+                  <p className="text-[11px] text-[#667085]">Staff can log in with their phone to log visits</p>
                 </div>
               </div>
               <button
                 onClick={() => setIsAddStaffOpen(false)}
-                className="rounded-full p-1.5 text-[#a1a1aa] hover:bg-white/[0.06] hover:text-white transition-colors"
+                className="rounded-full p-1.5 text-[#667085] hover:bg-[#F1F1F4] hover:text-[#111439] transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
             {staffSuccessMsg ? (
-              <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/25 p-4 text-center space-y-2 animate-fade-in">
-                <CheckCircle2 className="h-8 w-8 text-emerald-400 mx-auto" />
-                <p className="text-xs font-bold text-emerald-400">{staffSuccessMsg}</p>
+              <div className="rounded-xl bg-[#16A34A]/10 border border-[#16A34A]/25 p-4 text-center space-y-2 animate-fade-in">
+                <CheckCircle2 className="h-8 w-8 text-[#16A34A] mx-auto" />
+                <p className="text-xs font-bold text-[#16A34A]">{staffSuccessMsg}</p>
               </div>
             ) : (
               <form onSubmit={handleAddStaffSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold text-[#a1a1aa] uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-[#667085] uppercase tracking-wider mb-1.5">
                     Staff Full Name *
                   </label>
                   <input
@@ -104,41 +104,41 @@ export default function DashboardPage() {
                     placeholder="e.g. Rahul Sharma"
                     value={staffName}
                     onChange={(e) => setStaffName(e.target.value)}
-                    className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-xs font-medium text-white placeholder:text-[#52525b] focus:outline-none focus:border-purple-500/50 focus:bg-white/[0.06] transition-colors"
+                    className="w-full rounded-xl border border-[#EAECF0] bg-[#F8F8F9] px-3.5 py-2.5 text-xs font-medium text-[#111439] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#6C4DFF] focus:bg-[#FFFFFF] transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-[#a1a1aa] uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-[#667085] uppercase tracking-wider mb-1.5">
                     Staff Mobile Number (For Login &amp; OTP) *
                   </label>
                   <div className="relative">
-                    <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#52525b]" />
+                    <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#94A3B8]" />
                     <input
                       type="tel"
                       required
                       placeholder="+91 98201 XXXXX"
                       value={staffPhone}
                       onChange={(e) => setStaffPhone(e.target.value)}
-                      className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] pl-10 pr-3.5 py-2.5 text-xs font-medium text-white placeholder:text-[#52525b] focus:outline-none focus:border-purple-500/50 focus:bg-white/[0.06] transition-colors"
+                      className="w-full rounded-xl border border-[#EAECF0] bg-[#F8F8F9] pl-10 pr-3.5 py-2.5 text-xs font-medium text-[#111439] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#6C4DFF] focus:bg-[#FFFFFF] transition-colors"
                     />
                   </div>
-                  <p className="text-[10px] text-[#71717a] mt-1">
+                  <p className="text-[10px] text-[#667085] mt-1">
                     Staff will enter this mobile number on the login page to access visit entry.
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-[#a1a1aa] uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-[#667085] uppercase tracking-wider mb-1.5">
                     Role &amp; Permissions *
                   </label>
                   <select
                     value={staffRole}
                     onChange={(e) => setStaffRole(e.target.value as any)}
-                    className="w-full rounded-xl border border-white/[0.08] bg-[#18181b] px-3.5 py-2.5 text-xs font-medium text-white focus:outline-none focus:border-purple-500/50 transition-colors"
+                    className="w-full rounded-xl border border-[#EAECF0] bg-[#FFFFFF] px-3.5 py-2.5 text-xs font-medium text-[#111439] focus:outline-none focus:border-[#6C4DFF] transition-colors"
                   >
-                    <option className="bg-[#18181b] text-white" value="staff">Staff / Cashier (Visit Data Entry Only)</option>
-                    <option className="bg-[#18181b] text-white" value="manager">Manager (Visits + WhatsApp Messages)</option>
+                    <option value="staff">Staff / Cashier (Visit Data Entry Only)</option>
+                    <option value="manager">Manager (Visits + WhatsApp Messages)</option>
                   </select>
                 </div>
 
@@ -146,13 +146,13 @@ export default function DashboardPage() {
                   <button
                     type="button"
                     onClick={() => setIsAddStaffOpen(false)}
-                    className="flex-1 rounded-xl border border-white/[0.08] bg-white/[0.03] py-2.5 text-xs font-bold text-[#a1a1aa] hover:bg-white/[0.06] hover:text-white transition-colors"
+                    className="flex-1 rounded-xl border border-[#EAECF0] bg-[#F8F8F9] py-2.5 text-xs font-bold text-[#667085] hover:bg-[#F1F1F4] hover:text-[#111439] transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 rounded-xl brand-gradient py-2.5 text-xs font-bold text-white shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 hover:opacity-95 transition-all btn-interactive"
+                    className="flex-1 rounded-xl brand-gradient py-2.5 text-xs font-bold text-white shadow-md shadow-purple-500/20 hover:shadow-purple-500/35 hover:opacity-95 transition-all btn-interactive"
                   >
                     Link &amp; Add Staff
                   </button>
@@ -167,14 +167,14 @@ export default function DashboardPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-black text-[#111439] tracking-tight">
               {activeBusiness.name}
             </h1>
-            <span className="inline-flex items-center gap-1 rounded-full bg-purple-500/15 border border-purple-500/30 px-2.5 py-0.5 text-[10px] font-bold text-purple-400">
+            <span className="inline-flex items-center gap-1 rounded-full bg-[#6C4DFF]/10 border border-[#6C4DFF]/20 px-2.5 py-0.5 text-[10px] font-bold text-[#6C4DFF]">
               <Sparkles className="h-3 w-3" /> Live Store
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-[#71717a] mt-1">
+          <p className="text-xs sm:text-sm text-[#667085] mt-1 font-medium">
             Customer Return &amp; Daily Retention Overview
           </p>
         </div>
@@ -183,28 +183,28 @@ export default function DashboardPage() {
         <div className="flex flex-wrap items-center gap-2.5">
           <button
             onClick={() => setIsAddStaffOpen(true)}
-            className="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] px-3.5 py-2 text-xs font-semibold text-white hover:bg-white/[0.08] transition-colors btn-interactive"
+            className="flex items-center gap-2 rounded-xl border border-[#EAECF0] bg-[#FFFFFF] px-3.5 py-2 text-xs font-bold text-[#111439] hover:bg-[#F8F8F9] hover:border-[#D0D5DD] transition-all shadow-xs btn-interactive"
           >
-            <UserPlus className="h-3.5 w-3.5 text-blue-400" />
+            <UserPlus className="h-3.5 w-3.5 text-[#3B82F6]" />
             <span>Add Staff</span>
           </button>
 
           <button
             onClick={() => setIsQROpen(true)}
-            className="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] px-3.5 py-2 text-xs font-semibold text-white hover:bg-white/[0.08] transition-colors btn-interactive"
+            className="flex items-center gap-2 rounded-xl border border-[#EAECF0] bg-[#FFFFFF] px-3.5 py-2 text-xs font-bold text-[#111439] hover:bg-[#F8F8F9] hover:border-[#D0D5DD] transition-all shadow-xs btn-interactive"
           >
-            <QrCode className="h-3.5 w-3.5 text-purple-400" />
+            <QrCode className="h-3.5 w-3.5 text-[#6C4DFF]" />
             <span>Counter QR</span>
           </button>
 
           <Link
             href="/opportunities"
-            className="relative flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] px-3.5 py-2 text-xs font-semibold text-white hover:bg-white/[0.08] transition-colors btn-interactive"
+            className="relative flex items-center gap-2 rounded-xl border border-[#EAECF0] bg-[#FFFFFF] px-3.5 py-2 text-xs font-bold text-[#111439] hover:bg-[#F8F8F9] hover:border-[#D0D5DD] transition-all shadow-xs btn-interactive"
           >
-            <Megaphone className="h-3.5 w-3.5 text-red-400" />
+            <Megaphone className="h-3.5 w-3.5 text-[#EF4444]" />
             <span>Opportunities</span>
             {pendingOpportunitiesCount > 0 && (
-              <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-bold text-white tabular-nums">
+              <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-[#EF4444] px-1 text-[9px] font-bold text-white tabular-nums">
                 {pendingOpportunitiesCount}
               </span>
             )}
@@ -212,7 +212,7 @@ export default function DashboardPage() {
 
           <Link
             href="/add-visit"
-            className="flex items-center gap-1.5 rounded-xl brand-gradient px-4 py-2 text-xs font-bold text-white shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 hover:opacity-95 transition-all btn-interactive"
+            className="flex items-center gap-1.5 rounded-xl brand-gradient px-4 py-2 text-xs font-bold text-white shadow-md shadow-purple-500/25 hover:shadow-purple-500/40 hover:opacity-95 transition-all btn-interactive"
           >
             <PlusCircle className="h-4 w-4" />
             <span>Add Visit (5s)</span>
@@ -234,21 +234,21 @@ export default function DashboardPage() {
       </div>
 
       {/* Retention Shortcuts Banner */}
-      <div className="rounded-2xl brand-gradient p-6 text-white shadow-xl shadow-purple-500/20 flex flex-col md:flex-row items-center justify-between gap-4 border border-white/[0.15]">
+      <div className="rounded-2xl brand-gradient p-6 text-white shadow-xl shadow-purple-500/15 flex flex-col md:flex-row items-center justify-between gap-4 border border-white/20">
         <div className="space-y-1 text-center md:text-left">
           <h3 className="text-base font-bold tracking-tight">
             Need to bring back inactive customers this weekend?
           </h3>
-          <p className="text-xs text-white/80">
+          <p className="text-xs text-white/90">
             You have {pendingOpportunitiesCount} customers who missed their usual visit cycle. Send 1-click personalized WhatsApp offers now.
           </p>
         </div>
         <Link
           href="/opportunities"
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-2.5 text-xs font-bold text-zinc-950 hover:bg-zinc-100 transition-colors shrink-0 shadow-md btn-interactive"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#FFFFFF] px-5 py-2.5 text-xs font-bold text-[#111439] hover:bg-[#F8F8F9] transition-all shrink-0 shadow-md btn-interactive"
         >
           <span>Open Opportunities</span>
-          <ArrowRight className="h-4 w-4" />
+          <ArrowRight className="h-4 w-4 text-[#6C4DFF]" />
         </Link>
       </div>
     </div>

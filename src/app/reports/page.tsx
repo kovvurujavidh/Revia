@@ -1,7 +1,7 @@
-// Importers/Callers: Next.js App Router route `/reports`, AppSidebar, MobileNav
-// Affected API: Reports & CSV Export page (Financial summaries, CSV download, segment breakdown)
+// Importers/Callers: Next.js App Router route `/reports`, AppSidebar, MobileNav, AppHeader
+// Affected API: ReportsPage React page component (Financial summaries, CSV download, segment breakdown)
 // Data Schemas: Customer, Visit, Business, User from src/lib/types.ts
-// User's Verbatim Instruction: "https://emilkowal.ski/skill https://github.com/emilkowalski/skills https://www.ui-skills.com/skills INSTALL AND AUTOMATICALLY USE THIS SKILLS AND REDESIGH MY WEBSITE CONCEPT IS SAME CODE IS SAME JUST DESINE AND LOOK IF YOU HAVE PROBLEM MAKE A V1 VERSION AND SAVE ALL OLD VERSION AND USE THE NEW VERSION TO TEST"
+// User's Verbatim Instruction: "AFTER LOGIN THE LEFT SIDE BAR IS GOOD NOT FIT FOR MOBILE OK SEE THE WHOLE DOT CHANGECONCEPTOR CODE PLESE CHECH MOBILE FRENDLY AND THE COLORS WE CHOOSE NOW AND REQUIREMETS DOC IS DIFFERENT KEEP ANIMATIONS ONLY CHANGE COLORS TO MACTH PRODUCTION LEVEL WEBSITE"
 
 "use client";
 
@@ -30,32 +30,32 @@ export default function ReportsPage() {
     return (
       <div className="min-h-[80vh] flex items-center justify-center p-4 animate-fade-in">
         <div className="max-w-md w-full brand-card p-8 text-center space-y-6">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-purple-500/15 border border-purple-500/30 text-purple-400">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#6C4DFF]/10 border border-[#6C4DFF]/20 text-[#6C4DFF]">
             <Lock className="h-8 w-8" />
           </div>
 
           <div className="space-y-2">
-            <h1 className="text-xl font-black text-white tracking-tight">Staff Access Restricted</h1>
-            <p className="text-xs text-[#71717a] leading-relaxed">
+            <h1 className="text-xl font-black text-[#111439] tracking-tight">Staff Access Restricted</h1>
+            <p className="text-xs text-[#667085] leading-relaxed">
               Financial and analytical reports are restricted to Business Owners. Staff accounts are configured for fast customer visit data entry and counter check-ins.
             </p>
           </div>
 
-          <div className="rounded-xl bg-white/[0.03] p-4 text-left border border-white/[0.08] space-y-2">
-            <div className="flex items-center justify-between text-xs font-bold text-white">
+          <div className="rounded-xl bg-[#F8F8F9] p-4 text-left border border-[#EAECF0] space-y-2">
+            <div className="flex items-center justify-between text-xs font-bold text-[#111439]">
               <span>Current Role:</span>
-              <span className="capitalize px-2.5 py-0.5 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-400 text-[10px] font-bold">
+              <span className="capitalize px-2.5 py-0.5 rounded-full bg-[#3B82F6]/10 border border-[#3B82F6]/20 text-[#3B82F6] text-[10px] font-bold">
                 {currentUser.role}
               </span>
             </div>
-            <p className="text-[11px] text-[#71717a]">
-              Logged in as <strong className="text-white">{currentUser.email}</strong>
+            <p className="text-[11px] text-[#667085]">
+              Logged in as <strong className="text-[#111439]">{currentUser.email}</strong>
             </p>
           </div>
 
           <Link
             href="/add-visit"
-            className="w-full flex items-center justify-center gap-2 rounded-xl brand-gradient py-3 text-xs font-bold text-white shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 hover:opacity-95 transition-all btn-interactive"
+            className="w-full flex items-center justify-center gap-2 rounded-xl brand-gradient py-3 text-xs font-bold text-white shadow-lg shadow-purple-500/20 hover:shadow-purple-500/35 hover:opacity-95 transition-all btn-interactive"
           >
             <span>Go to Add Visit Entry</span>
             <ArrowRight className="h-4 w-4" />
@@ -134,21 +134,27 @@ export default function ReportsPage() {
     let filename = "";
     if (type === "customers") {
       const headers = ["ID", "Name", "Phone", "Segment", "Total Visits", "Last Visit At", "Created At"];
-      const rows = customers.map(c => [
-        `"${c.id}"`, `"${c.name}"`, `"${c.phone}"`, `"${c.segment}"`, c.total_visits, `"${c.last_visit_date}"`, `"${c.created_at}"`
+      const rows = customers.map((c) => [
+        `"${c.id}"`,
+        `"${c.name}"`,
+        `"${c.phone}"`,
+        `"${c.segment}"`,
+        c.total_visits,
+        `"${c.last_visit_date}"`,
+        `"${c.created_at}"`,
       ]);
-      csvData = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+      csvData = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
       filename = `${activeBusiness.name}_Customers_${format(new Date(), "yyyy-MM-dd")}.csv`;
     } else {
       const headers = ["Visit ID", "Customer ID", "Customer Name", "Amount", "Notes", "Timestamp"];
-      const rows = filteredVisits.map(v => {
-        const custName = v.customer_id ? (customers.find(c => c.id === v.customer_id)?.name || "Unknown") : "Anonymous";
+      const rows = filteredVisits.map((v) => {
+        const custName = v.customer_id ? customers.find((c) => c.id === v.customer_id)?.name || "Unknown" : "Anonymous";
         return [`"${v.id}"`, `"${v.customer_id || ""}"`, `"${custName}"`, v.amount, `"${v.notes || ""}"`, `"${v.created_at}"`];
       });
-      csvData = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+      csvData = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
       filename = `${activeBusiness.name}_Visits_${format(new Date(), "yyyy-MM-dd")}.csv`;
     }
-    const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
@@ -159,21 +165,21 @@ export default function ReportsPage() {
   };
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 animate-fade-in">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 animate-fade-in text-[#111439]">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">Reports &amp; Data Export</h1>
-            <span className="rounded-full bg-blue-500/15 border border-blue-500/30 px-2.5 py-0.5 text-xs font-bold text-blue-400 tabular-nums">
+            <h1 className="text-2xl sm:text-3xl font-black text-[#111439] tracking-tight">Reports & Data Export</h1>
+            <span className="rounded-full bg-[#3B82F6]/10 border border-[#3B82F6]/20 px-2.5 py-0.5 text-xs font-bold text-[#3B82F6] tabular-nums">
               {filteredVisits.length} Records
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-[#71717a] mt-1">Financial breakdown, segment contribution, and customer leaderboard.</p>
+          <p className="text-xs sm:text-sm text-[#667085] mt-1 font-medium">Financial breakdown, segment contribution, and customer leaderboard.</p>
         </div>
 
         {/* Date Range Selector */}
-        <div className="flex items-center gap-1.5 rounded-xl bg-white/[0.03] p-1 border border-white/[0.08]">
+        <div className="flex items-center gap-1.5 rounded-xl bg-[#F8F8F9] p-1 border border-[#EAECF0]">
           {[
             { label: "7 Days", val: "7d" },
             { label: "30 Days", val: "30d" },
@@ -183,10 +189,10 @@ export default function ReportsPage() {
             <button
               key={rng.val}
               onClick={() => setDateRange(rng.val as any)}
-              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all btn-interactive ${
+              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all btn-interactive cursor-pointer ${
                 dateRange === rng.val
-                  ? "bg-purple-500 text-white shadow-md shadow-purple-500/25"
-                  : "text-[#a1a1aa] hover:text-white hover:bg-white/[0.04]"
+                  ? "brand-gradient text-white shadow-md shadow-purple-500/20"
+                  : "text-[#667085] hover:text-[#111439] hover:bg-[#F1F1F4]"
               }`}
             >
               {rng.label}
@@ -198,27 +204,27 @@ export default function ReportsPage() {
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
         <div className="brand-card p-5 sm:p-6">
-          <div className="flex items-center gap-2 mb-2 text-[#71717a]">
-            <CreditCard className="h-4 w-4 text-purple-400" />
-            <h3 className="text-xs font-bold uppercase tracking-wider text-[#a1a1aa]">Total Revenue</h3>
+          <div className="flex items-center gap-2 mb-2 text-[#667085]">
+            <CreditCard className="h-4 w-4 text-[#6C4DFF]" />
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[#667085]">Total Revenue</h3>
           </div>
-          <p className="text-2xl sm:text-3xl font-black text-white tabular-nums">{formatCurrency(totalRevenue)}</p>
+          <p className="text-2xl sm:text-3xl font-black text-[#111439] tabular-nums">{formatCurrency(totalRevenue)}</p>
         </div>
 
         <div className="brand-card p-5 sm:p-6">
-          <div className="flex items-center gap-2 mb-2 text-[#71717a]">
-            <Calendar className="h-4 w-4 text-purple-400" />
-            <h3 className="text-xs font-bold uppercase tracking-wider text-[#a1a1aa]">Total Visits</h3>
+          <div className="flex items-center gap-2 mb-2 text-[#667085]">
+            <Calendar className="h-4 w-4 text-[#6C4DFF]" />
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[#667085]">Total Visits</h3>
           </div>
-          <p className="text-2xl sm:text-3xl font-black text-purple-400 tabular-nums">{totalVisits}</p>
+          <p className="text-2xl sm:text-3xl font-black text-[#6C4DFF] tabular-nums">{totalVisits}</p>
         </div>
 
         <div className="brand-card p-5 sm:p-6">
-          <div className="flex items-center gap-2 mb-2 text-[#71717a]">
-            <Users className="h-4 w-4 text-emerald-400" />
-            <h3 className="text-xs font-bold uppercase tracking-wider text-[#a1a1aa]">Unique Customers</h3>
+          <div className="flex items-center gap-2 mb-2 text-[#667085]">
+            <Users className="h-4 w-4 text-[#16A34A]" />
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[#667085]">Unique Customers</h3>
           </div>
-          <p className="text-2xl sm:text-3xl font-black text-emerald-400 tabular-nums">{uniqueVisitorCount}</p>
+          <p className="text-2xl sm:text-3xl font-black text-[#16A34A] tabular-nums">{uniqueVisitorCount}</p>
         </div>
       </div>
 
@@ -226,35 +232,35 @@ export default function ReportsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Segment Revenue Breakdown */}
         <div className="brand-card p-6">
-          <div className="flex items-center gap-2 mb-6 border-b border-white/[0.08] pb-3">
-            <BarChart2 className="h-4 w-4 text-purple-400" />
-            <h2 className="text-sm font-bold text-white tracking-tight">Segment Revenue Breakdown</h2>
+          <div className="flex items-center gap-2 mb-6 border-b border-[#EAECF0] pb-3">
+            <BarChart2 className="h-4 w-4 text-[#6C4DFF]" />
+            <h2 className="text-sm font-bold text-[#111439] tracking-tight">Segment Revenue Breakdown</h2>
           </div>
           <div className="space-y-4">
             {segmentStats.map(([segment, data]) => {
               const bgClass =
                 segment === "VIP"
-                  ? "bg-purple-500"
+                  ? "bg-[#6C4DFF]"
                   : segment === "Regular"
-                  ? "bg-blue-500"
+                  ? "bg-[#3B82F6]"
                   : segment === "New"
-                  ? "bg-emerald-500"
+                  ? "bg-[#16A34A]"
                   : segment === "Becoming Inactive"
-                  ? "bg-amber-500"
+                  ? "bg-[#F59E0B]"
                   : segment === "Inactive"
-                  ? "bg-red-500"
-                  : "bg-zinc-600";
+                  ? "bg-[#EF4444]"
+                  : "bg-[#94A3B8]";
               const percentage = totalRevenue > 0 ? (data.revenue / totalRevenue) * 100 : 0;
               return (
                 <div key={segment} className="space-y-1.5">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-white">{segment}</span>
+                    <span className="font-bold text-[#111439]">{segment}</span>
                     <div className="text-right">
-                      <span className="font-bold text-white tabular-nums">{formatCurrency(data.revenue)}</span>
-                      <span className="text-[#71717a] ml-2 tabular-nums">({data.count} visits)</span>
+                      <span className="font-bold text-[#111439] tabular-nums">{formatCurrency(data.revenue)}</span>
+                      <span className="text-[#667085] ml-2 tabular-nums">({data.count} visits)</span>
                     </div>
                   </div>
-                  <div className="w-full bg-white/[0.05] rounded-full h-2 overflow-hidden">
+                  <div className="w-full bg-[#F8F8F9] rounded-full h-2 overflow-hidden">
                     <div
                       className={`h-2 rounded-full ${bgClass} transition-all duration-500`}
                       style={{ width: `${Math.max(percentage, 2)}%` }}
@@ -268,38 +274,38 @@ export default function ReportsPage() {
 
         {/* Top Customers Leaderboard */}
         <div className="brand-card p-6 flex flex-col h-full">
-          <div className="flex items-center gap-2 mb-4 border-b border-white/[0.08] pb-3">
-            <Trophy className="h-4 w-4 text-amber-400" />
-            <h2 className="text-sm font-bold text-white tracking-tight">Top Customers Leaderboard</h2>
+          <div className="flex items-center gap-2 mb-4 border-b border-[#EAECF0] pb-3">
+            <Trophy className="h-4 w-4 text-[#F59E0B]" />
+            <h2 className="text-sm font-bold text-[#111439] tracking-tight">Top Customers Leaderboard</h2>
           </div>
           <div className="flex-1 overflow-y-auto pr-1 space-y-2.5">
             {topCustomers.map((cust, idx) => (
               <div
                 key={cust.name}
-                className="flex items-center justify-between p-3 rounded-xl border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] transition-colors"
+                className="flex items-center justify-between p-3 rounded-xl border border-[#EAECF0] bg-[#F8F8F9] hover:bg-[#FFFFFF] hover:border-[#D0D5DD] transition-colors"
               >
                 <div className="flex items-center gap-3">
                   <div
                     className={`flex h-8 w-8 items-center justify-center rounded-xl font-black text-xs ${
                       idx === 0
-                        ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
+                        ? "bg-[#F59E0B]/20 text-[#F59E0B] border border-[#F59E0B]/30"
                         : idx === 1
-                        ? "bg-zinc-300/20 text-zinc-300 border border-zinc-300/30"
+                        ? "bg-[#94A3B8]/20 text-[#94A3B8] border border-[#94A3B8]/30"
                         : idx === 2
-                        ? "bg-amber-700/20 text-amber-500 border border-amber-700/30"
-                        : "bg-white/[0.05] text-[#71717a] border border-white/[0.08]"
+                        ? "bg-[#F59E0B]/15 text-[#B45309] border border-[#F59E0B]/30"
+                        : "bg-[#F8F8F9] text-[#667085] border border-[#EAECF0]"
                     }`}
                   >
                     #{idx + 1}
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-white">{cust.name}</p>
-                    <p className="text-[10px] text-[#71717a] tabular-nums">{cust.phone}</p>
+                    <p className="text-xs font-bold text-[#111439]">{cust.name}</p>
+                    <p className="text-[10px] text-[#667085] tabular-nums">{cust.phone}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs font-bold text-emerald-400 tabular-nums">{formatCurrency(cust.spend)}</p>
-                  <p className="text-[10px] text-[#71717a] tabular-nums">{cust.visits} visits</p>
+                  <p className="text-xs font-bold text-[#16A34A] tabular-nums">{formatCurrency(cust.spend)}</p>
+                  <p className="text-[10px] text-[#667085] tabular-nums">{cust.visits} visits</p>
                 </div>
               </div>
             ))}
@@ -309,21 +315,21 @@ export default function ReportsPage() {
 
       {/* CSV Export Bar */}
       <div className="brand-card p-6 sm:p-7">
-        <h2 className="text-sm font-bold text-white mb-1">Export Full Data Records (.CSV)</h2>
-        <p className="text-xs text-[#71717a] mb-4">Download complete raw transaction and customer spreadsheets for external accounting.</p>
+        <h2 className="text-sm font-bold text-[#111439] mb-1">Export Full Data Records (.CSV)</h2>
+        <p className="text-xs text-[#667085] mb-4 font-medium">Download complete raw transaction and customer spreadsheets for external accounting.</p>
         <div className="flex flex-col sm:flex-row gap-3">
           <button
             onClick={() => downloadCSV("customers")}
-            className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] py-3 text-xs font-bold text-white hover:bg-white/[0.08] transition-colors btn-interactive"
+            className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-[#EAECF0] bg-[#F8F8F9] py-3 text-xs font-bold text-[#111439] hover:bg-[#F1F1F4] hover:border-[#D0D5DD] transition-colors btn-interactive cursor-pointer"
           >
-            <Download className="h-4 w-4 text-purple-400" />
+            <Download className="h-4 w-4 text-[#6C4DFF]" />
             <span>Download All Customers CSV</span>
           </button>
           <button
             onClick={() => downloadCSV("visits")}
-            className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] py-3 text-xs font-bold text-white hover:bg-white/[0.08] transition-colors btn-interactive"
+            className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-[#EAECF0] bg-[#F8F8F9] py-3 text-xs font-bold text-[#111439] hover:bg-[#F1F1F4] hover:border-[#D0D5DD] transition-colors btn-interactive cursor-pointer"
           >
-            <Download className="h-4 w-4 text-blue-400" />
+            <Download className="h-4 w-4 text-[#3B82F6]" />
             <span>Download {dateRange !== "all" ? "Filtered" : "All"} Visits CSV</span>
           </button>
         </div>

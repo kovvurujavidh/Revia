@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import { AppHeader } from "./AppHeader";
 import { AppSidebar } from "./AppSidebar";
@@ -10,10 +10,24 @@ import { useApp } from "@/context/AppContext";
 import Link from "next/link";
 import { AlertTriangle, Clock, ArrowRight } from "lucide-react";
 
+// Importers/Callers: App layout (`src/app/layout.tsx`)
+// Affected API: AppLayoutWrapper component, mobile drawer state management
+// Data Schemas: AppContext types via useApp()
+// User's Verbatim Instruction: "AFTER LOGIN THE LEFT SIDE BAR IS GOOD NOT FIT FOR MOBILE OK SEE THE WHOLE DOT CHANGECONCEPTOR CODE PLESE CHECH MOBILE FRENDLY AND THE COLORS WE CHOOSE NOW AND REQUIREMETS DOC IS DIFFERENT KEEP ANIMATIONS ONLY CHANGE COLORS TO MACTH PRODUCTION LEVEL WEBSITE"
+
 export function AppLayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { isTrialActive, trialDaysRemaining, isReadOnly, activeBusiness } = useApp();
   const [isQROpen, setIsQROpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const closeMobileMenu = useCallback(() => {
+    setIsMobileMenuOpen(false);
+  }, []);
+
+  const openMobileMenu = useCallback(() => {
+    setIsMobileMenuOpen(true);
+  }, []);
 
   const isPublicPage =
     pathname === "/" ||
@@ -22,7 +36,7 @@ export function AppLayoutWrapper({ children }: { children: React.ReactNode }) {
     pathname?.startsWith("/onboarding");
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-[#F8F8F9]">
       {/* Table / Counter QR Code Modal */}
       <CounterQRCode isOpen={isQROpen} onClose={() => setIsQROpen(false)} />
 
@@ -55,11 +69,18 @@ export function AppLayoutWrapper({ children }: { children: React.ReactNode }) {
       )}
 
       {/* Main Top Header */}
-      {!isPublicPage && <AppHeader onOpenQR={() => setIsQROpen(true)} />}
+      {!isPublicPage && (
+        <AppHeader
+          onOpenQR={() => setIsQROpen(true)}
+          onToggleMobileMenu={openMobileMenu}
+        />
+      )}
 
       <div className="flex flex-1">
-        {/* Desktop Sidebar */}
-        {!isPublicPage && <AppSidebar />}
+        {/* Desktop Sidebar & Mobile Drawer */}
+        {!isPublicPage && (
+          <AppSidebar isOpen={isMobileMenuOpen} onClose={closeMobileMenu} />
+        )}
 
         {/* Content Area */}
         <main

@@ -1,7 +1,7 @@
-// Importers/Callers: Next.js App Router route /add-visit, AppSidebar, MobileNav
-// Affected API: AddVisitPage React component
+// Importers/Callers: Next.js App Router route /add-visit, AppSidebar, MobileNav, AppHeader
+// Affected API: AddVisitPage React page component
 // Data Schemas: Business, Customer, Visit, WhatsAppLog from src/lib/types.ts
-// User's Verbatim Instruction: "https://emilkowal.ski/skill https://github.com/emilkowalski/skills https://www.ui-skills.com/skills INSTALL AND AUTOMATICALLY USE THIS SKILLS AND REDESIGH MY WEBSITE CONCEPT IS SAME CODE IS SAME JUST DESINE AND LOOK IF YOU HAVE PROBLEM MAKE A V1 VERSION AND SAVE ALL OLD VERSION AND USE THE NEW VERSION TO TEST"
+// User's Verbatim Instruction: "AFTER LOGIN THE LEFT SIDE BAR IS GOOD NOT FIT FOR MOBILE OK SEE THE WHOLE DOT CHANGECONCEPTOR CODE PLESE CHECH MOBILE FRENDLY AND THE COLORS WE CHOOSE NOW AND REQUIREMETS DOC IS DIFFERENT KEEP ANIMATIONS ONLY CHANGE COLORS TO MACTH PRODUCTION LEVEL WEBSITE"
 
 "use client";
 
@@ -17,7 +17,6 @@ import {
   Phone,
   MessageCircle,
   ShieldAlert,
-  User,
 } from "lucide-react";
 import { buildWhatsAppLink } from "@/lib/intelligence";
 
@@ -151,27 +150,27 @@ export default function AddVisitPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-black text-white tracking-tight">Fast Visit Entry</h1>
-            <span className="rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-0.5 text-xs font-bold text-emerald-400 inline-flex items-center gap-1">
+            <h1 className="text-2xl font-black text-[#111439] tracking-tight">Fast Visit Entry</h1>
+            <span className="rounded-full bg-[#16A34A]/10 border border-[#16A34A]/25 px-2.5 py-0.5 text-xs font-bold text-[#16A34A] inline-flex items-center gap-1">
               <Zap className="h-3 w-3" /> 5-10s Speed Mode
             </span>
           </div>
-          <p className="text-xs text-[#71717a] mt-1">
+          <p className="text-xs text-[#667085] mt-1 font-medium">
             Lookup phone number, enter amount, and keep your counter queue moving fast.
           </p>
         </div>
 
         <button
           onClick={() => setIsQROpen(true)}
-          className="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] px-3.5 py-2 text-xs font-semibold text-white hover:bg-white/[0.08] transition-colors btn-interactive"
+          className="flex items-center gap-2 rounded-xl border border-[#EAECF0] bg-[#FFFFFF] px-3.5 py-2 text-xs font-bold text-[#111439] hover:bg-[#F8F8F9] hover:border-[#D0D5DD] transition-all shadow-xs btn-interactive"
         >
-          <QrCode className="h-4 w-4 text-purple-400" />
+          <QrCode className="h-4 w-4 text-[#6C4DFF]" />
           <span>Table / Counter QR Code</span>
         </button>
       </div>
 
       {isReadOnly && (
-        <div className="rounded-xl bg-red-500/10 p-4 border border-red-500/25 flex items-center gap-3 text-xs text-red-400 font-semibold">
+        <div className="rounded-xl bg-[#EF4444]/10 p-4 border border-[#EF4444]/25 flex items-center gap-3 text-xs text-[#EF4444] font-bold">
           <ShieldAlert className="h-5 w-5 shrink-0" />
           <span>
             Your trial has expired. You are currently in read-only mode. Please upgrade your plan in Profile to record new visits.
@@ -181,17 +180,17 @@ export default function AddVisitPage() {
 
       {/* Success Notification Banner */}
       {successData && (
-        <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-5 animate-fade-in flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="rounded-2xl border border-[#16A34A]/30 bg-[#16A34A]/10 p-5 animate-fade-in flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-zinc-950 font-black">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#16A34A] text-white font-black shadow-sm">
               <CheckCircle2 className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-sm font-bold text-white">
+              <p className="text-sm font-bold text-[#111439]">
                 Visit recorded successfully! (₹{successData.amount.toLocaleString()})
               </p>
-              <p className="text-xs text-[#a1a1aa] mt-0.5">
-                Logged for <strong className="text-emerald-400">{successData.customerName}</strong>
+              <p className="text-xs text-[#667085] mt-0.5">
+                Logged for <strong className="text-[#16A34A]">{successData.customerName}</strong>
               </p>
             </div>
           </div>
@@ -212,7 +211,7 @@ export default function AddVisitPage() {
                     message_sent: "Thank you for visiting!",
                   });
                 }}
-                className="flex flex-1 sm:flex-none items-center justify-center gap-1.5 rounded-xl bg-[#25D366] px-4 py-2.5 text-xs font-bold text-zinc-950 shadow-lg shadow-emerald-500/20 hover:brightness-105 transition-all btn-interactive"
+                className="flex flex-1 sm:flex-none items-center justify-center gap-1.5 rounded-xl bg-[#25D366] px-4 py-2.5 text-xs font-bold text-white shadow-md shadow-emerald-500/20 hover:brightness-105 transition-all btn-interactive"
               >
                 <MessageCircle className="h-4 w-4" />
                 <span>Send WhatsApp Thanks</span>
@@ -220,7 +219,7 @@ export default function AddVisitPage() {
             )}
             <button
               onClick={() => setSuccessData(null)}
-              className="text-xs font-semibold text-[#71717a] hover:text-white px-2 py-1 transition-colors"
+              className="text-xs font-bold text-[#667085] hover:text-[#111439] px-2 py-1 transition-colors"
             >
               Dismiss
             </button>
@@ -229,23 +228,23 @@ export default function AddVisitPage() {
       )}
 
       {/* Main Entry Form Card */}
-      <div className="brand-card-elevated p-6 sm:p-8">
+      <div className="brand-card p-6 sm:p-8">
         {/* Toggle Mode: Known Customer vs Anonymous */}
-        <div className="flex items-center justify-between border-b border-white/[0.08] pb-5 mb-6">
+        <div className="flex items-center justify-between border-b border-[#EAECF0] pb-5 mb-6">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-[#a1a1aa] uppercase tracking-wider">
+            <span className="text-xs font-bold text-[#667085] uppercase tracking-wider">
               Entry Type
             </span>
           </div>
 
-          <div className="flex rounded-xl bg-white/[0.03] p-1 border border-white/[0.08]">
+          <div className="flex rounded-xl bg-[#F8F8F9] p-1 border border-[#EAECF0]">
             <button
               type="button"
               onClick={() => setIsAnonymous(false)}
               className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all btn-interactive ${
                 !isAnonymous
-                  ? "bg-purple-500 text-white shadow-md shadow-purple-500/25"
-                  : "text-[#71717a] hover:text-white"
+                  ? "brand-gradient text-white shadow-md shadow-purple-500/20"
+                  : "text-[#667085] hover:text-[#111439]"
               }`}
             >
               Customer Visit
@@ -255,8 +254,8 @@ export default function AddVisitPage() {
               onClick={() => setIsAnonymous(true)}
               className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all btn-interactive ${
                 isAnonymous
-                  ? "bg-purple-500 text-white shadow-md shadow-purple-500/25"
-                  : "text-[#71717a] hover:text-white"
+                  ? "brand-gradient text-white shadow-md shadow-purple-500/20"
+                  : "text-[#667085] hover:text-[#111439]"
               }`}
             >
               Anonymous Walk-in
@@ -269,11 +268,11 @@ export default function AddVisitPage() {
             <div className="space-y-4">
               {/* Phone / Search Input */}
               <div>
-                <label className="block text-xs font-bold text-[#a1a1aa] uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-[#667085] uppercase tracking-wider mb-1.5">
                   Customer Mobile / Search *
                 </label>
                 <div className="relative">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#52525b]">
+                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#94A3B8]">
                     <Phone className="h-4 w-4" />
                   </div>
                   <input
@@ -285,7 +284,7 @@ export default function AddVisitPage() {
                       if (selectedCustomerId) setSelectedCustomerId(null);
                     }}
                     placeholder="Enter 10-digit mobile number or customer name"
-                    className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] pl-10 pr-4 py-3 text-sm font-medium text-white placeholder:text-[#52525b] focus:border-purple-500/50 focus:bg-white/[0.06] focus:outline-none transition-all"
+                    className="w-full rounded-xl border border-[#EAECF0] bg-[#F8F8F9] pl-10 pr-4 py-3 text-sm font-medium text-[#111439] placeholder:text-[#94A3B8] focus:border-[#6C4DFF] focus:bg-[#FFFFFF] focus:outline-none transition-all"
                   />
                 </div>
               </div>
@@ -294,25 +293,25 @@ export default function AddVisitPage() {
               {matchedCustomer && !selectedCustomerId && (
                 <div
                   onClick={() => handleSelectCustomer(matchedCustomer)}
-                  className="rounded-xl border border-purple-500/30 bg-purple-500/10 p-3.5 flex items-center justify-between cursor-pointer hover:bg-purple-500/15 transition-colors animate-fade-in"
+                  className="rounded-xl border border-[#6C4DFF]/30 bg-[#6C4DFF]/5 p-3.5 flex items-center justify-between cursor-pointer hover:bg-[#6C4DFF]/10 transition-colors animate-fade-in"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-500 text-white font-bold text-xs">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-xl brand-gradient text-white font-bold text-xs shadow-xs">
                       {matchedCustomer.name.charAt(0)}
                     </div>
                     <div>
-                      <p className="text-xs font-bold text-white">
+                      <p className="text-xs font-bold text-[#111439]">
                         {matchedCustomer.name}{" "}
-                        <span className="text-[10px] text-[#a1a1aa] font-normal">
+                        <span className="text-[10px] text-[#667085] font-normal">
                           ({matchedCustomer.phone})
                         </span>
                       </p>
-                      <p className="text-[11px] text-[#71717a] tabular-nums">
+                      <p className="text-[11px] text-[#667085] tabular-nums">
                         {matchedCustomer.total_visits} visits recorded • Last seen {new Date(matchedCustomer.last_visit_date).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
-                  <span className="rounded-lg bg-purple-500 px-3 py-1 text-[10px] font-bold text-white shadow-sm shadow-purple-500/30">
+                  <span className="rounded-lg brand-gradient px-3 py-1 text-[10px] font-bold text-white shadow-sm shadow-purple-500/20">
                     Select Member
                   </span>
                 </div>
@@ -320,18 +319,18 @@ export default function AddVisitPage() {
 
               {/* Selected Customer Banner */}
               {selectedCustomerId && (
-                <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 flex items-center justify-between animate-fade-in">
+                <div className="rounded-xl border border-[#16A34A]/30 bg-[#16A34A]/10 p-3.5 flex items-center justify-between animate-fade-in">
                   <div className="flex items-center gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+                    <CheckCircle2 className="h-5 w-5 text-[#16A34A]" />
                     <div>
-                      <p className="text-xs font-bold text-white">{name}</p>
-                      <p className="text-[11px] text-[#71717a] tabular-nums">{phoneSearch}</p>
+                      <p className="text-xs font-bold text-[#111439]">{name}</p>
+                      <p className="text-[11px] text-[#667085] tabular-nums">{phoneSearch}</p>
                     </div>
                   </div>
                   <button
                     type="button"
                     onClick={handleClearSelected}
-                    className="text-xs font-semibold text-red-400 hover:text-red-300 transition-colors"
+                    className="text-xs font-bold text-[#EF4444] hover:text-[#DC2626] transition-colors"
                   >
                     Change
                   </button>
@@ -340,13 +339,13 @@ export default function AddVisitPage() {
 
               {/* If New Customer (no match & not selected) */}
               {!matchedCustomer && !selectedCustomerId && phoneSearch.length >= 3 && (
-                <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4 space-y-3 animate-fade-in">
-                  <div className="flex items-center gap-2 text-xs font-bold text-purple-400">
+                <div className="rounded-xl border border-[#EAECF0] bg-[#F8F8F9] p-4 space-y-3 animate-fade-in">
+                  <div className="flex items-center gap-2 text-xs font-bold text-[#6C4DFF]">
                     <Sparkles className="h-4 w-4" />
                     <span>New Customer Detected — Enter Name</span>
                   </div>
                   <div>
-                    <label className="block text-[11px] font-bold text-[#a1a1aa] uppercase tracking-wider mb-1">
+                    <label className="block text-[11px] font-bold text-[#667085] uppercase tracking-wider mb-1">
                       Customer Full Name *
                     </label>
                     <input
@@ -355,7 +354,7 @@ export default function AddVisitPage() {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="e.g. Rahul Sharma"
-                      className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-xs font-medium text-white placeholder:text-[#52525b] focus:outline-none focus:border-purple-500/50 focus:bg-white/[0.06] transition-colors"
+                      className="w-full rounded-xl border border-[#EAECF0] bg-[#FFFFFF] px-3.5 py-2.5 text-xs font-medium text-[#111439] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#6C4DFF] transition-colors"
                     />
                   </div>
                 </div>
@@ -366,12 +365,12 @@ export default function AddVisitPage() {
           {/* Amount Input & Fast Quick-Select Chips */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="text-xs font-bold text-[#a1a1aa] uppercase tracking-wider">
+              <label className="text-xs font-bold text-[#667085] uppercase tracking-wider">
                 Visit Bill / Order Amount ({activeBusiness.currency || "INR"}) *
               </label>
             </div>
             <div className="relative">
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-purple-400 font-bold text-base">
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#6C4DFF] font-bold text-base">
                 ₹
               </div>
               <input
@@ -381,7 +380,7 @@ export default function AddVisitPage() {
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="0.00"
-                className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] pl-10 pr-4 py-3.5 text-xl font-black text-white placeholder:text-[#52525b] focus:border-purple-500/50 focus:bg-white/[0.06] focus:outline-none tabular-nums transition-all"
+                className="w-full rounded-xl border border-[#EAECF0] bg-[#F8F8F9] pl-10 pr-4 py-3.5 text-xl font-black text-[#111439] placeholder:text-[#94A3B8] focus:border-[#6C4DFF] focus:bg-[#FFFFFF] focus:outline-none tabular-nums transition-all"
               />
             </div>
 
@@ -392,7 +391,7 @@ export default function AddVisitPage() {
                   key={val}
                   type="button"
                   onClick={() => setAmount(val.toString())}
-                  className="rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-xs font-bold text-white hover:border-purple-500/40 hover:bg-purple-500/10 transition-all btn-interactive tabular-nums"
+                  className="rounded-lg border border-[#EAECF0] bg-[#F8F8F9] px-3 py-1.5 text-xs font-bold text-[#111439] hover:border-[#6C4DFF]/40 hover:bg-[#6C4DFF]/10 transition-all btn-interactive tabular-nums"
                 >
                   ₹{val}
                 </button>
@@ -402,15 +401,15 @@ export default function AddVisitPage() {
 
           {/* Notes or Order details */}
           <div>
-            <label className="block text-xs font-bold text-[#a1a1aa] uppercase tracking-wider mb-1.5">
-              Items / Notes <span className="text-[10px] text-[#71717a] font-normal lowercase">(optional, e.g. Table 4 / Hair Spa / Cold Brew)</span>
+            <label className="block text-xs font-bold text-[#667085] uppercase tracking-wider mb-1.5">
+              Items / Notes <span className="text-[10px] text-[#94A3B8] font-normal lowercase">(optional, e.g. Table 4 / Hair Spa / Cold Brew)</span>
             </label>
             <input
               type="text"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="e.g. Table 2, 2x Cappuccino + Croissant"
-              className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-2.5 text-xs font-medium text-white placeholder:text-[#52525b] focus:border-purple-500/50 focus:bg-white/[0.06] focus:outline-none transition-colors"
+              className="w-full rounded-xl border border-[#EAECF0] bg-[#F8F8F9] px-4 py-2.5 text-xs font-medium text-[#111439] placeholder:text-[#94A3B8] focus:border-[#6C4DFF] focus:bg-[#FFFFFF] focus:outline-none transition-colors"
             />
           </div>
 

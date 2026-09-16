@@ -1,3 +1,8 @@
+// Importers/Callers: Next.js route `/onboarding`, Auth sign-up flow redirect.
+// Affected API: Multi-step business registration wizard, categories selector, initial trial configuration.
+// Data Schemas: Business, IndustryType, User from src/lib/types.ts.
+// User's Verbatim Instruction: "AFTER LOGIN THE LEFT SIDE BAR IS GOOD NOT FIT FOR MOBILE OK SEE THE WHOLE DOT CHANGECONCEPTOR CODE PLESE CHECH MOBILE FRENDLY AND THE COLORS WE CHOOSE NOW AND REQUIREMETS DOC IS DIFFERENT KEEP ANIMATIONS ONLY CHANGE COLORS TO MACTH PRODUCTION LEVEL WEBSITE"
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -113,31 +118,28 @@ export default function OnboardingPage() {
 
   if (checkingAuth) {
     return (
-      <div className="min-h-screen bg-[#09090b] flex items-center justify-center">
+      <div className="min-h-screen bg-[#F8F8F9] flex items-center justify-center">
         <div className="text-center animate-fade-in">
-          <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl brand-gradient text-white shadow-lg shadow-purple-500/20 mb-4 animate-pulse-glow">
+          <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl brand-gradient text-white shadow-lg shadow-purple-500/20 mb-4 animate-pulse">
             <Zap className="h-6 w-6" />
           </div>
-          <p className="text-sm text-[#71717a] font-medium">Checking session...</p>
+          <p className="text-sm text-[#667085] font-medium">Checking session...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#09090b] flex flex-col items-center justify-center px-4 py-12">
-      <div className="absolute inset-0 grid-bg opacity-20"></div>
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] radial-glow"></div>
-
-      <div className="relative w-full max-w-xl animate-fade-in-up">
+    <div className="min-h-screen bg-[#F8F8F9] flex flex-col items-center justify-center px-4 py-12">
+      <div className="relative w-full max-w-xl animate-fade-in">
         <div className="text-center mb-8">
           <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl brand-gradient text-white shadow-lg shadow-purple-500/20 mb-4">
             <Zap className="h-6 w-6" />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white">
+          <h1 className="text-2xl sm:text-3xl font-black text-[#111439]">
             Set Up Your Business
           </h1>
-          <p className="text-sm text-[#a1a1aa] mt-2">
+          <p className="text-xs sm:text-sm text-[#667085] mt-1">
             Step {step} of 3 — Start your 14-day free trial
           </p>
 
@@ -146,16 +148,16 @@ export default function OnboardingPage() {
               <div
                 key={s}
                 className={`h-1.5 rounded-full transition-all duration-300 ${
-                  step >= s ? "w-10 brand-gradient" : "w-2 bg-[#27272a]"
+                  step >= s ? "w-10 brand-gradient" : "w-2 bg-[#EAECF0]"
                 }`}
               />
             ))}
           </div>
         </div>
 
-        <div className="rounded-2xl border border-[#27272a] bg-[#18181b] p-8">
+        <div className="brand-card p-6 sm:p-8 shadow-xl">
           {error && (
-            <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-3 text-sm text-red-400 font-medium flex items-center gap-2 mb-4">
+            <div className="rounded-xl bg-[#EF4444]/10 border border-[#EF4444]/20 p-3 text-xs text-[#EF4444] font-semibold flex items-center gap-2 mb-4 animate-fade-in">
               <AlertCircle className="h-4 w-4 shrink-0" />
               <span>{error}</span>
             </div>
@@ -165,19 +167,19 @@ export default function OnboardingPage() {
           {step === 1 && (
             <div className="space-y-6 animate-fade-in">
               <div>
-                <label className="block text-xs font-semibold text-[#a1a1aa] mb-2">Business Name</label>
+                <label className="block text-xs font-bold text-[#111439] uppercase tracking-wider mb-2">Business Name</label>
                 <input
                   type="text"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. Olive & Thyme Bistro"
-                  className="w-full rounded-xl border border-[#3f3f46] bg-[#27272a] px-4 py-3 text-sm text-white placeholder:text-[#52525b] focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all"
+                  className="w-full rounded-xl border border-[#EAECF0] bg-[#F8F8F9] px-4 py-2.5 text-xs text-[#111439] placeholder:text-[#94A3B8] focus:bg-[#FFFFFF] focus:border-[#6C4DFF] focus:outline-none transition-colors"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#a1a1aa] mb-2.5">Industry</label>
+                <label className="block text-xs font-bold text-[#111439] uppercase tracking-wider mb-2.5">Industry</label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {categories.map((cat) => {
                     const Icon = cat.icon;
@@ -188,15 +190,15 @@ export default function OnboardingPage() {
                         onClick={() => setIndustry(cat.id)}
                         className={`rounded-xl border p-3.5 cursor-pointer transition-all duration-200 ${
                           isSelected
-                            ? "border-purple-500/50 bg-purple-500/10 shadow-lg shadow-purple-500/5"
-                            : "border-[#27272a] bg-[#09090b] hover:border-purple-500/30"
+                            ? "border-[#6C4DFF] bg-[#6C4DFF]/10 shadow-md shadow-purple-500/10"
+                            : "border-[#EAECF0] bg-[#F8F8F9] hover:border-[#6C4DFF]/30 hover:bg-[#FFFFFF]"
                         }`}
                       >
                         <div className="flex items-center gap-2.5 mb-1">
-                          <Icon className={`h-4 w-4 ${isSelected ? "text-purple-400" : "text-[#52525b]"}`} />
-                          <p className={`text-xs font-bold ${isSelected ? "text-white" : "text-[#a1a1aa]"}`}>{cat.label}</p>
+                          <Icon className={`h-4 w-4 ${isSelected ? "text-[#6C4DFF]" : "text-[#667085]"}`} />
+                          <p className={`text-xs font-bold ${isSelected ? "text-[#111439]" : "text-[#667085]"}`}>{cat.label}</p>
                         </div>
-                        <p className="text-[11px] text-[#52525b] line-clamp-1">{cat.desc}</p>
+                        <p className="text-[11px] text-[#667085] line-clamp-1">{cat.desc}</p>
                       </div>
                     );
                   })}
@@ -207,7 +209,7 @@ export default function OnboardingPage() {
                 type="button"
                 disabled={!name.trim()}
                 onClick={() => setStep(2)}
-                className="w-full py-3.5 rounded-xl brand-gradient text-white text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 hover:opacity-95 transition-all disabled:opacity-50 cursor-pointer"
+                className="w-full py-3.5 rounded-xl brand-gradient text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md shadow-purple-500/20 hover:opacity-95 transition-all disabled:opacity-50 cursor-pointer btn-interactive"
               >
                 <span>Continue</span>
                 <ArrowRight className="h-4 w-4" />
@@ -219,22 +221,22 @@ export default function OnboardingPage() {
           {step === 2 && (
             <div className="space-y-6 animate-fade-in">
               <div>
-                <label className="block text-xs font-semibold text-[#a1a1aa] mb-2">Business Phone (for WhatsApp)</label>
+                <label className="block text-xs font-bold text-[#111439] uppercase tracking-wider mb-2">Business Phone (for WhatsApp)</label>
                 <div className="relative">
-                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#52525b]" />
+                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#94A3B8]" />
                   <input
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="+91 98765 43210"
-                    className="w-full rounded-xl border border-[#3f3f46] bg-[#27272a] pl-10 pr-4 py-3 text-sm text-white placeholder:text-[#52525b] focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all"
+                    className="w-full rounded-xl border border-[#EAECF0] bg-[#F8F8F9] pl-10 pr-4 py-2.5 text-xs text-[#111439] placeholder:text-[#94A3B8] focus:bg-[#FFFFFF] focus:border-[#6C4DFF] focus:outline-none transition-colors"
                   />
                 </div>
-                <p className="text-[11px] text-[#52525b] mt-1.5">Used for WhatsApp campaign sender identity.</p>
+                <p className="text-[11px] text-[#667085] mt-1.5 font-medium">Used for WhatsApp campaign sender identity.</p>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#a1a1aa] mb-2">Currency</label>
+                <label className="block text-xs font-bold text-[#111439] uppercase tracking-wider mb-2">Currency</label>
                 <div className="grid grid-cols-3 gap-3">
                   {[
                     { code: "INR", symbol: "₹" },
@@ -247,12 +249,12 @@ export default function OnboardingPage() {
                       onClick={() => setCurrency(cur.code)}
                       className={`p-3 rounded-xl border text-center transition-all duration-200 ${
                         currency === cur.code
-                          ? "border-purple-500/50 bg-purple-500/10 text-purple-400"
-                          : "border-[#27272a] bg-[#09090b] text-[#52525b] hover:border-purple-500/30"
+                          ? "border-[#6C4DFF] bg-[#6C4DFF]/10 text-[#6C4DFF] font-black"
+                          : "border-[#EAECF0] bg-[#F8F8F9] text-[#667085] hover:border-[#6C4DFF]/30 hover:bg-[#FFFFFF]"
                       }`}
                     >
-                      <span className="block text-lg font-black">{cur.symbol}</span>
-                      <span className="block text-[11px] mt-0.5 font-semibold">{cur.code}</span>
+                      <span className="block text-lg font-black text-[#111439]">{cur.symbol}</span>
+                      <span className="block text-[11px] mt-0.5 font-bold">{cur.code}</span>
                     </button>
                   ))}
                 </div>
@@ -262,14 +264,14 @@ export default function OnboardingPage() {
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="flex-1 py-3 rounded-xl border border-[#27272a] bg-[#09090b] text-sm font-bold text-[#71717a] hover:text-white hover:border-[#3f3f46] transition-all"
+                  className="flex-1 py-3 rounded-xl border border-[#EAECF0] bg-[#F8F8F9] text-xs font-bold text-[#667085] hover:text-[#111439] hover:bg-[#F1F1F4] transition-all"
                 >
                   Back
                 </button>
                 <button
                   type="button"
                   onClick={() => setStep(3)}
-                  className="flex-[2] py-3.5 rounded-xl brand-gradient text-white text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 hover:opacity-95 transition-all"
+                  className="flex-[2] py-3.5 rounded-xl brand-gradient text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md shadow-purple-500/20 hover:opacity-95 transition-all btn-interactive"
                 >
                   <span>Next</span>
                   <ArrowRight className="h-4 w-4" />
@@ -281,20 +283,20 @@ export default function OnboardingPage() {
           {/* STEP 3 */}
           {step === 3 && (
             <div className="space-y-6 animate-fade-in">
-              <div className="rounded-xl border border-purple-500/30 bg-purple-500/10 p-5 space-y-3">
+              <div className="rounded-xl border border-[#6C4DFF]/30 bg-[#6C4DFF]/10 p-5 space-y-2">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-purple-400" />
-                  <h3 className="text-sm font-bold text-white">14-Day Free Trial Included</h3>
+                  <CheckCircle2 className="h-5 w-5 text-[#6C4DFF]" />
+                  <h3 className="text-sm font-bold text-[#111439]">14-Day Free Trial Included</h3>
                 </div>
-                <p className="text-xs text-[#a1a1aa] leading-relaxed">
+                <p className="text-xs text-[#667085] leading-relaxed">
                   Unlimited customer profiles, retention analytics, AI intelligence, and WhatsApp campaigns.
                 </p>
               </div>
 
-              <div className="rounded-xl border border-[#27272a] bg-[#09090b] p-4 space-y-2">
-                <p className="text-sm font-bold text-white">Business: {name}</p>
-                <p className="text-xs text-[#71717a]">Industry: {categories.find((c) => c.id === industry)?.label}</p>
-                <p className="text-xs text-[#71717a]">Currency: {currency}</p>
+              <div className="rounded-xl border border-[#EAECF0] bg-[#F8F8F9] p-4 space-y-2">
+                <p className="text-xs font-bold text-[#111439]">Business: {name}</p>
+                <p className="text-xs text-[#667085]">Industry: {categories.find((c) => c.id === industry)?.label}</p>
+                <p className="text-xs text-[#667085]">Currency: {currency}</p>
               </div>
 
               <div className="flex items-center gap-3">
@@ -302,7 +304,7 @@ export default function OnboardingPage() {
                   type="button"
                   onClick={() => setStep(2)}
                   disabled={isLoading}
-                  className="flex-1 py-3 rounded-xl border border-[#27272a] bg-[#09090b] text-sm font-bold text-[#71717a] hover:text-white hover:border-[#3f3f46] transition-all disabled:opacity-50"
+                  className="flex-1 py-3 rounded-xl border border-[#EAECF0] bg-[#F8F8F9] text-xs font-bold text-[#667085] hover:text-[#111439] hover:bg-[#F1F1F4] transition-all disabled:opacity-50"
                 >
                   Back
                 </button>
@@ -310,7 +312,7 @@ export default function OnboardingPage() {
                   type="button"
                   onClick={handleComplete}
                   disabled={isLoading}
-                  className="flex-[2] py-3.5 rounded-xl brand-gradient text-white text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 hover:opacity-95 cursor-pointer disabled:opacity-50"
+                  className="flex-[2] py-3.5 rounded-xl brand-gradient text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md shadow-purple-500/20 hover:opacity-95 cursor-pointer disabled:opacity-50 btn-interactive"
                 >
                   <Zap className="h-4 w-4" />
                   <span>{isLoading ? "Creating Workspace..." : "Launch My Dashboard"}</span>

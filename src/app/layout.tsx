@@ -164,7 +164,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#111439" />
       </head>
       <body
-        className={`min-h-screen bg-[#09090b] text-[#fafafa] antialiased overflow-x-hidden ${inter.className}`}
+        className={`min-h-screen bg-[#F8F8F9] text-[#111439] antialiased overflow-x-hidden ${inter.className}`}
       >
         <AppProvider>
           <AppLayoutWrapper>{children}</AppLayoutWrapper>

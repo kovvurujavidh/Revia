@@ -1,7 +1,7 @@
 // Importers/Callers: Next.js Root Route `/` landing page, accessible to search engines and public visitors.
-// Affected API: LandingPage React component.
+// Affected API: LandingPage React component with top-header Admin portal access and public value proposition.
 // Data Schemas: UI schemas & ROI calculator state.
-// User's Verbatim Instruction: "improve seo and the importent stuff neneed to rank my website please"
+// User's Verbatim Instruction: "SAVE THIS AND RUN THIS TELL ME TO SEE"
 
 "use client";
 
@@ -37,6 +37,7 @@ import {
   QrCode,
   Smartphone,
   Lock,
+  Briefcase,
 } from "lucide-react";
 
 export default function LandingPage() {
@@ -201,47 +202,63 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-[#fafafa] overflow-hidden">
+    <div className="min-h-screen bg-[#F8F8F9] text-[#111439] overflow-hidden">
       {/* ── Semantic Navigation ── */}
-      <header className="fixed top-0 z-50 w-full border-b border-white/[0.08] bg-[#09090b]/85 backdrop-blur-xl">
+      <header className="fixed top-0 z-50 w-full border-b border-[#EAECF0] bg-[#FFFFFF]/90 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl brand-gradient text-white shadow-lg shadow-[#6C4DFF]/25">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl brand-gradient text-white shadow-lg shadow-purple-500/20">
               <Zap className="h-5 w-5" />
             </div>
-            <span className="text-xl font-black tracking-tight brand-gradient-text">
+            <span className="text-xl font-black tracking-tight text-[#111439]">
               Revia
             </span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-8" aria-label="Main Navigation">
-            <a href="#features" className="text-sm font-medium text-[#a1a1aa] hover:text-white transition-colors">
+            <a href="#features" className="text-sm font-semibold text-[#667085] hover:text-[#111439] transition-colors">
               Features
             </a>
-            <a href="#how-it-works" className="text-sm font-medium text-[#a1a1aa] hover:text-white transition-colors">
+            <a href="#how-it-works" className="text-sm font-semibold text-[#667085] hover:text-[#111439] transition-colors">
               How It Works
             </a>
-            <a href="#calculator" className="text-sm font-medium text-[#a1a1aa] hover:text-white transition-colors">
+            <a href="#calculator" className="text-sm font-semibold text-[#667085] hover:text-[#111439] transition-colors">
               ROI Calculator
             </a>
-            <a href="#industries" className="text-sm font-medium text-[#a1a1aa] hover:text-white transition-colors">
+            <a href="#industries" className="text-sm font-semibold text-[#667085] hover:text-[#111439] transition-colors">
               Industries
             </a>
-            <a href="#faq" className="text-sm font-medium text-[#a1a1aa] hover:text-white transition-colors">
+            <a href="#faq" className="text-sm font-semibold text-[#667085] hover:text-[#111439] transition-colors">
               FAQ
             </a>
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Link
+              href="/auth/admin-login"
+              className="flex items-center gap-1 rounded-xl border border-[#EAECF0] bg-[#FFFFFF] px-2.5 sm:px-3 py-2 text-xs font-bold text-[#667085] hover:text-[#111439] hover:bg-[#F8F8F9] transition-colors"
+              title="Founder / Super Admin Portal"
+            >
+              <ShieldCheck className="h-3.5 w-3.5 text-[#6C4DFF]" />
+              <span className="hidden sm:inline">Admin</span>
+            </Link>
+            <Link
+              href="/auth/staff-login"
+              className="flex items-center gap-1.5 rounded-xl border border-[#6C4DFF]/30 bg-[#6C4DFF]/10 px-3 py-2 text-xs sm:text-sm font-bold text-[#6C4DFF] hover:bg-[#6C4DFF]/20 transition-colors"
+              title="Quick Staff & Manager Access"
+            >
+              <Smartphone className="h-3.5 w-3.5 text-[#6C4DFF]" />
+              <span>Login as Staff</span>
+            </Link>
             <Link
               href="/auth/login"
-              className="text-sm font-semibold text-[#a1a1aa] hover:text-white transition-colors px-3 py-2"
+              className="text-sm font-semibold text-[#667085] hover:text-[#111439] transition-colors px-2 sm:px-3 py-2 hidden sm:block"
             >
               Sign In
             </Link>
             <Link
               href="/auth/signup"
-              className="flex items-center gap-1.5 rounded-xl brand-gradient px-4.5 py-2.5 text-xs sm:text-sm font-bold text-white shadow-lg shadow-[#6C4DFF]/25 hover:opacity-95 transition-all btn-interactive"
+              className="flex items-center gap-1.5 rounded-xl brand-gradient px-3.5 sm:px-4.5 py-2 sm:py-2.5 text-xs sm:text-sm font-bold text-white shadow-md shadow-purple-500/20 hover:opacity-95 transition-all btn-interactive"
             >
               <span>Start Free</span>
               <ArrowRight className="h-4 w-4" />
@@ -252,21 +269,17 @@ export default function LandingPage() {
 
       <main>
         {/* ── Hero Section (H1 + Keyword Focus) ── */}
-        <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
-          {/* Background effects */}
-          <div className="absolute inset-0 grid-bg opacity-30 pointer-events-none" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] radial-glow pointer-events-none" />
-
+        <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden bg-[#F8F8F9]">
           <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-4xl mx-auto stagger">
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/[0.1] bg-white/[0.04] px-4 py-1.5 text-xs font-semibold text-[#a1a1aa] mb-8">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#6C4DFF]/20 bg-[#6C4DFF]/10 px-4 py-1.5 text-xs font-bold text-[#6C4DFF] mb-8">
                 <Sparkles className="h-3.5 w-3.5 text-[#6C4DFF]" />
-                <span>AI Customer Retention & WhatsApp Marketing Platform</span>
+                <span>AI Customer Retention &amp; WhatsApp Marketing Platform</span>
               </div>
 
               {/* Main H1 for SEO */}
-              <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight leading-[1.1] mb-6">
+              <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight leading-[1.1] mb-6 text-[#111439]">
                 Stop Losing Customers.{" "}
                 <span className="brand-gradient-text">
                   Turn Visitors Into Regulars.
@@ -274,28 +287,28 @@ export default function LandingPage() {
               </h1>
 
               {/* Subheadline */}
-              <p className="text-lg sm:text-xl text-[#a1a1aa] max-w-2xl mx-auto mb-10 leading-relaxed">
+              <p className="text-lg sm:text-xl text-[#667085] max-w-2xl mx-auto mb-10 leading-relaxed font-medium">
                 Revia monitors every customer&apos;s visit rhythm and automatically triggers personalized WhatsApp comeback offers before they switch to competitors.{" "}
-                <span className="text-white font-semibold">Boost repeat revenue by 32%.</span>
+                <span className="text-[#111439] font-bold">Boost repeat revenue by 32%.</span>
               </p>
 
               {/* Primary CTA */}
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link
                   href="/auth/signup"
-                  className="flex items-center gap-2 rounded-xl brand-gradient px-8 py-4 text-sm font-bold text-white shadow-xl shadow-[#6C4DFF]/25 hover:opacity-95 transition-all w-full sm:w-auto justify-center btn-interactive"
+                  className="flex items-center gap-2 rounded-xl brand-gradient px-8 py-4 text-sm font-bold text-white shadow-xl shadow-purple-500/25 hover:opacity-95 transition-all w-full sm:w-auto justify-center btn-interactive"
                 >
                   <span>Start 14-Day Free Trial</span>
                   <ArrowRight className="h-4 w-4" />
                 </Link>
-                <div className="flex items-center gap-2 text-xs sm:text-sm text-[#71717a]">
+                <div className="flex items-center gap-2 text-xs sm:text-sm text-[#667085] font-semibold">
                   <CheckCircle2 className="h-4 w-4 text-[#16A34A]" />
                   <span>No credit card required • 2-min setup</span>
                 </div>
               </div>
 
               {/* Trust Badges */}
-              <div className="flex flex-wrap items-center justify-center gap-6 mt-12 text-xs text-[#667085]">
+              <div className="flex flex-wrap items-center justify-center gap-6 mt-12 text-xs text-[#667085] font-medium">
                 <div className="flex items-center gap-1.5">
                   <ShieldCheck className="h-4 w-4 text-[#16A34A]" />
                   <span>98% WhatsApp Delivery Rate</span>
@@ -313,31 +326,31 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── Interactive ROI Calculator Section (Dwell Time & High Ranking) ── */}
-        <section id="calculator" className="py-20 md:py-28 relative border-t border-white/[0.08] bg-white/[0.01]">
+        {/* ── Interactive ROI Calculator Section ── */}
+        <section id="calculator" className="py-20 md:py-28 relative border-t border-[#EAECF0] bg-[#FFFFFF]">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-14">
               <div className="inline-flex items-center gap-1.5 rounded-full bg-[#16A34A]/10 border border-[#16A34A]/30 px-3 py-1 text-xs font-bold text-[#16A34A] mb-3">
                 <Calculator className="h-3.5 w-3.5" /> Calculate Your Potential ROI
               </div>
-              <h2 className="text-3xl sm:text-4xl font-black tracking-tight mb-3">
+              <h2 className="text-3xl sm:text-4xl font-black tracking-tight mb-3 text-[#111439]">
                 How Much Revenue Is Slipping Through Your Doors?
               </h2>
-              <p className="text-[#a1a1aa] text-sm sm:text-base max-w-xl mx-auto">
+              <p className="text-[#667085] text-sm sm:text-base max-w-xl mx-auto font-medium">
                 Discover how much additional revenue Revia recovers by stopping customer churn and bringing back lapsed regulars.
               </p>
             </div>
 
-            <div className="max-w-4xl mx-auto brand-card p-6 sm:p-10 border border-white/[0.1] shadow-2xl">
+            <div className="max-w-4xl mx-auto brand-card p-6 sm:p-10 shadow-xl border border-[#EAECF0]">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                 {/* Sliders */}
                 <div className="space-y-6">
                   <div>
                     <div className="flex justify-between items-center mb-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-[#a1a1aa]">
+                      <label className="text-xs font-bold uppercase tracking-wider text-[#667085]">
                         Monthly Customer Count
                       </label>
-                      <span className="text-sm font-black text-white tabular-nums">
+                      <span className="text-sm font-black text-[#111439] tabular-nums">
                         {monthlyCustomers.toLocaleString()} customers
                       </span>
                     </div>
@@ -350,7 +363,7 @@ export default function LandingPage() {
                       onChange={(e) => setMonthlyCustomers(Number(e.target.value))}
                       className="w-full accent-[#6C4DFF] cursor-pointer"
                     />
-                    <div className="flex justify-between text-[10px] text-[#71717a] mt-1">
+                    <div className="flex justify-between text-[10px] text-[#94A3B8] mt-1 font-semibold">
                       <span>100</span>
                       <span>2,500</span>
                       <span>5,000+</span>
@@ -359,10 +372,10 @@ export default function LandingPage() {
 
                   <div>
                     <div className="flex justify-between items-center mb-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-[#a1a1aa]">
+                      <label className="text-xs font-bold uppercase tracking-wider text-[#667085]">
                         Average Bill / Spend Per Visit
                       </label>
-                      <span className="text-sm font-black text-white tabular-nums">
+                      <span className="text-sm font-black text-[#111439] tabular-nums">
                         ₹{avgBill.toLocaleString()}
                       </span>
                     </div>
@@ -375,7 +388,7 @@ export default function LandingPage() {
                       onChange={(e) => setAvgBill(Number(e.target.value))}
                       className="w-full accent-[#6C4DFF] cursor-pointer"
                     />
-                    <div className="flex justify-between text-[10px] text-[#71717a] mt-1">
+                    <div className="flex justify-between text-[10px] text-[#94A3B8] mt-1 font-semibold">
                       <span>₹100</span>
                       <span>₹2,500</span>
                       <span>₹5,000</span>
@@ -386,21 +399,21 @@ export default function LandingPage() {
                 {/* Calculation Output Card */}
                 <div className="rounded-2xl border border-[#6C4DFF]/30 bg-[#6C4DFF]/10 p-6 text-center space-y-4">
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-[#a1a1aa]">
+                    <p className="text-xs font-bold uppercase tracking-wider text-[#667085]">
                       Estimated Monthly Recovered Revenue
                     </p>
-                    <p className="text-4xl sm:text-5xl font-black text-white brand-gradient-text my-2 tabular-nums">
+                    <p className="text-4xl sm:text-5xl font-black text-[#111439] brand-gradient-text my-2 tabular-nums">
                       ₹{calculatedRevenue.recoveredMonthly.toLocaleString()}
                     </p>
-                    <p className="text-xs text-[#a1a1aa]">
-                      From <strong className="text-white">~{calculatedRevenue.recoveredCustomers}</strong> recovered at-risk regulars/mo
+                    <p className="text-xs text-[#667085] font-medium">
+                      From <strong className="text-[#111439]">~{calculatedRevenue.recoveredCustomers}</strong> recovered at-risk regulars/mo
                     </p>
                   </div>
 
-                  <div className="border-t border-white/[0.08] pt-4">
-                    <p className="text-xs text-[#667085]">
+                  <div className="border-t border-[#6C4DFF]/20 pt-4">
+                    <p className="text-xs text-[#667085] font-medium">
                       Annual Revenue Boost:{" "}
-                      <strong className="text-[#16A34A] text-sm tabular-nums">
+                      <strong className="text-[#16A34A] text-sm font-black tabular-nums">
                         +₹{calculatedRevenue.recoveredYearly.toLocaleString()} / year
                       </strong>
                     </p>
@@ -408,9 +421,9 @@ export default function LandingPage() {
 
                   <Link
                     href="/auth/signup"
-                    className="inline-flex items-center justify-center gap-2 w-full rounded-xl brand-gradient py-3 text-xs font-bold text-white shadow-lg shadow-[#6C4DFF]/25 hover:opacity-95 transition-all btn-interactive"
+                    className="inline-flex items-center justify-center gap-2 w-full rounded-xl brand-gradient py-3 text-xs font-bold text-white shadow-md shadow-purple-500/20 hover:opacity-95 transition-all btn-interactive"
                   >
-                    <span>Start Free & Claim This Revenue</span>
+                    <span>Start Free &amp; Claim This Revenue</span>
                     <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
                 </div>
@@ -420,14 +433,14 @@ export default function LandingPage() {
         </section>
 
         {/* ── Features Section (Keyword-Rich Cards) ── */}
-        <section id="features" className="py-20 md:py-28 relative">
+        <section id="features" className="py-20 md:py-28 relative bg-[#F8F8F9] border-t border-[#EAECF0]">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-3xl sm:text-4xl font-black tracking-tight mb-4">
+              <h2 className="text-3xl sm:text-4xl font-black tracking-tight mb-4 text-[#111439]">
                 Everything You Need to{" "}
                 <span className="brand-gradient-text">Retain High-Value Customers</span>
               </h2>
-              <p className="text-[#a1a1aa] text-base sm:text-lg max-w-2xl mx-auto">
+              <p className="text-[#667085] text-base sm:text-lg max-w-2xl mx-auto font-medium">
                 Stop wasting budget on acquiring one-off visitors. Turn your existing traffic into loyal, high-frequency patrons.
               </p>
             </div>
@@ -440,11 +453,11 @@ export default function LandingPage() {
                     key={i}
                     className="brand-card p-8 transition-all duration-300 brand-card-hover"
                   >
-                    <div className={`inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${feature.color} text-white mb-5`}>
+                    <div className={`inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${feature.color} text-white mb-5 shadow-md shadow-purple-500/10`}>
                       <Icon className="h-6 w-6" />
                     </div>
-                    <h3 className="text-lg font-bold text-white mb-2">{feature.title}</h3>
-                    <p className="text-[#a1a1aa] text-sm leading-relaxed">{feature.description}</p>
+                    <h3 className="text-lg font-bold text-[#111439] mb-2">{feature.title}</h3>
+                    <p className="text-[#667085] text-sm leading-relaxed font-medium">{feature.description}</p>
                   </article>
                 );
               })}
@@ -453,15 +466,13 @@ export default function LandingPage() {
         </section>
 
         {/* ── How It Works (Visual 3-Step Flow) ── */}
-        <section id="how-it-works" className="py-20 md:py-28 relative border-t border-white/[0.08] overflow-hidden">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] radial-glow pointer-events-none" />
-
+        <section id="how-it-works" className="py-20 md:py-28 relative border-t border-[#EAECF0] bg-[#FFFFFF] overflow-hidden">
           <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-3xl sm:text-4xl font-black tracking-tight mb-4">
+              <h2 className="text-3xl sm:text-4xl font-black tracking-tight mb-4 text-[#111439]">
                 How <span className="brand-gradient-text">Revia</span> Works in 3 Simple Steps
               </h2>
-              <p className="text-[#a1a1aa] text-base sm:text-lg max-w-2xl mx-auto">
+              <p className="text-[#667085] text-base sm:text-lg max-w-2xl mx-auto font-medium">
                 Zero complicated setup. Works seamlessly alongside any billing setup or cashier workflow.
               </p>
             </div>
@@ -472,16 +483,16 @@ export default function LandingPage() {
                 return (
                   <div key={i} className="relative text-center group">
                     {i < 2 && (
-                      <div className="hidden md:block absolute top-12 left-[60%] w-[80%] h-px bg-gradient-to-r from-[#6C4DFF]/50 to-transparent" />
+                      <div className="hidden md:block absolute top-12 left-[60%] w-[80%] h-px bg-gradient-to-r from-[#6C4DFF]/40 to-transparent" />
                     )}
-                    <div className="relative inline-flex h-20 w-20 items-center justify-center rounded-2xl border border-white/[0.08] bg-white/[0.03] mb-6 group-hover:border-[#6C4DFF]/50 transition-all duration-300">
+                    <div className="relative inline-flex h-20 w-20 items-center justify-center rounded-2xl border border-[#EAECF0] bg-[#F8F8F9] mb-6 group-hover:border-[#6C4DFF]/50 transition-all duration-300 shadow-sm">
                       <Icon className="h-8 w-8 text-[#6C4DFF]" />
-                      <span className="absolute -top-2.5 -right-2.5 flex h-6 w-6 items-center justify-center rounded-full brand-gradient text-[10px] font-black text-white shadow-md">
+                      <span className="absolute -top-2.5 -right-2.5 flex h-6 w-6 items-center justify-center rounded-full brand-gradient text-[10px] font-black text-white shadow-md shadow-purple-500/20">
                         {step.step}
                       </span>
                     </div>
-                    <h3 className="text-base font-bold text-white mb-2">{step.title}</h3>
-                    <p className="text-[#a1a1aa] text-xs sm:text-sm leading-relaxed max-w-xs mx-auto">
+                    <h3 className="text-base font-bold text-[#111439] mb-2">{step.title}</h3>
+                    <p className="text-[#667085] text-xs sm:text-sm leading-relaxed max-w-xs mx-auto font-medium">
                       {step.description}
                     </p>
                   </div>
@@ -492,13 +503,13 @@ export default function LandingPage() {
         </section>
 
         {/* ── Industry Showcase Deep Dive ── */}
-        <section id="industries" className="py-20 md:py-28 border-t border-white/[0.08]">
+        <section id="industries" className="py-20 md:py-28 border-t border-[#EAECF0] bg-[#F8F8F9]">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
-              <h2 className="text-3xl sm:text-4xl font-black tracking-tight mb-4">
+              <h2 className="text-3xl sm:text-4xl font-black tracking-tight mb-4 text-[#111439]">
                 Engineered for <span className="brand-gradient-text">Your Specific Business Type</span>
               </h2>
-              <p className="text-[#a1a1aa] text-sm sm:text-base max-w-2xl mx-auto">
+              <p className="text-[#667085] text-sm sm:text-base max-w-2xl mx-auto font-medium">
                 Every industry has unique visit rhythms. Revia provides dedicated presets and logic tailored to your exact business.
               </p>
             </div>
@@ -512,10 +523,10 @@ export default function LandingPage() {
                   <button
                     key={key}
                     onClick={() => setSelectedIndustry(key as any)}
-                    className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs sm:text-sm font-semibold transition-all duration-200 btn-interactive ${
+                    className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs sm:text-sm font-bold transition-all duration-200 btn-interactive cursor-pointer ${
                       isSelected
-                        ? "brand-gradient text-white shadow-lg shadow-[#6C4DFF]/25"
-                        : "border border-white/[0.08] bg-white/[0.02] text-[#a1a1aa] hover:border-[#6C4DFF]/30 hover:text-white"
+                        ? "brand-gradient text-white shadow-md shadow-purple-500/20"
+                        : "border border-[#EAECF0] bg-[#FFFFFF] text-[#667085] hover:border-[#6C4DFF]/30 hover:text-[#111439]"
                     }`}
                   >
                     <Icon className="h-4 w-4" />
@@ -526,51 +537,51 @@ export default function LandingPage() {
             </div>
 
             {/* Active Industry Panel */}
-            <div className="brand-card p-8 md:p-12 animate-fade-in border border-white/[0.1]">
+            <div className="brand-card p-8 md:p-12 animate-fade-in shadow-xl">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                 <div>
-                  <div className="inline-flex items-center gap-2 rounded-full border border-[#6C4DFF]/30 bg-[#6C4DFF]/10 px-3 py-1 text-xs font-semibold text-[#a855f7] mb-4">
+                  <div className="inline-flex items-center gap-2 rounded-full border border-[#6C4DFF]/30 bg-[#6C4DFF]/10 px-3 py-1 text-xs font-bold text-[#6C4DFF] mb-4">
                     {(() => {
                       const Icon = activeInd.icon;
                       return <Icon className="h-3.5 w-3.5" />;
                     })()}
                     {activeInd.label}
                   </div>
-                  <h3 className="text-2xl sm:text-3xl font-black text-white mb-3">
+                  <h3 className="text-2xl sm:text-3xl font-black text-[#111439] mb-3">
                     {activeInd.tagline}
                   </h3>
-                  <p className="text-[#a1a1aa] text-sm leading-relaxed mb-6">
+                  <p className="text-[#667085] text-sm leading-relaxed mb-6 font-medium">
                     {activeInd.description}
                   </p>
                   <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                     <span className="text-2xl sm:text-3xl font-black brand-gradient-text tabular-nums">
                       {activeInd.metric}
                     </span>
-                    <span className="text-xs text-[#667085] italic">
+                    <span className="text-xs text-[#667085] italic font-semibold">
                       {activeInd.caseStudy}
                     </span>
                   </div>
                 </div>
 
                 {/* Interactive Simulated Alert Box */}
-                <div className="rounded-2xl border border-white/[0.08] bg-[#0b141a] p-6 space-y-4">
-                  <div className="flex items-center gap-3 pb-3 border-b border-white/[0.06]">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#6C4DFF] to-[#3B82F6] text-white text-sm font-bold">
+                <div className="rounded-2xl border border-[#EAECF0] bg-[#FFFFFF] shadow-md p-6 space-y-4">
+                  <div className="flex items-center gap-3 pb-3 border-b border-[#EAECF0]">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full brand-gradient text-white text-sm font-bold shadow-sm">
                       RD
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-white">Rahul Deshmukh</p>
-                      <p className="text-[11px] text-[#71717a]">Regular customer • Last visit 16 days ago</p>
+                      <p className="text-sm font-bold text-[#111439]">Rahul Deshmukh</p>
+                      <p className="text-[11px] text-[#667085]">Regular customer • Last visit 16 days ago</p>
                     </div>
                   </div>
                   <div className="rounded-xl border border-[#F59E0B]/30 bg-[#F59E0B]/10 p-3">
-                    <p className="text-xs text-[#F59E0B] font-semibold flex items-center gap-1.5">
+                    <p className="text-xs text-[#F59E0B] font-bold flex items-center gap-1.5">
                       ⚠️ At-Risk Alert: Usually visits every 5 days
                     </p>
                   </div>
-                  <div className="rounded-xl border border-[#25D366]/30 bg-[#005c4b] p-3 text-white">
+                  <div className="rounded-xl border border-[#25D366]/30 bg-[#d9fdd3] p-3 text-[#111439]">
                     <p className="text-xs font-medium leading-relaxed">
-                      📱 1-Click WhatsApp: &ldquo;Hi Rahul! We noticed you haven&apos;t visited in a while. Enjoy 15% OFF your next order this weekend!&rdquo;
+                      📱 <strong>1-Click WhatsApp:</strong> &ldquo;Hi Rahul! We noticed you haven&apos;t visited in a while. Enjoy 15% OFF your next order this weekend!&rdquo;
                     </p>
                   </div>
                 </div>
@@ -580,13 +591,13 @@ export default function LandingPage() {
         </section>
 
         {/* ── FAQ Section (Google PAA / Rich Snippets) ── */}
-        <section id="faq" className="py-20 md:py-28 border-t border-white/[0.08] bg-white/[0.01]">
+        <section id="faq" className="py-20 md:py-28 border-t border-[#EAECF0] bg-[#FFFFFF]">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-14">
-              <h2 className="text-3xl sm:text-4xl font-black tracking-tight mb-3">
+              <h2 className="text-3xl sm:text-4xl font-black tracking-tight mb-3 text-[#111439]">
                 Frequently Asked <span className="brand-gradient-text">Questions</span>
               </h2>
-              <p className="text-[#a1a1aa] text-sm sm:text-base">
+              <p className="text-[#667085] text-sm sm:text-base font-medium">
                 Everything you need to know about getting started with Revia.
               </p>
             </div>
@@ -597,21 +608,21 @@ export default function LandingPage() {
                 return (
                   <div
                     key={idx}
-                    className="brand-card border border-white/[0.08] overflow-hidden transition-all duration-200"
+                    className="brand-card border border-[#EAECF0] overflow-hidden transition-all duration-200"
                   >
                     <button
                       onClick={() => setOpenFaq(isOpen ? null : idx)}
-                      className="w-full flex items-center justify-between p-5 text-left text-sm sm:text-base font-bold text-white focus:outline-none"
+                      className="w-full flex items-center justify-between p-5 text-left text-sm sm:text-base font-bold text-[#111439] focus:outline-none cursor-pointer"
                     >
                       <span>{faq.question}</span>
                       <ChevronDown
-                        className={`h-4 w-4 text-[#a1a1aa] transition-transform duration-200 ${
+                        className={`h-4 w-4 text-[#667085] transition-transform duration-200 ${
                           isOpen ? "rotate-180 text-[#6C4DFF]" : ""
                         }`}
                       />
                     </button>
                     {isOpen && (
-                      <div className="px-5 pb-5 text-xs sm:text-sm text-[#a1a1aa] leading-relaxed border-t border-white/[0.04] pt-3">
+                      <div className="px-5 pb-5 text-xs sm:text-sm text-[#667085] leading-relaxed border-t border-[#EAECF0] pt-3 font-medium">
                         {faq.answer}
                       </div>
                     )}
@@ -623,21 +634,20 @@ export default function LandingPage() {
         </section>
 
         {/* ── Bottom Call To Action ── */}
-        <section className="py-20 md:py-28 border-t border-white/[0.08]">
+        <section className="py-20 md:py-28 border-t border-[#EAECF0] bg-[#F8F8F9]">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="relative rounded-3xl border border-white/[0.1] bg-white/[0.02] p-12 md:p-16 text-center overflow-hidden shadow-2xl">
-              <div className="absolute inset-0 radial-glow pointer-events-none" />
+            <div className="relative rounded-3xl border border-[#6C4DFF]/20 bg-white p-12 md:p-16 text-center overflow-hidden shadow-2xl">
               <div className="relative max-w-2xl mx-auto space-y-6">
-                <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-white">
+                <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-[#111439]">
                   Ready to Stop Losing Your Best Customers?
                 </h2>
-                <p className="text-[#a1a1aa] text-base sm:text-lg">
+                <p className="text-[#667085] text-base sm:text-lg font-medium">
                   Join 2,500+ restaurants, cafes, salons, and local stores using Revia. Set up in 2 minutes.
                 </p>
                 <div className="pt-2">
                   <Link
                     href="/auth/signup"
-                    className="inline-flex items-center gap-2 rounded-xl brand-gradient px-8 py-4 text-sm font-bold text-white shadow-xl shadow-[#6C4DFF]/25 hover:opacity-95 transition-all btn-interactive"
+                    className="inline-flex items-center gap-2 rounded-xl brand-gradient px-8 py-4 text-sm font-bold text-white shadow-xl shadow-purple-500/25 hover:opacity-95 transition-all btn-interactive"
                   >
                     <span>Start Your 14-Day Free Trial</span>
                     <ArrowRight className="h-4 w-4" />
@@ -650,25 +660,30 @@ export default function LandingPage() {
       </main>
 
       {/* ── Semantic Footer ── */}
-      <footer className="border-t border-white/[0.08] py-10 bg-[#09090b]">
+      <footer className="border-t border-[#EAECF0] py-10 bg-[#FFFFFF]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-2.5">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg brand-gradient text-white">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg brand-gradient text-white shadow-sm">
                 <Zap className="h-3.5 w-3.5" />
               </div>
-              <span className="text-sm font-black text-white">Revia</span>
-              <span className="text-xs text-[#71717a] ml-2">
+              <span className="text-sm font-black text-[#111439]">Revia</span>
+              <span className="text-xs text-[#667085] ml-2 font-medium">
                 • AI Customer Retention Engine
               </span>
             </div>
 
-            <div className="flex items-center gap-6 text-xs text-[#a1a1aa]">
-              <a href="#features" className="hover:text-white transition-colors">Features</a>
-              <a href="#calculator" className="hover:text-white transition-colors">ROI Calculator</a>
-              <a href="#industries" className="hover:text-white transition-colors">Industries</a>
-              <a href="#faq" className="hover:text-white transition-colors">FAQ</a>
-              <Link href="/auth/login" className="hover:text-white transition-colors">Sign In</Link>
+            <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-xs text-[#667085] font-semibold">
+              <a href="#features" className="hover:text-[#111439] transition-colors">Features</a>
+              <a href="#calculator" className="hover:text-[#111439] transition-colors">ROI Calculator</a>
+              <a href="#industries" className="hover:text-[#111439] transition-colors">Industries</a>
+              <a href="#faq" className="hover:text-[#111439] transition-colors">FAQ</a>
+              <Link href="/auth/staff-login" className="text-[#6C4DFF] hover:underline transition-colors">Staff Login</Link>
+              <Link href="/auth/login" className="hover:text-[#111439] transition-colors">Sign In</Link>
+              <Link href="/auth/admin-login" className="text-[#667085] hover:text-[#111439] transition-colors flex items-center gap-1">
+                <Lock className="h-3 w-3" />
+                <span>Founder / Admin</span>
+              </Link>
             </div>
 
             <p className="text-xs text-[#667085]">

@@ -1,3 +1,8 @@
+// Importers/Callers: src/context/AppContext.tsx, all app components, admin panel, billing components
+// Affected API: AppStore singleton, multi-tenant state sync, subscription payment processing, auto-reconciliation, platform core settings
+// Data Schemas: Business, Customer, Visit, Opportunity, WhatsAppTemplate, WhatsAppLog, StaffMember, SubscriptionPaymentRecord, PlatformCoreSettings
+// User's Verbatim Instruction: "javidhkovvuru143@axl THIS IS UPI IS AND IS THE UTR CAN NEED TO VERIFY BY ME SHOW IN ADMINPANY AND I NEEDTO VERIFY THEM MAKE IT LIKE THIS OR IF WE CAN AUTO VERIFY WITH SECURLY DO IT AND MAKE CHANGE WHAT BIG COMPANIES DO"
+
 import {
   Business,
   Customer,
@@ -7,10 +12,25 @@ import {
   WhatsAppLog,
   StaffMember,
   SubscriptionPlanId,
+  SubscriptionStatus,
+  SubscriptionPaymentRecord,
+  PlatformCoreSettings,
 } from "./types";
 import { getSupabase } from "./supabase/client";
 import { calculateCustomerSegment, generateLiveOpportunities } from "./intelligence";
 import { DEFAULT_WHATSAPP_TEMPLATES } from "./seedData";
+import { validateUtrNumber, parseBankSmsOrStatement } from "./upi";
+
+export const DEFAULT_PLATFORM_SETTINGS: PlatformCoreSettings = {
+  id: "global-platform-settings",
+  upi_id: "javidhkovvuru143@axl",
+  upi_name: "Javidh Kovvuru (Revia)",
+  default_trial_days: 14,
+  announcement_banner: "Welcome to Revia! Boost repeat customer visits with AI-powered WhatsApp comeback triggers.",
+  support_email: "support@revia.app",
+  support_whatsapp: "919876543210",
+  auto_verification_mode: "manual_approval",
+};
 
 interface StoreState {
   businesses: Business[];
@@ -21,6 +41,8 @@ interface StoreState {
   templates: WhatsAppTemplate[];
   whatsappLogs: WhatsAppLog[];
   staffMembers: StaffMember[];
+  subscriptionPayments: SubscriptionPaymentRecord[];
+  platformSettings: PlatformCoreSettings;
 }
 
 function createEmptyState(): StoreState {
@@ -33,8 +55,11 @@ function createEmptyState(): StoreState {
     templates: [],
     whatsappLogs: [],
     staffMembers: [],
+    subscriptionPayments: [],
+    platformSettings: { ...DEFAULT_PLATFORM_SETTINGS },
   };
 }
+
 
 export class AppStore {
   private static instance: AppStore;
@@ -83,6 +108,7 @@ export class AppStore {
       supabase.from("users").select("*").eq("business_id", businessId),
     ]);
 
+    if (bizRes.error) console.error("Store load business error:", bizRes.error);
     if (bizRes.data) {
       this.state.businesses = [bizRes.data as Business];
     }
@@ -469,12 +495,39 @@ export class AppStore {
     return this.state.staffMembers;
   }
 
+  public getStaffLimits(plan: SubscriptionPlanId = "starter", isTrial: boolean = true) {
+    if (isTrial || plan === "starter") {
+      return { maxStaff: 1, maxManagers: 1, label: "Free Trial / Starter" };
+    }
+    if (plan === "growth") {
+      return { maxStaff: 3, maxManagers: 2, label: "Growth Tier" };
+    }
+    return { maxStaff: 999, maxManagers: 999, label: "Pro Unlimited" };
+  }
+
   public async addStaffMember(staff: Omit<StaffMember, "id" | "created_at">): Promise<StaffMember> {
+    const bizId = staff.business_id || this.state.activeBusinessId;
+    const currentBiz = this.state.businesses.find((b) => b.id === bizId) || this.getActiveBusiness();
+    const isTrial = currentBiz?.subscription_status === "trialing";
+    const plan = currentBiz?.subscription_plan || "starter";
+    const limits = this.getStaffLimits(plan, isTrial);
+
+    const existingMembers = this.state.staffMembers.filter((s) => s.business_id === bizId);
+    const existingStaffCount = existingMembers.filter((s) => s.role === "staff").length;
+    const existingManagerCount = existingMembers.filter((s) => s.role === "manager").length;
+
+    if (staff.role === "staff" && existingStaffCount >= limits.maxStaff) {
+      throw new Error(`Plan Limit Exceeded: ${limits.label} allows a maximum of ${limits.maxStaff} Staff member(s). Please upgrade to add more staff.`);
+    }
+    if (staff.role === "manager" && existingManagerCount >= limits.maxManagers) {
+      throw new Error(`Plan Limit Exceeded: ${limits.label} allows a maximum of ${limits.maxManagers} Manager(s). Please upgrade to add more managers.`);
+    }
+
     const supabase = getSupabase();
     const { data, error } = await supabase
       .from("users")
       .insert({
-        business_id: staff.business_id || this.state.activeBusinessId,
+        business_id: bizId,
         email: staff.email,
         full_name: staff.name,
         phone: staff.phone,
@@ -521,7 +574,7 @@ export class AppStore {
   public async updateBusinessSubscription(
     businessId: string,
     planId: SubscriptionPlanId,
-    status: "trialing" | "active" | "canceled" | "expired"
+    status: SubscriptionStatus
   ) {
     const supabase = getSupabase();
     await supabase
@@ -583,6 +636,209 @@ export class AppStore {
       }
       return b;
     });
+    this.notify();
+  }
+
+  // --- UPI SUBSCRIPTION PAYMENTS & CORE SETTINGS ---
+  public getSubscriptionPayments(businessId?: string): SubscriptionPaymentRecord[] {
+    if (typeof window !== "undefined" && this.state.subscriptionPayments.length === 0) {
+      try {
+        const saved = localStorage.getItem("revia_subscription_payments");
+        if (saved) {
+          this.state.subscriptionPayments = JSON.parse(saved);
+        }
+      } catch (e) {
+        console.warn("Error reading subscription payments from localStorage", e);
+      }
+    }
+
+    if (businessId) {
+      return this.state.subscriptionPayments.filter((p) => p.business_id === businessId);
+    }
+    return this.state.subscriptionPayments;
+  }
+
+  public getPlatformSettings(): PlatformCoreSettings {
+    if (typeof window !== "undefined") {
+      try {
+        const saved = localStorage.getItem("revia_platform_settings");
+        if (saved) {
+          this.state.platformSettings = { ...DEFAULT_PLATFORM_SETTINGS, ...JSON.parse(saved) };
+        }
+      } catch (e) {
+        console.warn("Error reading platform settings from localStorage", e);
+      }
+    }
+    return this.state.platformSettings;
+  }
+
+  public updatePlatformSettings(settings: Partial<PlatformCoreSettings>) {
+    this.state.platformSettings = {
+      ...this.state.platformSettings,
+      ...settings,
+    };
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("revia_platform_settings", JSON.stringify(this.state.platformSettings));
+      } catch (e) {
+        console.warn("Failed to persist platform settings", e);
+      }
+    }
+    this.notify();
+  }
+
+  public async submitSubscriptionPayment(
+    data: Omit<SubscriptionPaymentRecord, "id" | "created_at" | "status">
+  ): Promise<SubscriptionPaymentRecord> {
+    const cleanUtr = data.utr_reference?.trim() || "";
+
+    // 1. Validate UTR format and anti-fraud rules
+    const validation = validateUtrNumber(cleanUtr);
+    if (!validation.isValid) {
+      throw new Error(validation.error || "Invalid UTR reference number.");
+    }
+
+    // 2. Anti-fraud: Check for duplicate UTR usage across all platform transactions
+    const duplicateUtr = this.state.subscriptionPayments.find(
+      (p) => p.utr_reference.trim() === cleanUtr && p.status !== "rejected"
+    );
+    if (duplicateUtr) {
+      throw new Error(
+        "This UTR reference number has already been submitted on the platform. Please check your transaction receipt."
+      );
+    }
+
+    const isProvisional = this.state.platformSettings.auto_verification_mode === "provisional_instant_access";
+
+    const newRecord: SubscriptionPaymentRecord = {
+      id: "pay_" + Math.random().toString(36).substring(2, 9),
+      ...data,
+      utr_reference: cleanUtr,
+      status: isProvisional ? "approved" : "pending",
+      verification_method: isProvisional ? "provisional_auto" : "manual_founder",
+      created_at: new Date().toISOString(),
+      approved_at: isProvisional ? new Date().toISOString() : undefined,
+    };
+
+    // If provisional instant access is enabled, grant immediate paid access while founder audits
+    if (isProvisional) {
+      await this.updateBusinessSubscription(data.business_id, data.plan_id, "active");
+    }
+
+    this.state.subscriptionPayments = [newRecord, ...this.state.subscriptionPayments];
+
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem(
+          "revia_subscription_payments",
+          JSON.stringify(this.state.subscriptionPayments)
+        );
+      } catch (e) {
+        console.warn("Failed to persist payments to storage", e);
+      }
+    }
+
+    this.notify();
+    return newRecord;
+  }
+
+  public async approveSubscriptionPayment(
+    paymentId: string,
+    method: "manual_founder" | "auto_sms_matched" | "provisional_auto" = "manual_founder"
+  ) {
+    const payment = this.state.subscriptionPayments.find((p) => p.id === paymentId);
+    if (!payment) return;
+
+    payment.status = "approved";
+    payment.verification_method = method;
+    payment.approved_at = new Date().toISOString();
+
+    await this.updateBusinessSubscription(payment.business_id, payment.plan_id, "active");
+
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem(
+          "revia_subscription_payments",
+          JSON.stringify(this.state.subscriptionPayments)
+        );
+      } catch (e) {
+        console.warn("Failed to persist payments", e);
+      }
+    }
+    this.notify();
+  }
+
+  public async autoReconcileFromBankSms(smsOrStatementText: string): Promise<{
+    matchedCount: number;
+    approvedIds: string[];
+    parsedRecords: any[];
+  }> {
+    const parsed = parseBankSmsOrStatement(smsOrStatementText);
+    const approvedIds: string[] = [];
+
+    for (const record of parsed) {
+      // Find matching pending payment by exact 12-digit UTR
+      const matchingPending = this.state.subscriptionPayments.find(
+        (p) => p.status === "pending" && p.utr_reference.trim() === record.utr.trim()
+      );
+
+      if (matchingPending) {
+        matchingPending.status = "approved";
+        matchingPending.verification_method = "auto_sms_matched";
+        matchingPending.approved_at = new Date().toISOString();
+        matchingPending.remarks = "Auto-reconciled via Bank SMS / Statement";
+
+        await this.updateBusinessSubscription(
+          matchingPending.business_id,
+          matchingPending.plan_id,
+          "active"
+        );
+        approvedIds.push(matchingPending.id);
+      }
+    }
+
+    if (approvedIds.length > 0 && typeof window !== "undefined") {
+      try {
+        localStorage.setItem(
+          "revia_subscription_payments",
+          JSON.stringify(this.state.subscriptionPayments)
+        );
+      } catch (e) {
+        console.warn("Failed to persist auto-reconciled payments", e);
+      }
+    }
+
+    this.notify();
+    return {
+      matchedCount: approvedIds.length,
+      approvedIds,
+      parsedRecords: parsed,
+    };
+  }
+
+  public async rejectSubscriptionPayment(paymentId: string, remarks?: string) {
+    const payment = this.state.subscriptionPayments.find((p) => p.id === paymentId);
+    if (!payment) return;
+
+    payment.status = "rejected";
+    payment.remarks = remarks || "Verification rejected by administrator.";
+
+    // If was previously provisionally active, downgrade back to trialing or expired
+    const biz = this.state.businesses.find((b) => b.id === payment.business_id);
+    if (biz && biz.subscription_plan === payment.plan_id) {
+      await this.updateBusinessSubscription(biz.id, "starter", "trialing");
+    }
+
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem(
+          "revia_subscription_payments",
+          JSON.stringify(this.state.subscriptionPayments)
+        );
+      } catch (e) {
+        console.warn("Failed to persist payments", e);
+      }
+    }
     this.notify();
   }
 
