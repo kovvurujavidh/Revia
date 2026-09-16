@@ -46,13 +46,6 @@ export default function LoginPage() {
   const [resetEmail, setResetEmail] = useState("");
   const [resetSent, setResetSent] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
-
-  // 1. Google 1-Click Login / Signup
-    setError(null);
-    setIsGoogleLoading(true);
-      setError(err.message || "Google authentication error occurred.");
-
-  // 2. Step 1: Check Email and advance to Password or Signup step
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const cleanEmail = email.trim().toLowerCase();
@@ -375,15 +368,7 @@ export default function LoginPage() {
             </div>
           )}
 
-          
-              <div className="relative flex items-center justify-center my-4">
-                <div className="border-t border-[#EAECF0] w-full" />
-                <span className="bg-[#FFFFFF] px-3 text-[11px] font-semibold uppercase tracking-wider text-[#94A3B8] absolute">
-                  or continue with email
-                </span>
-              </div>
-            </>
-          )}
+
 
           {/* STEP 1: EMAIL ENTRY */}
           {step === "email" && (
