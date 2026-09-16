@@ -28,6 +28,7 @@ import {
   Clock,
   CreditCard,
   AlertTriangle,
+  RefreshCw,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -293,6 +294,14 @@ export default function DashboardPage() {
               >
                 <QrCode className="h-3.5 w-3.5 text-[#6C4DFF]" />
                 <span>Counter QR</span>
+              </button>
+
+              <button
+                onClick={() => window.location.reload()}
+                className="flex items-center gap-2 rounded-xl border border-[#EAECF0] bg-[#FFFFFF] px-3.5 py-2 text-xs font-bold text-[#667085] hover:bg-[#F8F8F9] hover:border-[#D0D5DD] hover:text-[#111439] transition-all shadow-xs btn-interactive cursor-pointer"
+              >
+                <RefreshCw className="h-3.5 w-3.5" />
+                <span>Refresh</span>
               </button>
 
               <Link

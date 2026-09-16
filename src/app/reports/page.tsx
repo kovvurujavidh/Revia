@@ -18,6 +18,7 @@ import {
   Lock,
   ArrowRight,
   TrendingUp,
+  RefreshCw,
 } from "lucide-react";
 import { format, subDays, isWithinInterval, startOfDay, endOfDay } from "date-fns";
 
@@ -179,7 +180,14 @@ export default function ReportsPage() {
         </div>
 
         {/* Date Range Selector */}
-        <div className="flex items-center gap-1.5 rounded-xl bg-[#F8F8F9] p-1 border border-[#EAECF0]">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => window.location.reload()}
+            className="flex items-center gap-2 rounded-xl border border-[#EAECF0] bg-[#FFFFFF] px-3.5 py-2 text-xs font-bold text-[#667085] hover:bg-[#F8F8F9] hover:border-[#D0D5DD] hover:text-[#111439] transition-all shadow-xs btn-interactive"
+          >
+            <RefreshCw className="h-4 w-4" />
+          </button>
+          <div className="flex items-center gap-1.5 rounded-xl bg-[#F8F8F9] p-1 border border-[#EAECF0]">
           {[
             { label: "7 Days", val: "7d" },
             { label: "30 Days", val: "30d" },
@@ -198,6 +206,7 @@ export default function ReportsPage() {
               {rng.label}
             </button>
           ))}
+          </div>
         </div>
       </div>
 

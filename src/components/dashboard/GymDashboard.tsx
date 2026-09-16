@@ -19,7 +19,6 @@ import {
   Search,
   X,
   Sparkles,
-  Flame,
   ArrowRight,
   ShieldAlert,
 } from "lucide-react";
@@ -239,18 +238,6 @@ export function GymDashboard() {
 
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
-        {/* Today's Check-ins */}
-        <div className="rounded-2xl border border-[#EAECF0] bg-[#FFFFFF] p-4 sm:p-5 shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[#667085]">Today's Check-ins</span>
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-orange-50 text-orange-600">
-              <Flame className="h-4 w-4" />
-            </div>
-          </div>
-          <p className="text-xl sm:text-2xl font-black text-[#111439] mt-2">{todayVisits.length}</p>
-          <p className="text-[11px] text-orange-600 font-semibold mt-0.5">Workouts logged today</p>
-        </div>
-
         {/* Active Members */}
         <div className="rounded-2xl border border-[#EAECF0] bg-[#FFFFFF] p-4 sm:p-5 shadow-xs">
           <div className="flex items-center justify-between">

@@ -24,6 +24,7 @@ import {
   Tag,
   Eye,
   PlusCircle,
+  RefreshCw,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { buildWhatsAppLink } from "@/lib/intelligence";
@@ -263,13 +264,21 @@ export default function CustomersPage() {
           </p>
         </div>
 
-        <Link
-          href="/add-visit"
-          className="flex items-center gap-1.5 rounded-xl brand-gradient px-4 py-2.5 text-xs font-bold text-white shadow-md shadow-purple-500/25 hover:shadow-purple-500/40 hover:opacity-95 transition-all btn-interactive"
-        >
-          <PlusCircle className="h-4 w-4" />
-          <span>{isSalon ? "Record Client Visit" : "Add Customer Visit"}</span>
-        </Link>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => window.location.reload()}
+            className="flex items-center gap-1.5 rounded-xl border border-[#EAECF0] bg-[#FFFFFF] px-3.5 py-2.5 text-xs font-bold text-[#667085] hover:bg-[#F8F8F9] hover:border-[#D0D5DD] hover:text-[#111439] transition-all shadow-xs btn-interactive"
+          >
+            <RefreshCw className="h-4 w-4" />
+          </button>
+          <Link
+            href="/add-visit"
+            className="flex items-center gap-1.5 rounded-xl brand-gradient px-4 py-2.5 text-xs font-bold text-white shadow-md shadow-purple-500/25 hover:shadow-purple-500/40 hover:opacity-95 transition-all btn-interactive"
+          >
+            <PlusCircle className="h-4 w-4" />
+            <span>{isSalon ? "Record Client Visit" : "Add Customer Visit"}</span>
+          </Link>
+        </div>
       </div>
 
       {/* Filter & Search Bar */}

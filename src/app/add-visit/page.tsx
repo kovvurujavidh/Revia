@@ -20,6 +20,7 @@ import {
   Scissors,
   Tag,
   UserCheck,
+  RefreshCw,
 } from "lucide-react";
 import { buildWhatsAppLink } from "@/lib/intelligence";
 
@@ -95,6 +96,17 @@ export default function AddVisitPage() {
     setName("");
     setPhoneSearch("");
     setServiceTaken("");
+  };
+
+  const handleRefresh = () => {
+    setPhoneSearch("");
+    setName("");
+    setAmount("");
+    setServiceTaken("");
+    setNotes("");
+    setSelectedCustomerId(null);
+    setSuccessData(null);
+    setIsAnonymous(false);
   };
 
   const quickAmountPresets = isSalon
@@ -208,6 +220,13 @@ export default function AddVisitPage() {
         >
           <QrCode className="h-4 w-4 text-[#6C4DFF]" />
           <span>Table / Counter QR Code</span>
+        </button>
+        <button
+          onClick={handleRefresh}
+          className="flex items-center gap-2 rounded-xl border border-[#EAECF0] bg-[#FFFFFF] px-3.5 py-2 text-xs font-bold text-[#667085] hover:bg-[#F8F8F9] hover:border-[#D0D5DD] hover:text-[#111439] transition-all shadow-xs btn-interactive"
+        >
+          <RefreshCw className="h-4 w-4" />
+          <span>Refresh</span>
         </button>
       </div>
 
@@ -343,6 +362,21 @@ export default function AddVisitPage() {
                 </div>
               </div>
 
+              {/* Name Input - Always visible for non-anonymous */}
+              <div>
+                <label className="block text-xs font-bold text-[#667085] uppercase tracking-wider mb-1.5">
+                  {isSalon ? "Client Full Name *" : "Customer Full Name *"}
+                </label>
+                <input
+                  type="text"
+                  required={!isAnonymous}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder={isSalon ? "e.g. Priya Sharma" : "e.g. John Doe"}
+                  className="w-full rounded-xl border border-[#EAECF0] bg-[#F8F8F9] px-4 py-3 text-sm font-medium text-[#111439] placeholder:text-[#94A3B8] focus:border-[#6C4DFF] focus:bg-[#FFFFFF] focus:outline-none transition-all"
+                />
+              </div>
+
               {/* Matched Customer Autocomplete Suggestion */}
               {matchedCustomer && !selectedCustomerId && (
                 <div
@@ -395,29 +429,6 @@ export default function AddVisitPage() {
                   >
                     Change
                   </button>
-                </div>
-              )}
-
-              {/* If New Customer (no match & not selected) */}
-              {!matchedCustomer && !selectedCustomerId && phoneSearch.length >= 3 && (
-                <div className="rounded-xl border border-purple-200 bg-purple-50/60 p-4 space-y-3 animate-fade-in">
-                  <div className="flex items-center gap-2 text-xs font-bold text-[#6C4DFF]">
-                    <Sparkles className="h-4 w-4" />
-                    <span>New Client Auto-Detected — Enter Name</span>
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-bold text-[#667085] uppercase tracking-wider mb-1">
-                      Client Full Name *
-                    </label>
-                    <input
-                      type="text"
-                      required={!isAnonymous && !selectedCustomerId}
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="e.g. Priya Sharma"
-                      className="w-full rounded-xl border border-[#EAECF0] bg-[#FFFFFF] px-3.5 py-2.5 text-xs font-medium text-[#111439] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#6C4DFF] transition-colors"
-                    />
-                  </div>
                 </div>
               )}
             </div>
