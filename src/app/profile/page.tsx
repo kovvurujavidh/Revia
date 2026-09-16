@@ -412,7 +412,7 @@ export default function ProfilePage() {
       {/* DYNAMIC UPI QR SCANNER PAYMENT MODAL */}
       {selectedPlanForUpi && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
-          <div className="brand-card w-full max-w-lg p-6 sm:p-8 bg-white shadow-2xl relative max-h-[92vh] overflow-y-auto space-y-6">
+          <div className="brand-card w-full max-w-xs w-[92vw] p-4 sm:p-6 bg-white shadow-2xl relative max-h-[92vh] overflow-y-auto space-y-6">
             {/* Close button */}
             <button
               onClick={handleCloseUpiModal}
