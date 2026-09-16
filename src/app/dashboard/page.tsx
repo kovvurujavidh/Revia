@@ -1,7 +1,7 @@
 // Importers/Callers: Next.js App Router route /dashboard, AppHeader, AppSidebar, MobileNav.
-// Affected API: Store Dashboard (KPI grid, AI Daily report, Recent visits feed, Quick Add Staff modal, Counter QR opt-in).
+// Affected API: Store Dashboard (Conditional rendering for pg_hostel, gym, clothing, salon_spa, and standard retail/restaurant tenants).
 // Data Schemas: Business, Opportunity, StaffMember, User from src/lib/types.ts.
-// User's Verbatim Instruction: "AFTER LOGIN THE LEFT SIDE BAR IS GOOD NOT FIT FOR MOBILE OK SEE THE WHOLE DOT CHANGECONCEPTOR CODE PLESE CHECH MOBILE FRENDLY AND THE COLORS WE CHOOSE NOW AND REQUIREMETS DOC IS DIFFERENT KEEP ANIMATIONS ONLY CHANGE COLORS TO MACTH PRODUCTION LEVEL WEBSITE"
+// User's Verbatim Instruction: "c:\AI\Revia_Final_All_Three_Business_Updates_Claude_Code_Prompt.docx now this make todo and complete updaate"
 
 "use client";
 
@@ -10,6 +10,10 @@ import { useApp } from "@/context/AppContext";
 import { MetricsGrid } from "@/components/dashboard/MetricsGrid";
 import { DailyAIReport } from "@/components/dashboard/DailyAIReport";
 import { RecentVisits } from "@/components/dashboard/RecentVisits";
+import { SalonDashboard } from "@/components/dashboard/SalonDashboard";
+import { PGDashboard } from "@/components/dashboard/PGDashboard";
+import { GymDashboard } from "@/components/dashboard/GymDashboard";
+import { ClothingDashboard } from "@/components/dashboard/ClothingDashboard";
 import { CounterQRCode } from "@/components/add-visit/CounterQRCode";
 import {
   PlusCircle,
@@ -32,6 +36,8 @@ export default function DashboardPage() {
   const [staffPhone, setStaffPhone] = useState("");
   const [staffRole, setStaffRole] = useState<"staff" | "manager">("staff");
   const [staffSuccessMsg, setStaffSuccessMsg] = useState<string | null>(null);
+
+  const isSalon = activeBusiness?.industry === "salon_spa";
 
   const pendingOpportunitiesCount = opportunities.filter(
     (o) => o.status === "pending"
@@ -81,7 +87,7 @@ export default function DashboardPage() {
               </div>
               <button
                 onClick={() => setIsAddStaffOpen(false)}
-                className="rounded-full p-1.5 text-[#667085] hover:bg-[#F1F1F4] hover:text-[#111439] transition-colors"
+                className="rounded-full p-1.5 text-[#667085] hover:bg-[#F1F1F4] hover:text-[#111439] transition-colors cursor-pointer"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -146,13 +152,13 @@ export default function DashboardPage() {
                   <button
                     type="button"
                     onClick={() => setIsAddStaffOpen(false)}
-                    className="flex-1 rounded-xl border border-[#EAECF0] bg-[#F8F8F9] py-2.5 text-xs font-bold text-[#667085] hover:bg-[#F1F1F4] hover:text-[#111439] transition-colors"
+                    className="flex-1 rounded-xl border border-[#EAECF0] bg-[#F8F8F9] py-2.5 text-xs font-bold text-[#667085] hover:bg-[#F1F1F4] hover:text-[#111439] transition-colors cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 rounded-xl brand-gradient py-2.5 text-xs font-bold text-white shadow-md shadow-purple-500/20 hover:shadow-purple-500/35 hover:opacity-95 transition-all btn-interactive"
+                    className="flex-1 rounded-xl brand-gradient py-2.5 text-xs font-bold text-white shadow-md shadow-purple-500/20 hover:shadow-purple-500/35 hover:opacity-95 transition-all btn-interactive cursor-pointer"
                   >
                     Link &amp; Add Staff
                   </button>
@@ -163,94 +169,108 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Welcome & Quick Action Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl sm:text-3xl font-black text-[#111439] tracking-tight">
-              {activeBusiness.name}
-            </h1>
-            <span className="inline-flex items-center gap-1 rounded-full bg-[#6C4DFF]/10 border border-[#6C4DFF]/20 px-2.5 py-0.5 text-[10px] font-bold text-[#6C4DFF]">
-              <Sparkles className="h-3 w-3" /> Live Store
-            </span>
+      {/* Conditionally Render Business-Specific Workspace Dashboards */}
+      {activeBusiness?.industry === "salon_spa" ? (
+        <SalonDashboard />
+      ) : activeBusiness?.industry === "pg_hostel" ? (
+        <PGDashboard />
+      ) : activeBusiness?.industry === "gym" ? (
+        <GymDashboard />
+      ) : activeBusiness?.industry === "clothing" ? (
+        <ClothingDashboard />
+      ) : (
+        /* Standard Dashboard (Restaurant, Cafe, Hotel, Clinic, Retail, Other) */
+        <>
+          {/* Welcome & Quick Action Header */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl sm:text-3xl font-black text-[#111439] tracking-tight">
+                  {activeBusiness?.name}
+                </h1>
+                <span className="inline-flex items-center gap-1 rounded-full bg-[#6C4DFF]/10 border border-[#6C4DFF]/20 px-2.5 py-0.5 text-[10px] font-bold text-[#6C4DFF]">
+                  <Sparkles className="h-3 w-3" /> Live Store
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-[#667085] mt-1 font-medium">
+                Customer Return &amp; Daily Retention Overview
+              </p>
+            </div>
+
+            {/* Quick Action Shortcuts */}
+            <div className="flex flex-wrap items-center gap-2.5">
+              <button
+                onClick={() => setIsAddStaffOpen(true)}
+                className="flex items-center gap-2 rounded-xl border border-[#EAECF0] bg-[#FFFFFF] px-3.5 py-2 text-xs font-bold text-[#111439] hover:bg-[#F8F8F9] hover:border-[#D0D5DD] transition-all shadow-xs btn-interactive cursor-pointer"
+              >
+                <UserPlus className="h-3.5 w-3.5 text-[#3B82F6]" />
+                <span>Add Staff</span>
+              </button>
+
+              <button
+                onClick={() => setIsQROpen(true)}
+                className="flex items-center gap-2 rounded-xl border border-[#EAECF0] bg-[#FFFFFF] px-3.5 py-2 text-xs font-bold text-[#111439] hover:bg-[#F8F8F9] hover:border-[#D0D5DD] transition-all shadow-xs btn-interactive cursor-pointer"
+              >
+                <QrCode className="h-3.5 w-3.5 text-[#6C4DFF]" />
+                <span>Counter QR</span>
+              </button>
+
+              <Link
+                href="/opportunities"
+                className="relative flex items-center gap-2 rounded-xl border border-[#EAECF0] bg-[#FFFFFF] px-3.5 py-2 text-xs font-bold text-[#111439] hover:bg-[#F8F8F9] hover:border-[#D0D5DD] transition-all shadow-xs btn-interactive"
+              >
+                <Megaphone className="h-3.5 w-3.5 text-[#EF4444]" />
+                <span>Opportunities</span>
+                {pendingOpportunitiesCount > 0 && (
+                  <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-[#EF4444] px-1 text-[9px] font-bold text-white tabular-nums">
+                    {pendingOpportunitiesCount}
+                  </span>
+                )}
+              </Link>
+
+              <Link
+                href="/add-visit"
+                className="flex items-center gap-1.5 rounded-xl brand-gradient px-4 py-2 text-xs font-bold text-white shadow-md shadow-purple-500/25 hover:shadow-purple-500/40 hover:opacity-95 transition-all btn-interactive"
+              >
+                <PlusCircle className="h-4 w-4" />
+                <span>Add Visit (5s)</span>
+              </Link>
+            </div>
           </div>
-          <p className="text-xs sm:text-sm text-[#667085] mt-1 font-medium">
-            Customer Return &amp; Daily Retention Overview
-          </p>
-        </div>
 
-        {/* Quick Action Shortcuts */}
-        <div className="flex flex-wrap items-center gap-2.5">
-          <button
-            onClick={() => setIsAddStaffOpen(true)}
-            className="flex items-center gap-2 rounded-xl border border-[#EAECF0] bg-[#FFFFFF] px-3.5 py-2 text-xs font-bold text-[#111439] hover:bg-[#F8F8F9] hover:border-[#D0D5DD] transition-all shadow-xs btn-interactive"
-          >
-            <UserPlus className="h-3.5 w-3.5 text-[#3B82F6]" />
-            <span>Add Staff</span>
-          </button>
+          {/* KPI Metrics Summary Grid */}
+          <MetricsGrid />
 
-          <button
-            onClick={() => setIsQROpen(true)}
-            className="flex items-center gap-2 rounded-xl border border-[#EAECF0] bg-[#FFFFFF] px-3.5 py-2 text-xs font-bold text-[#111439] hover:bg-[#F8F8F9] hover:border-[#D0D5DD] transition-all shadow-xs btn-interactive"
-          >
-            <QrCode className="h-3.5 w-3.5 text-[#6C4DFF]" />
-            <span>Counter QR</span>
-          </button>
+          {/* Main Grid: AI Intelligence Report & Recent Visits */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <DailyAIReport />
+            </div>
+            <div>
+              <RecentVisits />
+            </div>
+          </div>
 
-          <Link
-            href="/opportunities"
-            className="relative flex items-center gap-2 rounded-xl border border-[#EAECF0] bg-[#FFFFFF] px-3.5 py-2 text-xs font-bold text-[#111439] hover:bg-[#F8F8F9] hover:border-[#D0D5DD] transition-all shadow-xs btn-interactive"
-          >
-            <Megaphone className="h-3.5 w-3.5 text-[#EF4444]" />
-            <span>Opportunities</span>
-            {pendingOpportunitiesCount > 0 && (
-              <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-[#EF4444] px-1 text-[9px] font-bold text-white tabular-nums">
-                {pendingOpportunitiesCount}
-              </span>
-            )}
-          </Link>
-
-          <Link
-            href="/add-visit"
-            className="flex items-center gap-1.5 rounded-xl brand-gradient px-4 py-2 text-xs font-bold text-white shadow-md shadow-purple-500/25 hover:shadow-purple-500/40 hover:opacity-95 transition-all btn-interactive"
-          >
-            <PlusCircle className="h-4 w-4" />
-            <span>Add Visit (5s)</span>
-          </Link>
-        </div>
-      </div>
-
-      {/* KPI Metrics Summary Grid */}
-      <MetricsGrid />
-
-      {/* Main Grid: AI Intelligence Report & Recent Visits */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <DailyAIReport />
-        </div>
-        <div>
-          <RecentVisits />
-        </div>
-      </div>
-
-      {/* Retention Shortcuts Banner */}
-      <div className="rounded-2xl brand-gradient p-6 text-white shadow-xl shadow-purple-500/15 flex flex-col md:flex-row items-center justify-between gap-4 border border-white/20">
-        <div className="space-y-1 text-center md:text-left">
-          <h3 className="text-base font-bold tracking-tight">
-            Need to bring back inactive customers this weekend?
-          </h3>
-          <p className="text-xs text-white/90">
-            You have {pendingOpportunitiesCount} customers who missed their usual visit cycle. Send 1-click personalized WhatsApp offers now.
-          </p>
-        </div>
-        <Link
-          href="/opportunities"
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#FFFFFF] px-5 py-2.5 text-xs font-bold text-[#111439] hover:bg-[#F8F8F9] transition-all shrink-0 shadow-md btn-interactive"
-        >
-          <span>Open Opportunities</span>
-          <ArrowRight className="h-4 w-4 text-[#6C4DFF]" />
-        </Link>
-      </div>
+          {/* Retention Shortcuts Banner */}
+          <div className="rounded-2xl brand-gradient p-6 text-white shadow-xl shadow-purple-500/15 flex flex-col md:flex-row items-center justify-between gap-4 border border-white/20">
+            <div className="space-y-1 text-center md:text-left">
+              <h3 className="text-base font-bold tracking-tight">
+                Need to bring back inactive customers this weekend?
+              </h3>
+              <p className="text-xs text-white/90">
+                You have {pendingOpportunitiesCount} customers who missed their usual visit cycle. Send 1-click personalized WhatsApp offers now.
+              </p>
+            </div>
+            <Link
+              href="/opportunities"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#FFFFFF] px-5 py-2.5 text-xs font-bold text-[#111439] hover:bg-[#F8F8F9] transition-all shrink-0 shadow-md btn-interactive"
+            >
+              <span>Open Opportunities</span>
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </>
+      )}
     </div>
   );
 }

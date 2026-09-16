@@ -1,7 +1,7 @@
-// Importers/Callers: src/components/layout/AppLayoutWrapper.tsx
-// Affected API: CounterQRCode React component
+// Importers/Callers: AppLayoutWrapper, Dashboard, AddVisitPage
+// Affected API: CounterQRCode React modal component (adaptive for PG, Gym, Clothing, and Retail/Restaurant)
 // Data Schemas: Business from src/lib/types.ts
-// User's Verbatim Instruction: "https://emilkowal.ski/skill https://github.com/emilkowalski/skills https://www.ui-skills.com/skills INSTALL AND AUTOMATICALLY USE THIS SKILLS AND REDESIGH MY WEBSITE CONCEPT IS SAME CODE IS SAME JUST DESINE AND LOOK IF YOU HAVE PROBLEM MAKE A V1 VERSION AND SAVE ALL OLD VERSION AND USE THE NEW VERSION TO TEST"
+// User's Verbatim Instruction: "when i scan this it need to open a sutomer from so the customer can directly register him self into the=is organization"
 
 "use client";
 
@@ -30,6 +30,38 @@ export function CounterQRCode({ isOpen, onClose }: { isOpen: boolean; onClose: (
     window.print();
   };
 
+  const industry = activeBusiness?.industry;
+  const isPG = industry === "pg_hostel";
+  const isGym = industry === "gym";
+  const isClothing = industry === "clothing";
+
+  const getHeaderBadge = () => {
+    if (isPG) return "PG Resident QR Code";
+    if (isGym) return "Gym Member QR Code";
+    if (isClothing) return "VIP Shopper QR Code";
+    return "Table & Counter QR Code";
+  };
+
+  const getSubHeader = () => {
+    if (isPG) return "Place this at your reception desk or notice board. Residents scan to register directly into your system.";
+    if (isGym) return "Place this at your front desk. Members scan to register or check in for daily workouts.";
+    if (isClothing) return "Place this at your billing counter. Shoppers scan to get instant perks and join your VIP club.";
+    return "Place this on your counter or dining tables. Customers scan to claim their perk and register voluntarily.";
+  };
+
+  const getScanTitle = () => {
+    if (isPG) return "Scan to Register as Resident";
+    if (isGym) return "Scan to Register / Check-In";
+    if (isClothing) return "Scan to Join VIP Shoppers";
+    return "Scan to Join VIP Club";
+  };
+
+  const getPerkText = () => {
+    if (isPG) return "🏢 Instant resident registration & WhatsApp rent updates";
+    if (isGym) return "💪 Quick workout check-in & membership pass";
+    return `🎁 ${activeBusiness.qr_loyalty_perk || "Get 10% OFF on your next visit!"}`;
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-md animate-fade-in">
       <div className="relative w-full max-w-md rounded-2xl bg-[#121215] p-6 shadow-2xl border border-white/[0.1] text-white">
@@ -44,11 +76,11 @@ export function CounterQRCode({ isOpen, onClose }: { isOpen: boolean; onClose: (
         {/* Header */}
         <div className="text-center mb-6">
           <span className="inline-flex items-center gap-1 rounded-full bg-purple-500/15 border border-purple-500/30 px-3 py-1 text-xs font-bold text-purple-400 mb-2">
-            <Sparkles className="h-3.5 w-3.5" /> Table &amp; Counter QR Code
+            <Sparkles className="h-3.5 w-3.5" /> {getHeaderBadge()}
           </span>
           <h2 className="text-xl font-black text-white">{activeBusiness.name}</h2>
           <p className="text-xs text-[#a1a1aa] mt-1">
-            Place this on your counter or dining tables. Customers scan to claim their perk and register voluntarily.
+            {getSubHeader()}
           </p>
         </div>
 
@@ -66,10 +98,10 @@ export function CounterQRCode({ isOpen, onClose }: { isOpen: boolean; onClose: (
 
           <div className="mt-4">
             <p className="text-xs font-bold uppercase tracking-wider text-purple-400">
-              Scan to Join VIP Club
+              {getScanTitle()}
             </p>
             <p className="text-sm font-bold text-white mt-1">
-              🎁 {activeBusiness.qr_loyalty_perk || "Get 10% OFF on your next visit!"}
+              {getPerkText()}
             </p>
             <p className="text-[11px] text-[#71717a] mt-1">
               No app download required • Instant WhatsApp confirmation

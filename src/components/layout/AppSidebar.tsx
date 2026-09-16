@@ -1,7 +1,7 @@
 // Importers/Callers: App layout (`src/components/layout/AppLayoutWrapper.tsx`)
-// Affected API: AppSidebar React component (supporting desktop fixed & mobile sliding drawer)
-// Data Schemas: Opportunity, User { role: "owner" | "manager" | "staff" | "superadmin" }
-// User's Verbatim Instruction: "AFTER LOGIN THE LEFT SIDE BAR IS GOOD NOT FIT FOR MOBILE OK SEE THE WHOLE DOT CHANGECONCEPTOR CODE PLESE CHECH MOBILE FRENDLY AND THE COLORS WE CHOOSE NOW AND REQUIREMETS DOC IS DIFFERENT KEEP ANIMATIONS ONLY CHANGE COLORS TO MACTH PRODUCTION LEVEL WEBSITE"
+// Affected API: AppSidebar React component (desktop fixed & mobile drawer with Salon-specific navigation)
+// Data Schemas: Opportunity, User, Business from src/lib/types.ts
+// User's Verbatim Instruction: "c:\AI\Revia_Salon_Final_Update_Claude_Code_Prompt.docx  make todo list and update this one after another"
 
 "use client";
 
@@ -31,7 +31,7 @@ interface AppSidebarProps {
 
 export function AppSidebar({ isOpen = false, onClose }: AppSidebarProps) {
   const pathname = usePathname();
-  const { opportunities, currentUser } = useApp();
+  const { opportunities, currentUser, activeBusiness } = useApp();
 
   // Auto-close mobile drawer on route change
   useEffect(() => {
@@ -51,6 +51,11 @@ export function AppSidebar({ isOpen = false, onClose }: AppSidebarProps) {
   }
 
   const isStaff = currentUser.role === "staff";
+  const industry = activeBusiness?.industry;
+  const isSalon = industry === "salon_spa";
+  const isPG = industry === "pg_hostel";
+  const isGym = industry === "gym";
+  const isClothing = industry === "clothing";
   const pendingOpportunitiesCount = opportunities.filter((o) => o.status === "pending").length;
 
   interface NavItem {
@@ -66,6 +71,64 @@ export function AppSidebar({ isOpen = false, onClose }: AppSidebarProps) {
   if (isStaff) {
     navItems = [
       { name: "Add Visit", href: "/add-visit", icon: PlusCircle },
+    ];
+  } else if (isPG) {
+    navItems = [
+      { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+      { name: "Residents", href: "/customers", icon: Users },
+      { name: "Add Resident", href: "/add-visit", icon: PlusCircle },
+      { name: "WhatsApp", href: "/whatsapp", icon: MessageCircle },
+      { name: "Analytics", href: "/analytics", icon: TrendingUp },
+    ];
+
+    bottomNavItems = [
+      { name: "Settings", href: "/settings", icon: Settings },
+      { name: "Subscription", href: "/profile", icon: CreditCard },
+    ];
+  } else if (isGym) {
+    navItems = [
+      { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+      { name: "Members", href: "/customers", icon: Users },
+      { name: "Check-in / Visit", href: "/add-visit", icon: PlusCircle },
+      { name: "WhatsApp", href: "/whatsapp", icon: MessageCircle },
+      { name: "Analytics", href: "/analytics", icon: TrendingUp },
+    ];
+
+    bottomNavItems = [
+      { name: "Settings", href: "/settings", icon: Settings },
+      { name: "Subscription", href: "/profile", icon: CreditCard },
+    ];
+  } else if (isClothing) {
+    navItems = [
+      { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+      { name: "Shoppers CRM", href: "/customers", icon: Users },
+      { name: "Add Sale", href: "/add-visit", icon: PlusCircle },
+      {
+        name: "Opportunities",
+        href: "/opportunities",
+        icon: Megaphone,
+        badge: pendingOpportunitiesCount > 0 ? pendingOpportunitiesCount : undefined,
+      },
+      { name: "WhatsApp", href: "/whatsapp", icon: MessageCircle },
+      { name: "Analytics", href: "/analytics", icon: TrendingUp },
+    ];
+
+    bottomNavItems = [
+      { name: "Settings", href: "/settings", icon: Settings },
+      { name: "Subscription", href: "/profile", icon: CreditCard },
+    ];
+  } else if (isSalon) {
+    navItems = [
+      { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+      { name: "Clients", href: "/customers", icon: Users },
+      { name: "Add Visit", href: "/add-visit", icon: PlusCircle },
+      { name: "Analytics", href: "/analytics", icon: TrendingUp },
+      { name: "WhatsApp", href: "/whatsapp", icon: MessageCircle },
+    ];
+
+    bottomNavItems = [
+      { name: "Settings", href: "/settings", icon: Settings },
+      { name: "Subscription", href: "/profile", icon: CreditCard },
     ];
   } else {
     navItems = [

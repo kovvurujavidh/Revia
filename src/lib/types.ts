@@ -1,7 +1,7 @@
 // Importers/Callers: App-wide data types across models, services, components, pages.
-// Affected API: Data Schemas (IndustryType, Business, User, Customer, Visit, StaffMember, SubscriptionPaymentRecord, PlatformCoreSettings).
+// Affected API: Data Schemas (IndustryType, Business, User, Customer, Visit, StaffMember, PGResident, GymMember, GymAttendanceRecord, ClothingCustomer, SubscriptionPaymentRecord, PlatformCoreSettings).
 // Data Schemas: All core data models.
-// User's Verbatim Instruction: "Master key: FOUNDER2026 REMOVE THIS AND PAYMENT GATEWAY IS BAD JUST TELL ME WHAT I NEED TO DO FOR THIS SEE TOTALLY REMOVE THE RAZOR PAY AMD WHEN USER CLICK THE SUBSCRIPTION Can you make you like open the UPI and automatically create scanner of related subscription and they can just pay the scanner and the amount will be credited into my account and in my admin panel I can see what subscription they done and I can manage that subscriptions and users of mine in admin panel only give me the core core website options that I can change and manipulate them only I can do with admin panel and don't give the admin panel password on there and at the admin panel I said don't keep the admin panel in subscription button keep in the home page there a small admin option in top so I can log in with their and the password must be like in capital letters JAVIDH786"
+// User's Verbatim Instruction: "c:\AI\Revia_Final_All_Three_Business_Updates_Claude_Code_Prompt.docx now this make todo and complete updaate"
 
 export type IndustryType =
   | "restaurant"
@@ -11,6 +11,8 @@ export type IndustryType =
   | "gym"
   | "salon_spa"
   | "clinic"
+  | "pg_hostel"
+  | "clothing"
   | "other";
 
 export type SubscriptionStatus =
@@ -203,3 +205,117 @@ export interface PlatformCoreSettings {
   support_whatsapp: string;
   auto_verification_mode?: "manual_approval" | "provisional_instant_access";
 }
+
+// ==========================================
+// PG (PAYING GUEST) SPECIFIC TYPES
+// ==========================================
+export type PGPaymentCycle = "monthly" | "half_monthly" | "yearly";
+
+export interface PGResident {
+  id: string;
+  business_id: string;
+  name: string;
+  phone: string;
+  payment_plan: PGPaymentCycle;
+  rent_amount: number;
+  joining_date: string; // ISO / YYYY-MM-DD
+  next_due_date: string; // ISO / YYYY-MM-DD
+  room_number?: string;
+  bed_number?: string;
+  status: "active" | "inactive" | "vacated";
+  notes?: string;
+  created_at: string;
+}
+
+export interface PGPaymentRecord {
+  id: string;
+  business_id: string;
+  resident_id: string;
+  resident_name: string;
+  amount: number;
+  payment_date: string;
+  payment_period?: string;
+  payment_method?: string;
+  reference_no?: string;
+  recorded_by?: string;
+  created_at: string;
+}
+
+export interface PGBed {
+  id: string;
+  bed_number: string;
+  resident_id?: string;
+  resident_name?: string;
+  status: "occupied" | "vacant";
+}
+
+export interface PGRoom {
+  id: string;
+  business_id: string;
+  room_number: string;
+  floor?: string;
+  total_beds: number;
+  occupied_beds: number;
+  beds?: PGBed[];
+}
+
+// ==========================================
+// GYM SPECIFIC TYPES & QR ATTENDANCE
+// ==========================================
+export interface GymMembershipPlan {
+  id: string;
+  business_id: string;
+  name: string;
+  duration_months: number; // 1, 3, 6, 12
+  price: number;
+  description?: string;
+}
+
+export interface GymMember {
+  id: string;
+  business_id: string;
+  name: string;
+  phone: string;
+  membership_plan_id?: string;
+  membership_name: string;
+  amount_paid: number;
+  start_date: string; // YYYY-MM-DD
+  expiry_date: string; // YYYY-MM-DD
+  status: "active" | "expired" | "frozen" | "pending";
+  emergency_contact?: string;
+  notes?: string;
+  created_at: string;
+}
+
+export interface GymAttendanceRecord {
+  id: string;
+  business_id: string;
+  member_id: string;
+  member_name: string;
+  member_phone: string;
+  check_in_time: string; // ISO timestamp or HH:mm
+  date: string; // YYYY-MM-DD
+  source: "qr" | "manual";
+  status: "present" | "late";
+  created_at: string;
+}
+
+// ==========================================
+// CLOTHING SHOP CRM TYPES
+// ==========================================
+export type ClothingCustomerSegment = "high_value" | "regular" | "low_value" | "inactive";
+
+export interface ClothingPurchaseRecord {
+  id: string;
+  business_id: string;
+  customer_id: string;
+  customer_name: string;
+  customer_phone: string;
+  amount: number;
+  bill_reference?: string;
+  date: string;
+  items_summary?: string;
+  notes?: string;
+  created_at: string;
+}
+

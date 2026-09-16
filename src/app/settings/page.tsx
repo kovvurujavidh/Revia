@@ -33,6 +33,7 @@ export default function SettingsPage() {
     currentUser,
     staffMembers,
     addStaffMember,
+    deleteStaffMember,
     updateBusiness,
   } = useApp();
 
@@ -56,6 +57,8 @@ export default function SettingsPage() {
   const [newStaffPhone, setNewStaffPhone] = useState("");
   const [newStaffEmail, setNewStaffEmail] = useState("");
   const [newStaffRole, setNewStaffRole] = useState<"manager" | "staff">("staff");
+  const [isAddingStaff, setIsAddingStaff] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   // Plan limit quotas
   const isTrial = activeBusiness.subscription_status === "trialing";
@@ -124,7 +127,7 @@ export default function SettingsPage() {
     setTimeout(() => setSavedToast(false), 2500);
   };
 
-  const handleAddStaff = (e: React.FormEvent) => {
+  const handleAddStaff = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newStaffName.trim() || !newStaffPhone.trim()) {
       setDataToast("Please enter both staff name and registered mobile phone number.");
@@ -144,8 +147,9 @@ export default function SettingsPage() {
       return;
     }
 
+    setIsAddingStaff(true);
     try {
-      addStaffMember({
+      await addStaffMember({
         name: newStaffName.trim(),
         email: newStaffEmail.trim().toLowerCase() || `${newStaffPhone.replace(/[^0-9]/g, "")}@staff.revia.app`,
         phone: newStaffPhone.trim(),
@@ -163,6 +167,24 @@ export default function SettingsPage() {
     } catch (err: any) {
       setDataToast(err.message || "Failed to add staff member.");
       setTimeout(() => setDataToast(null), 4000);
+    } finally {
+      setIsAddingStaff(false);
+    }
+  };
+
+  const handleDeleteStaff = async (id: string, name: string) => {
+    if (window.confirm(`Are you sure you want to remove ${name} from your team?`)) {
+      setDeletingId(id);
+      try {
+        await deleteStaffMember(id);
+        setDataToast(`Removed ${name} from your team.`);
+        setTimeout(() => setDataToast(null), 3500);
+      } catch (err: any) {
+        setDataToast(err.message || "Failed to remove staff member.");
+        setTimeout(() => setDataToast(null), 4000);
+      } finally {
+        setDeletingId(null);
+      }
     }
   };
 
@@ -375,35 +397,51 @@ export default function SettingsPage() {
             </div>
 
             {/* Registered Staff Rows */}
-            {staffMembers.map((member) => (
-              <div
-                key={member.id}
-                className="flex items-center justify-between p-3.5 bg-[#FFFFFF] hover:bg-[#F8F8F9] transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#F8F8F9] text-[#111439] font-bold text-xs border border-[#EAECF0]">
-                    {member.name.charAt(0)}
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-[#111439]">{member.name}</p>
-                    <p className="text-[11px] text-[#667085] flex items-center gap-1 tabular-nums">
-                      <Phone className="h-3 w-3 text-[#6C4DFF]" />
-                      <span>{member.phone || member.email}</span>
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <span
-                    className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${getRoleBadge(
-                      member.role
-                    )}`}
-                  >
-                    {member.role === "manager" ? "Manager" : "Staff (Entry)"}
-                  </span>
-                </div>
+            {staffMembers.length === 0 ? (
+              <div className="p-4 text-center text-xs text-[#667085] bg-[#FFFFFF]">
+                No staff or managers added yet. Click &ldquo;Add Staff Member&rdquo; above to invite team members.
               </div>
-            ))}
+            ) : (
+              staffMembers.map((member) => (
+                <div
+                  key={member.id}
+                  className="flex items-center justify-between p-3.5 bg-[#FFFFFF] hover:bg-[#F8F8F9] transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#F8F8F9] text-[#111439] font-bold text-xs border border-[#EAECF0]">
+                      {member.name.charAt(0)}
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-[#111439]">{member.name}</p>
+                      <p className="text-[11px] text-[#667085] flex items-center gap-1 tabular-nums">
+                        <Phone className="h-3 w-3 text-[#6C4DFF]" />
+                        <span>{member.phone || member.email}</span>
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <span
+                      className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${getRoleBadge(
+                        member.role
+                      )}`}
+                    >
+                      {member.role === "manager" ? "Manager" : "Staff (Entry)"}
+                    </span>
+
+                    <button
+                      type="button"
+                      disabled={deletingId === member.id}
+                      onClick={() => handleDeleteStaff(member.id, member.name)}
+                      className="p-1.5 text-[#667085] hover:text-[#EF4444] hover:bg-[#EF4444]/10 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
+                      title={`Remove ${member.name}`}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
 
           {/* Invite Modal */}
@@ -495,9 +533,10 @@ export default function SettingsPage() {
                     </button>
                     <button
                       type="submit"
-                      className="flex-1 rounded-xl brand-gradient py-2 text-xs font-bold text-white shadow-md shadow-purple-500/20 hover:opacity-90 btn-interactive cursor-pointer"
+                      disabled={isAddingStaff}
+                      className="flex-1 rounded-xl brand-gradient py-2 text-xs font-bold text-white shadow-md shadow-purple-500/20 hover:opacity-90 disabled:opacity-50 btn-interactive cursor-pointer"
                     >
-                      Save &amp; Link Staff
+                      {isAddingStaff ? "Saving & Linking..." : "Save & Link Staff"}
                     </button>
                   </div>
                 </form>

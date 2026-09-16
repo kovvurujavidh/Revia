@@ -1,7 +1,7 @@
 // Importers/Callers: Next.js App Router route `/admin`, `/auth/admin-login`.
 // Affected API: Super Admin panel for platform-wide subscription management, UPI approvals, AI Bank SMS auto-reconciliation, tenant control, core website settings, and SaaS growth analytics.
 // Data Schemas: Business, SubscriptionPlanId, SubscriptionStatus, SubscriptionPaymentRecord, PlatformCoreSettings, User from src/lib/types.ts.
-// User's Verbatim Instruction: "javidhkovvuru143@axl THIS IS UPI IS AND IS THE UTR CAN NEED TO VERIFY BY ME SHOW IN ADMINPANY AND I NEEDTO VERIFY THEM MAKE IT LIKE THIS OR IF WE CAN AUTO VERIFY WITH SECURLY DO IT AND MAKE CHANGE WHAT BIG COMPANIES DO"
+// User's Verbatim Instruction: "c:\AI\Revia_Final_All_Three_Business_Updates_Claude_Code_Prompt.docx now this make todo and complete updaate"
 
 "use client";
 
@@ -153,7 +153,7 @@ export default function AdminPage() {
   const totalPaidRevenue = approvedPayments.reduce((acc, p) => acc + (p.amount_inr || 0), 0);
 
   // Platform Analytics Math
-  const totalPlatformMRR = activePaidBusinesses * 599 + (totalBusinesses > 3 ? 1200 : 0);
+  const totalPlatformMRR = activePaidBusinesses * 799 + (totalBusinesses > 3 ? 1200 : 0);
   const totalProjectedARR = totalPlatformMRR * 12;
 
   // Industry Vertical Breakdown
@@ -437,7 +437,7 @@ export default function AdminPage() {
                   rows={3}
                   value={smsInputText}
                   onChange={(e) => setSmsInputText(e.target.value)}
-                  placeholder={`Paste your bank SMS alert here, for example:\n"Axis Bank: Rs 599.00 credited to a/c ... from UPI/427891238912/GPay..."`}
+                  placeholder={`Paste your bank SMS alert here, for example:\n"Axis Bank: Rs 799.00 credited to a/c ... from UPI/427891238912/GPay..."`}
                   className="w-full rounded-xl border border-[#EAECF0] bg-[#FFFFFF] p-3 text-xs font-mono text-[#111439] placeholder-[#94A3B8] focus:border-[#6C4DFF] focus:outline-none transition-colors"
                 />
 

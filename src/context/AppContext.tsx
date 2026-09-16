@@ -54,6 +54,7 @@ interface AppContextType {
   resolveOpportunity: (id: string, status: "pending" | "contacted" | "dismissed" | "sent") => void;
   addTemplate: (data: any) => WhatsAppTemplate;
   addStaffMember: (data: any) => StaffMember;
+  deleteStaffMember: (id: string) => Promise<void>;
   upgradePlan: (planId: SubscriptionPlanId) => void;
   extendTrial: (days?: number) => void;
   toggleSuspendBusiness: (bizId: string) => void;
@@ -296,6 +297,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         resolveOpportunity: (id, status) => store.resolveOpportunity(id, status as any),
         addTemplate: (data) => store.addTemplate(data) as any,
         addStaffMember: (data) => store.addStaffMember(data) as any,
+        deleteStaffMember: (id) => store.deleteStaffMember(id),
         upgradePlan: (planId) => store.upgradePlan(activeBusiness.id, planId),
         extendTrial: (days = 14) => store.extendTrial(activeBusiness.id, days),
         toggleSuspendBusiness: (bizId) => store.toggleSuspendBusiness(bizId),

@@ -1,7 +1,7 @@
 // Importers/Callers: Next.js route `/onboarding`, Auth sign-up flow redirect.
-// Affected API: Multi-step business registration wizard, categories selector, initial trial configuration.
+// Affected API: Multi-step business registration wizard, categories selector for clothing, gym, and pg_hostel.
 // Data Schemas: Business, IndustryType, User from src/lib/types.ts.
-// User's Verbatim Instruction: "AFTER LOGIN THE LEFT SIDE BAR IS GOOD NOT FIT FOR MOBILE OK SEE THE WHOLE DOT CHANGECONCEPTOR CODE PLESE CHECH MOBILE FRENDLY AND THE COLORS WE CHOOSE NOW AND REQUIREMETS DOC IS DIFFERENT KEEP ANIMATIONS ONLY CHANGE COLORS TO MACTH PRODUCTION LEVEL WEBSITE"
+// User's Verbatim Instruction: "c:\AI\Revia_Final_All_Three_Business_Updates_Claude_Code_Prompt.docx now this make todo and complete updaate"
 
 "use client";
 
@@ -21,6 +21,7 @@ import {
   Phone,
   Zap,
   AlertCircle,
+  Home,
 } from "lucide-react";
 import { IndustryType } from "@/lib/types";
 
@@ -51,12 +52,14 @@ export default function OnboardingPage() {
   }, [router]);
 
   const categories: { id: IndustryType; label: string; icon: any; desc: string }[] = [
+    { id: "clothing", label: "Clothing & Fashion", icon: ShoppingBag, desc: "Shopper CRM, VIP leaderboards" },
+    { id: "gym", label: "Gym & Fitness Studio", icon: Dumbbell, desc: "Member passes, daily attendance QR" },
+    { id: "pg_hostel", label: "PG & Hostel Accommodation", icon: Home, desc: "Room/bed capacity, rent cycles" },
+    { id: "salon_spa", label: "Salon & Spa", icon: Sparkles, desc: "Appointment cycles, 30-day repeats" },
     { id: "restaurant", label: "Restaurant / Dining", icon: Utensils, desc: "Tables, dinner orders, weekend volume" },
     { id: "cafe", label: "Café / Bakery", icon: Coffee, desc: "Daily regulars, coffee cards" },
-    { id: "salon_spa", label: "Salon & Spa", icon: Sparkles, desc: "Appointment cycles, 30-day repeats" },
-    { id: "gym", label: "Fitness & Gym", icon: Dumbbell, desc: "Membership tracking, workout frequency" },
-    { id: "retail", label: "Retail & Boutique", icon: ShoppingBag, desc: "Seasonal shoppers, catalog promotions" },
     { id: "clinic", label: "Clinic / Wellness", icon: Stethoscope, desc: "Follow-up checkups, patient care" },
+    { id: "retail", label: "General Retail & Mart", icon: ShoppingBag, desc: "Seasonal shoppers, catalog promotions" },
   ];
 
   const handleComplete = async (e: React.FormEvent) => {

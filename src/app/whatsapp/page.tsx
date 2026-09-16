@@ -1,7 +1,7 @@
 // Importers/Callers: Next.js route `/whatsapp`, AppSidebar, MobileNav
 // Affected API: WhatsAppPage React component (Industry Presets, Category Tabs, Token Chips, Live Chat Simulator, 1-Click Dispatch, Custom Date & Personalization)
-// Data Schemas: WhatsAppTemplate, Customer, Business, WhatsAppLog, WhatsAppCustomData from src/lib/types.ts.
-// User's Verbatim Instruction: "An update I want to do that for the Whatsapp reminders are all at I need to Add Customise data option so the user can And select dates or enter a personalised date so he can send a reminder According to IT"
+// Data Schemas: WhatsAppTemplate, Customer, Business, WhatsAppLog, WhatsAppCustomData, IndustryType from src/lib/types.ts.
+// User's Verbatim Instruction: "c:\AI\Revia_Final_All_Three_Business_Updates_Claude_Code_Prompt.docx now this make todo and complete updaate"
 
 "use client";
 
@@ -25,6 +25,7 @@ import {
   HeartPulse,
   Building2,
   Tag,
+  Home,
   ChevronRight,
   CalendarDays,
   Clock,
@@ -40,6 +41,8 @@ const INDUSTRY_META: Record<IndustryType, { label: string; icon: React.ReactNode
   cafe:       { label: "Café",       icon: <Coffee className="h-3.5 w-3.5" />,      color: "#F59E0B" },
   salon_spa:  { label: "Salon & Spa", icon: <Scissors className="h-3.5 w-3.5" />,   color: "#EC4899" },
   gym:        { label: "Gym",        icon: <Dumbbell className="h-3.5 w-3.5" />,    color: "#16A34A" },
+  clothing:   { label: "Clothing",   icon: <ShoppingBag className="h-3.5 w-3.5" />,  color: "#8B5CF6" },
+  pg_hostel:  { label: "PG & Hostel", icon: <Home className="h-3.5 w-3.5" />,        color: "#0284C7" },
   retail:     { label: "Retail",     icon: <ShoppingBag className="h-3.5 w-3.5" />,  color: "#3B82F6" },
   clinic:     { label: "Clinic",     icon: <HeartPulse className="h-3.5 w-3.5" />,   color: "#6C4DFF" },
   hotel:      { label: "Hotel",      icon: <Building2 className="h-3.5 w-3.5" />,    color: "#06b6d4" },

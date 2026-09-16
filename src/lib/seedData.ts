@@ -1,3 +1,8 @@
+// Importers/Callers: AppStore, context, seed initializers, WhatsApp Hub, Pricing components.
+// Affected API: SUBSCRIPTION_PLANS, DEFAULT_WHATSAPP_TEMPLATES, mock data for local fallback.
+// Data Schemas: SubscriptionPlan, WhatsAppTemplate from src/lib/types.ts.
+// User's Verbatim Instruction: "c:\AI\Revia_Final_All_Three_Business_Updates_Claude_Code_Prompt.docx now this make todo and complete updaate"
+
 import {
   Business,
   Customer,
@@ -12,7 +17,7 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   {
     id: "starter",
     name: "Starter Plan",
-    price_monthly_inr: 299,
+    price_monthly_inr: 499,
     description: "Ideal for small counters & single-location shops beginning customer retention.",
     max_customers: 300,
     features: [
@@ -28,7 +33,7 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   {
     id: "growth",
     name: "Growth Plan",
-    price_monthly_inr: 599,
+    price_monthly_inr: 799,
     description: "Our most popular plan for established restaurants, salons, and businesses.",
     max_customers: 1500,
     badge: "Most Popular",
@@ -47,7 +52,7 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   {
     id: "pro",
     name: "Pro Retention Suite",
-    price_monthly_inr: 999,
+    price_monthly_inr: 1199,
     description: "For high-volume businesses and multi-staff teams demanding maximum repeat revenue.",
     max_customers: 10000,
     badge: "Maximum ROI",
@@ -355,6 +360,80 @@ export const DEFAULT_WHATSAPP_TEMPLATES: WhatsAppTemplate[] = [
     category: "comeback",
     message:
       "Dear {customer_name}, prioritize your family's health this month at {business_name}. Avail our comprehensive Annual Preventive Health Check-Up package with a special {offer_discount}% discount. Reply for details! 🏥🌿",
+    is_default: true,
+  },
+
+  // --- CLOTHING SHOP & BOUTIQUE ---
+  {
+    id: "tpl-clothing-newstock",
+    business_id: null,
+    industry: "clothing",
+    name: "New Stock / Collection Arrival",
+    category: "festival",
+    message:
+      "Hi {customer_name}! 👋 New collection has arrived at {business_name}. Visit us to check out the latest styles and trendy designs. See you soon! 😊",
+    is_default: true,
+  },
+  {
+    id: "tpl-clothing-festival",
+    business_id: null,
+    industry: "clothing",
+    name: "Festival Offer & Season Sale ({offer_discount}% OFF)",
+    category: "festival",
+    message:
+      "Hey {customer_name}! 🌟 Celebrate the festive season in style with {business_name}. Enjoy special festive discounts of {offer_discount}% OFF on your favorite outfits this week! 🛍️✨",
+    is_default: true,
+  },
+  {
+    id: "tpl-clothing-loyal",
+    business_id: null,
+    industry: "clothing",
+    name: "VIP Loyal Shopper Preview Perk",
+    category: "vip_offer",
+    message:
+      "Dear {customer_name}, as one of our most valued shoppers at {business_name}, enjoy an exclusive VIP preview and special member discount on our new arrivals! 💖👗",
+    is_default: true,
+  },
+  {
+    id: "tpl-clothing-inactive",
+    business_id: null,
+    industry: "clothing",
+    name: "Inactive Shopper Comeback ({offer_discount}% OFF)",
+    category: "comeback",
+    message:
+      "Hi {customer_name}, we missed you at {business_name}! It's been {days_since_last_visit} days. Refresh your wardrobe with {offer_discount}% OFF on your next visit! 👗✨",
+    is_default: true,
+  },
+
+  // --- PG (PAYING GUEST) & HOSTEL ---
+  {
+    id: "tpl-pg-rent-due",
+    business_id: null,
+    industry: "pg_hostel",
+    name: "Monthly Rent Due Reminder",
+    category: "reminder",
+    message:
+      "Hi {customer_name}, this is a gentle reminder from {business_name} that your PG rent is due soon. Please clear your dues at the earliest. Thank you! 🏠",
+    is_default: true,
+  },
+  {
+    id: "tpl-pg-payment-receipt",
+    business_id: null,
+    industry: "pg_hostel",
+    name: "Rent Payment Confirmation & Receipt",
+    category: "thank_you",
+    message:
+      "Hi {customer_name}! Thank you for your rent payment to {business_name}. We have recorded your payment successfully. Have a wonderful and peaceful stay! ✨🏠",
+    is_default: true,
+  },
+  {
+    id: "tpl-pg-welcome",
+    business_id: null,
+    industry: "pg_hostel",
+    name: "New Resident Welcome & House Rules",
+    category: "thank_you",
+    message:
+      "Welcome to {business_name}, {customer_name}! 🏠 We are thrilled to have you with us. If you need any assistance with your room or facilities, please reach out anytime!",
     is_default: true,
   },
 

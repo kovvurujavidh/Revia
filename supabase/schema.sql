@@ -1,3 +1,8 @@
+-- Importers/Callers: Supabase Database Migration & Schema definition.
+-- Affected API: public.businesses, public.users, public.customers, public.visits, public.whatsapp_templates, public.whatsapp_logs.
+-- Data Schemas: Multi-tenant business schemas with RLS.
+-- User's Verbatim Instruction: "c:\AI\Revia_Final_All_Three_Business_Updates_Claude_Code_Prompt.docx now this make todo and complete updaate"
+
 -- ==============================================================================
 -- Small Business Customer Return SaaS - Multi-Tenant Supabase RLS Schema
 -- ==============================================================================
@@ -9,7 +14,7 @@ create extension if not exists "uuid-ossp";
 create table if not exists public.businesses (
   id uuid primary key default uuid_generate_v4(),
   name text not null,
-  industry text not null check (industry in ('restaurant', 'cafe', 'hotel', 'retail', 'gym', 'salon_spa', 'clinic', 'other')),
+  industry text not null check (industry in ('restaurant', 'cafe', 'hotel', 'retail', 'gym', 'salon_spa', 'clinic', 'pg_hostel', 'clothing', 'other')),
   owner_name text not null,
   owner_email text not null,
   phone text not null,

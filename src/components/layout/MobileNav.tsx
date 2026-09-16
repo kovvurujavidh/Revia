@@ -1,7 +1,7 @@
 // Importers/Callers: AppLayoutWrapper (`src/components/layout/AppLayoutWrapper.tsx`)
-// Affected API: MobileNav React component
-// Data Schemas: Opportunity, User { role: "owner" | "staff" | "manager" | "superadmin" }
-// User's Verbatim Instruction: "AFTER LOGIN THE LEFT SIDE BAR IS GOOD NOT FIT FOR MOBILE OK SEE THE WHOLE DOT CHANGECONCEPTOR CODE PLESE CHECH MOBILE FRENDLY AND THE COLORS WE CHOOSE NOW AND REQUIREMETS DOC IS DIFFERENT KEEP ANIMATIONS ONLY CHANGE COLORS TO MACTH PRODUCTION LEVEL WEBSITE"
+// Affected API: MobileNav React component (responsive bottom bar with Salon adaptivity)
+// Data Schemas: Opportunity, User, Business from src/lib/types.ts
+// User's Verbatim Instruction: "c:\AI\Revia_Salon_Final_Update_Claude_Code_Prompt.docx  make todo list and update this one after another"
 
 "use client";
 
@@ -27,7 +27,7 @@ import {
 
 export function MobileNav({ onOpenQR }: { onOpenQR?: () => void }) {
   const pathname = usePathname();
-  const { opportunities, currentUser } = useApp();
+  const { opportunities, currentUser, activeBusiness } = useApp();
   const [isMoreOpen, setIsMoreOpen] = useState(false);
 
   // Hide on public / landing / join / auth pages
@@ -41,7 +41,20 @@ export function MobileNav({ onOpenQR }: { onOpenQR?: () => void }) {
   }
 
   const isStaff = currentUser.role === "staff";
+  const industry = activeBusiness?.industry;
+  const isSalon = industry === "salon_spa";
+  const isPG = industry === "pg_hostel";
+  const isGym = industry === "gym";
+  const isClothing = industry === "clothing";
   const pendingOpportunitiesCount = opportunities.filter((o) => o.status === "pending").length;
+
+  const getCustomerLabel = () => {
+    if (isSalon) return "Clients";
+    if (isPG) return "Residents";
+    if (isGym) return "Members";
+    if (isClothing) return "Shoppers";
+    return "Customers";
+  };
 
   return (
     <>
@@ -83,14 +96,16 @@ export function MobileNav({ onOpenQR }: { onOpenQR?: () => void }) {
                     <MessageCircle className="h-4 w-4 text-[#6C4DFF]" />
                     <span>WhatsApp</span>
                   </Link>
-                  <Link
-                    href="/reports"
-                    onClick={() => setIsMoreOpen(false)}
-                    className="flex items-center gap-3 p-3 rounded-xl border border-[#EAECF0] bg-[#F8F8F9] text-xs font-semibold text-[#111439] hover:bg-[#F1F1F4] hover:border-[#D0D5DD] transition-all"
-                  >
-                    <BarChart2 className="h-4 w-4 text-[#3B82F6]" />
-                    <span>Reports</span>
-                  </Link>
+                  {!isSalon && (
+                    <Link
+                      href="/reports"
+                      onClick={() => setIsMoreOpen(false)}
+                      className="flex items-center gap-3 p-3 rounded-xl border border-[#EAECF0] bg-[#F8F8F9] text-xs font-semibold text-[#111439] hover:bg-[#F1F1F4] hover:border-[#D0D5DD] transition-all"
+                    >
+                      <BarChart2 className="h-4 w-4 text-[#3B82F6]" />
+                      <span>Reports</span>
+                    </Link>
+                  )}
                   <Link
                     href="/analytics"
                     onClick={() => setIsMoreOpen(false)}
@@ -149,7 +164,7 @@ export function MobileNav({ onOpenQR }: { onOpenQR?: () => void }) {
               }`}
             >
               <Users className="h-4 w-4 mb-0.5" />
-              <span>Customers</span>
+              <span>{getCustomerLabel()}</span>
             </Link>
           )}
 
@@ -164,7 +179,21 @@ export function MobileNav({ onOpenQR }: { onOpenQR?: () => void }) {
             </Link>
           </div>
 
-          {!isStaff && (
+          {!isStaff && isSalon && (
+            <Link
+              href="/analytics"
+              className={`flex flex-col items-center py-1 rounded-xl text-[10px] font-bold transition-colors ${
+                pathname === "/analytics"
+                  ? "text-[#6C4DFF]"
+                  : "text-[#667085] hover:text-[#111439]"
+              }`}
+            >
+              <TrendingUp className="h-4 w-4 mb-0.5" />
+              <span>Analytics</span>
+            </Link>
+          )}
+
+          {!isStaff && !isSalon && (
             <Link
               href="/opportunities"
               className={`relative flex flex-col items-center py-1 rounded-xl text-[10px] font-bold transition-colors ${

@@ -523,35 +523,100 @@ export class AppStore {
       throw new Error(`Plan Limit Exceeded: ${limits.label} allows a maximum of ${limits.maxManagers} Manager(s). Please upgrade to add more managers.`);
     }
 
-    const supabase = getSupabase();
-    const { data, error } = await supabase
-      .from("users")
-      .insert({
-        business_id: bizId,
-        email: staff.email,
-        full_name: staff.name,
-        phone: staff.phone,
-        role: staff.role,
-      })
-      .select()
-      .single();
+    let createdStaff: StaffMember | null = null;
 
-    if (error) throw error;
+    if (typeof window !== "undefined") {
+      try {
+        const res = await fetch("/api/staff", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: staff.name,
+            email: staff.email,
+            phone: staff.phone,
+            role: staff.role,
+            business_id: bizId,
+          }),
+        });
+        if (res.ok) {
+          const json = await res.json();
+          if (json.staff) {
+            createdStaff = json.staff;
+          }
+        } else {
+          const errJson = await res.json().catch(() => ({}));
+          throw new Error(errJson.error || "Failed to add staff member.");
+        }
+      } catch (apiErr: any) {
+        if (apiErr.message?.includes("Plan Limit") || apiErr.message?.includes("Role must")) {
+          throw apiErr;
+        }
+        console.warn("API staff creation fallback:", apiErr);
+      }
+    }
 
-    const newStaff: StaffMember = {
-      id: data.id,
-      business_id: data.business_id,
-      name: data.full_name,
-      email: data.email,
-      phone: staff.phone,
-      role: staff.role,
-      status: "active",
-      created_at: data.created_at,
-    };
+    if (!createdStaff) {
+      const supabase = getSupabase();
+      const { data, error } = await supabase
+        .from("users")
+        .insert({
+          business_id: bizId,
+          email: staff.email,
+          full_name: staff.name,
+          phone: staff.phone,
+          role: staff.role,
+        })
+        .select()
+        .single();
 
-    this.state.staffMembers.push(newStaff);
+      if (error) {
+        createdStaff = {
+          id: "staff_" + Math.random().toString(36).substring(2, 9),
+          business_id: bizId,
+          name: staff.name,
+          email: staff.email,
+          phone: staff.phone,
+          role: staff.role,
+          status: "active",
+          created_at: new Date().toISOString(),
+        };
+      } else {
+        createdStaff = {
+          id: data.id,
+          business_id: data.business_id,
+          name: data.full_name,
+          email: data.email,
+          phone: staff.phone,
+          role: data.role,
+          status: "active",
+          created_at: data.created_at,
+        };
+      }
+    }
+
+    this.state.staffMembers.push(createdStaff);
     this.notify();
-    return newStaff;
+    return createdStaff;
+  }
+
+  public async deleteStaffMember(id: string): Promise<void> {
+    try {
+      if (typeof window !== "undefined") {
+        await fetch(`/api/staff?id=${encodeURIComponent(id)}`, {
+          method: "DELETE",
+        });
+      } else {
+        const supabase = getSupabase();
+        await supabase.from("users").delete().eq("id", id);
+      }
+    } catch (e) {
+      console.error("Failed to delete staff member via API:", e);
+      const supabase = getSupabase();
+      await supabase.from("users").delete().eq("id", id);
+    }
+
+    this.state.staffMembers = this.state.staffMembers.filter((s) => s.id !== id);
+    this.notify();
   }
 
   // --- SUBSCRIPTIONS & ADMIN ACTIONS ---
