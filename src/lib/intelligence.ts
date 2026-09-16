@@ -1,7 +1,7 @@
-// Importers/Callers: DailyAIReport component, Store live opportunities generator, Analytics page.
-// Affected API: Deterministic customer segmentation, live opportunity generation, Daily AI Report generator.
-// Data Schemas: Business, Customer, Visit, Opportunity, DailyAIReportData, CustomerSegment from src/lib/types.ts.
-// User's Verbatim Instruction: "Daily AI Retention Intelligence in this showing ⚠️ 3 previous regulars are at immediate risk of churn... but it already done but still is not updated please work on connected and workflows to improve website"
+// Importers/Callers: DailyAIReport component, Store live opportunities generator, Analytics page, src/app/whatsapp/page.tsx, src/app/opportunities/page.tsx.
+// Affected API: Deterministic customer segmentation, live opportunity generation, Daily AI Report generator, WhatsApp custom date personalization engine.
+// Data Schemas: Business, Customer, Visit, Opportunity, DailyAIReportData, CustomerSegment, WhatsAppCustomData from src/lib/types.ts.
+// User's Verbatim Instruction: "An update I want to do that for the Whatsapp reminders are all at I need to Add Customise data option so the user can And select dates or enter a personalised date so he can send a reminder According to IT"
 
 import {
   Business,
@@ -11,6 +11,13 @@ import {
   DailyAIReportData,
   CustomerSegment,
 } from "./types";
+
+export interface WhatsAppCustomData {
+  customDate?: string;
+  validUntil?: string;
+  appointmentDate?: string;
+  customOfferDiscount?: string;
+}
 
 /**
  * Deterministically classify a customer's retention segment based on visit count,
@@ -283,12 +290,13 @@ export function generateDailyAIReport(
 }
 
 /**
- * Format a personalized WhatsApp message by replacing placeholders
+ * Format a personalized WhatsApp message by replacing placeholders with live customer & custom date data
  */
 export function formatWhatsAppMessage(
   templateMessage: string,
   customer: Partial<Customer>,
-  business: Business
+  business: Business,
+  customData?: WhatsAppCustomData
 ): string {
   const daysSinceLast = customer.last_visit_date
     ? Math.max(
@@ -300,18 +308,31 @@ export function formatWhatsAppMessage(
       )
     : 14;
 
+  const defaultNextWeek = new Date();
+  defaultNextWeek.setDate(defaultNextWeek.getDate() + 7);
+  const defaultValidUntil = defaultNextWeek.toLocaleDateString("en-IN", { weekday: 'short', month: 'short', day: 'numeric' });
+
+  const defaultTomorrow = new Date();
+  defaultTomorrow.setDate(defaultTomorrow.getDate() + 1);
+  const defaultAppointment = defaultTomorrow.toLocaleDateString("en-IN", { month: 'short', day: 'numeric' }) + " at 11:00 AM";
+
+  const discountToUse = customData?.customOfferDiscount || business.default_comeback_discount || 15;
+
   let msg = templateMessage
     .replace(/{customer_name}/g, customer.name || "Valued Guest")
     .replace(/{business_name}/g, business.name)
     .replace(/{days_since_last_visit}/g, daysSinceLast.toString())
-    .replace(/{offer_discount}/g, (business.default_comeback_discount || 15).toString())
+    .replace(/{offer_discount}/g, discountToUse.toString())
     .replace(
       /{favorite_item}/g,
       customer.favorite_items && customer.favorite_items.length > 0
         ? customer.favorite_items[0]
         : "our specialties"
     )
-    .replace(/{currency_symbol}/g, business.currency_symbol || "₹");
+    .replace(/{currency_symbol}/g, business.currency_symbol || "₹")
+    .replace(/{custom_date}/g, customData?.customDate || defaultValidUntil)
+    .replace(/{valid_until}/g, customData?.validUntil || defaultValidUntil)
+    .replace(/{appointment_date}/g, customData?.appointmentDate || defaultAppointment);
 
   if (business.whatsapp_signature) {
     msg += `\n\n${business.whatsapp_signature}`;

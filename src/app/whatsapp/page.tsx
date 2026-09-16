@@ -1,7 +1,7 @@
 // Importers/Callers: Next.js route `/whatsapp`, AppSidebar, MobileNav
-// Affected API: WhatsAppPage React component (Industry Presets, Category Tabs, Token Chips, Live Chat Simulator, 1-Click Dispatch)
-// Data Schemas: WhatsAppTemplate, Customer, Business, WhatsAppLog from src/lib/types.ts
-// User's Verbatim Instruction: "AFTER LOGIN THE LEFT SIDE BAR IS GOOD NOT FIT FOR MOBILE OK SEE THE WHOLE DOT CHANGECONCEPTOR CODE PLESE CHECH MOBILE FRENDLY AND THE COLORS WE CHOOSE NOW AND REQUIREMETS DOC IS DIFFERENT KEEP ANIMATIONS ONLY CHANGE COLORS TO MACTH PRODUCTION LEVEL WEBSITE"
+// Affected API: WhatsAppPage React component (Industry Presets, Category Tabs, Token Chips, Live Chat Simulator, 1-Click Dispatch, Custom Date & Personalization)
+// Data Schemas: WhatsAppTemplate, Customer, Business, WhatsAppLog, WhatsAppCustomData from src/lib/types.ts.
+// User's Verbatim Instruction: "An update I want to do that for the Whatsapp reminders are all at I need to Add Customise data option so the user can And select dates or enter a personalised date so he can send a reminder According to IT"
 
 "use client";
 
@@ -26,8 +26,11 @@ import {
   Building2,
   Tag,
   ChevronRight,
+  CalendarDays,
+  Clock,
+  Percent,
 } from "lucide-react";
-import { formatWhatsAppMessage, buildWhatsAppLink } from "@/lib/intelligence";
+import { formatWhatsAppMessage, buildWhatsAppLink, WhatsAppCustomData } from "@/lib/intelligence";
 import { formatDistanceToNow } from "date-fns";
 import { IndustryType, WhatsAppTemplate } from "@/lib/types";
 
@@ -61,8 +64,11 @@ const SMART_TOKENS = [
   { token: "{days_since_last_visit}", label: "Days Since Visit" },
   { token: "{favorite_item}",   label: "Favorite Item" },
   { token: "{currency_symbol}", label: "Currency Symbol" },
-  { token: "{loyalty_points}",  label: "Loyalty Points" },
+  { token: "{custom_date}",     label: "Custom Date" },
+  { token: "{valid_until}",       label: "Valid Until" },
+  { token: "{appointment_date}",   label: "Appointment Date" },
 ];
+
 
 /* ─────────────────────────── Component ─────────────────────────── */
 export default function WhatsAppPage() {
@@ -84,6 +90,7 @@ export default function WhatsAppPage() {
   const [targetSegment, setTargetSegment] = useState<string>("all");
   const [selectedCustomerId] = useState<string>("");
   const [customMessage, setCustomMessage] = useState<string>("");
+  const [customData, setCustomData] = useState<WhatsAppCustomData>({});
   const [copied, setCopied] = useState(false);
 
   /* ── Derived template list: industry presets + system defaults ── */
@@ -128,8 +135,8 @@ export default function WhatsAppPage() {
   const finalMessageBody = useMemo(() => {
     const rawTemplate = customMessage || activeTemplate?.message || "";
     if (!previewCustomer) return rawTemplate;
-    return formatWhatsAppMessage(rawTemplate, previewCustomer, activeBusiness);
-  }, [customMessage, activeTemplate, previewCustomer, activeBusiness]);
+    return formatWhatsAppMessage(rawTemplate, previewCustomer, activeBusiness, customData);
+  }, [customMessage, activeTemplate, previewCustomer, activeBusiness, customData]);
 
   /* ── Handlers ── */
   const handleCopy = () => {
@@ -144,7 +151,7 @@ export default function WhatsAppPage() {
 
   const handleSendToCustomer = (customer: (typeof customers)[0]) => {
     const rawTemplate = customMessage || activeTemplate?.message || "";
-    const msg = formatWhatsAppMessage(rawTemplate, customer, activeBusiness);
+    const msg = formatWhatsAppMessage(rawTemplate, customer, activeBusiness, customData);
     const link = buildWhatsAppLink(customer.phone, msg);
 
     logWhatsAppSend({
@@ -361,7 +368,106 @@ export default function WhatsAppPage() {
               </div>
             </div>
 
+            {/* Custom Date & Personalization UI */}
+            <div className="rounded-2xl border border-[#EAECF0] bg-[#F8F8F9] p-4 space-y-4">
+              <div className="flex items-center gap-2 mb-1">
+                <CalendarDays className="h-4 w-4 text-[#6C4DFF]" />
+                <h4 className="text-xs font-bold text-[#111439] uppercase tracking-wider">Customize Dates & Offers</h4>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* validUntil / customDate input */}
+                <div>
+                  <label className="block text-[10px] font-bold text-[#667085] uppercase tracking-wider mb-1.5 mt-0">
+                    Expiry / Custom Date <span className="text-[#6C4DFF] ml-1 font-black">{"{valid_until}"}</span>
+                  </label>
+                  <div className="flex gap-1.5">
+                    <input
+                      type="date"
+                      className="w-[110px] rounded-lg border border-[#EAECF0] bg-[#FFFFFF] px-2 py-1.5 text-xs font-medium text-[#111439] focus:border-[#6C4DFF] focus:outline-none transition-all cursor-pointer"
+                      onChange={(e) => {
+                        if (e.target.value) {
+                           const d = new Date(e.target.value);
+                           const formatted = d.toLocaleDateString("en-IN", { weekday: 'short', month: 'short', day: 'numeric' });
+                           setCustomData(prev => ({ ...prev, validUntil: formatted, customDate: formatted }));
+                        }
+                      }}
+                    />
+                    <input
+                      type="text"
+                      placeholder="e.g. this Sunday"
+                      value={customData.validUntil || ""}
+                      onChange={(e) => setCustomData(prev => ({ ...prev, validUntil: e.target.value, customDate: e.target.value }))}
+                      className="flex-1 w-full min-w-0 rounded-lg border border-[#EAECF0] bg-[#FFFFFF] px-3 py-1.5 text-xs font-medium text-[#111439] focus:border-[#6C4DFF] focus:outline-none transition-all"
+                    />
+                  </div>
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {["Today", "Tomorrow", "This Weekend", "Next 7 Days"].map(label => (
+                      <button
+                        key={label}
+                        onClick={() => setCustomData(prev => ({ ...prev, validUntil: label, customDate: label }))}
+                        className="rounded px-2 py-0.5 text-[9px] font-bold text-[#667085] bg-[#FFFFFF] border border-[#EAECF0] hover:border-[#6C4DFF]/40 hover:text-[#6C4DFF] transition-colors cursor-pointer"
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* appointmentDate input */}
+                <div>
+                  <label className="block text-[10px] font-bold text-[#667085] uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                    <Clock className="h-3 w-3" /> Appointment Time <span className="text-[#6C4DFF] ml-1 font-black">{"{appointment_date}"}</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Tomorrow at 11:00 AM"
+                    value={customData.appointmentDate || ""}
+                    onChange={(e) => setCustomData(prev => ({ ...prev, appointmentDate: e.target.value }))}
+                    className="w-full rounded-lg border border-[#EAECF0] bg-[#FFFFFF] px-3 py-1.5 text-xs font-medium text-[#111439] focus:border-[#6C4DFF] focus:outline-none transition-all"
+                  />
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {["Tomorrow 10 AM", "Tomorrow 4 PM", "Saturday 11 AM"].map(label => (
+                      <button
+                        key={label}
+                        onClick={() => setCustomData(prev => ({ ...prev, appointmentDate: label }))}
+                        className="rounded px-2 py-0.5 text-[9px] font-bold text-[#667085] bg-[#FFFFFF] border border-[#EAECF0] hover:border-[#6C4DFF]/40 hover:text-[#6C4DFF] transition-colors cursor-pointer"
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* customOfferDiscount input */}
+                <div>
+                  <label className="block text-[10px] font-bold text-[#667085] uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                    <Percent className="h-3 w-3" /> Offer Discount <span className="text-[#6C4DFF] ml-1 font-black">{"{offer_discount}"}</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 15, 20, Flat ₹100 Off"
+                    value={customData.customOfferDiscount || ""}
+                    onChange={(e) => setCustomData(prev => ({ ...prev, customOfferDiscount: e.target.value }))}
+                    className="w-full rounded-lg border border-[#EAECF0] bg-[#FFFFFF] px-3 py-1.5 text-xs font-medium text-[#111439] focus:border-[#6C4DFF] focus:outline-none transition-all"
+                  />
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {["10", "15", "20", "25", "30"].map(val => (
+                      <button
+                        key={val}
+                        onClick={() => setCustomData(prev => ({ ...prev, customOfferDiscount: val }))}
+                        className="rounded px-2 py-0.5 text-[9px] font-bold text-[#667085] bg-[#FFFFFF] border border-[#EAECF0] hover:border-[#6C4DFF]/40 hover:text-[#6C4DFF] transition-colors cursor-pointer"
+                      >
+                        {val}%
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Template Message Body */}
+
             <div>
               <label className="block text-xs font-bold text-[#667085] uppercase tracking-wider mb-1.5">
                 Template Message Body
