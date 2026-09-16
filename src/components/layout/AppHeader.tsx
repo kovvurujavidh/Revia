@@ -52,14 +52,14 @@ export function AppHeader({ onOpenQR, onToggleMobileMenu }: AppHeaderProps) {
   if (!activeBusiness?.id) return null;
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-[#EAECF0] bg-[#FFFFFF]/90 backdrop-blur-xl px-4 md:px-6 shadow-sm">
+    <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b border-[#EAECF0] bg-[#FFFFFF]/90 backdrop-blur-xl px-4 md:px-6 shadow-sm">
       {/* Left: Mobile Nav Hamburger + Revia Brand + Business Switcher */}
       <div className="flex items-center gap-3 min-w-0">
 
         {/* Hamburger Menu Trigger (Mobile Only) */}
         <button
           onClick={onToggleMobileMenu}
-          className="md:hidden flex h-9 w-9 items-center justify-center rounded-lg bg-[#F8F8F9] text-[#111439] border border-[#EAECF0] hover:bg-[#F1F1F4] hover:text-[#6C4DFF] transition-colors"
+          className="md:hidden flex h-10 w-10 items-center justify-center rounded-lg bg-[#F8F8F9] text-[#111439] border border-[#EAECF0] hover:bg-[#F1F1F4] hover:text-[#6C4DFF] transition-colors shrink-0"
           aria-label="Open mobile navigation menu"
         >
           <Menu className="h-5 w-5" />

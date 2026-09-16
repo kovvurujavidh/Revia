@@ -25,11 +25,14 @@ import {
   Phone,
   Sparkles,
   X,
+  Clock,
+  CreditCard,
+  AlertTriangle,
 } from "lucide-react";
 import Link from "next/link";
 
 export default function DashboardPage() {
-  const { activeBusiness, opportunities, addStaffMember } = useApp();
+  const { activeBusiness, opportunities, addStaffMember, trialDaysRemaining, isTrialActive, isReadOnly } = useApp();
   const [isQROpen, setIsQROpen] = useState(false);
   const [isAddStaffOpen, setIsAddStaffOpen] = useState(false);
   const [staffName, setStaffName] = useState("");
@@ -68,6 +71,83 @@ export default function DashboardPage() {
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 animate-fade-in">
+      {/* Subscription Status Banner */}
+      {isTrialActive && (
+        <div className={`rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border ${
+          trialDaysRemaining <= 3
+            ? "bg-[#EF4444]/5 border-[#EF4444]/20"
+            : trialDaysRemaining <= 7
+            ? "bg-[#F59E0B]/5 border-[#F59E0B]/20"
+            : "bg-[#6C4DFF]/5 border-[#6C4DFF]/20"
+        }`}>
+          <div className="flex items-center gap-3">
+            <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${
+              trialDaysRemaining <= 3
+                ? "bg-[#EF4444]/10 text-[#EF4444]"
+                : trialDaysRemaining <= 7
+                ? "bg-[#F59E0B]/10 text-[#F59E0B]"
+                : "bg-[#6C4DFF]/10 text-[#6C4DFF]"
+            }`}>
+              <Clock className="h-5 w-5" />
+            </div>
+            <div>
+              <p className={`text-sm font-bold ${
+                trialDaysRemaining <= 3
+                  ? "text-[#EF4444]"
+                  : trialDaysRemaining <= 7
+                  ? "text-[#F59E0B]"
+                  : "text-[#111439]"
+              }`}>
+                {trialDaysRemaining} days remaining in your free trial
+              </p>
+              <p className="text-xs text-[#667085] mt-0.5">
+                {trialDaysRemaining <= 3
+                  ? "Your trial is ending soon. Upgrade now to keep all features."
+                  : trialDaysRemaining <= 7
+                  ? "Upgrade to continue using all retention features after your trial."
+                  : "Enjoy full access to all Revia features during your trial period."}
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/profile"
+            className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold shadow-sm transition-all shrink-0 btn-interactive ${
+              trialDaysRemaining <= 3
+                ? "bg-[#EF4444] text-white hover:bg-[#DC2626] shadow-[#EF4444]/25"
+                : trialDaysRemaining <= 7
+                ? "bg-[#F59E0B] text-white hover:bg-[#D97706] shadow-[#F59E0B]/25"
+                : "brand-gradient text-white shadow-purple-500/20 hover:opacity-95"
+            }`}
+          >
+            <CreditCard className="h-4 w-4" />
+            <span>{trialDaysRemaining <= 3 ? "Upgrade Now" : "View Plans"}</span>
+          </Link>
+        </div>
+      )}
+
+      {isReadOnly && (
+        <div className="rounded-2xl bg-[#EF4444]/5 border border-[#EF4444]/20 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#EF4444]/10 text-[#EF4444]">
+              <AlertTriangle className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-[#EF4444]">Trial Expired</p>
+              <p className="text-xs text-[#667085] mt-0.5">
+                Your account is in read-only mode. Upgrade to add visits and send messages.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/profile"
+            className="inline-flex items-center gap-2 rounded-xl bg-[#EF4444] px-4 py-2 text-xs font-bold text-white shadow-md shadow-[#EF4444]/25 hover:bg-[#DC2626] transition-all shrink-0 btn-interactive"
+          >
+            <CreditCard className="h-4 w-4" />
+            <span>Activate Subscription</span>
+          </Link>
+        </div>
+      )}
+
       {/* Modal for QR Code */}
       <CounterQRCode isOpen={isQROpen} onClose={() => setIsQROpen(false)} />
 

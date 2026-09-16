@@ -41,6 +41,12 @@
   --color-text-muted: var(--text-muted);
   --color-border-subtle: var(--border-subtle);
   --color-border-medium: var(--border-medium);
+  --breakpoint-xs: 480px;
+}
+
+/* iOS safe area bottom padding for mobile bottom nav */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 * {

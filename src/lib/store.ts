@@ -505,7 +505,7 @@ export class AppStore {
     return { maxStaff: 999, maxManagers: 999, label: "Pro Unlimited" };
   }
 
-  public async addStaffMember(staff: Omit<StaffMember, "id" | "created_at">): Promise<StaffMember> {
+  public async addStaffMember(staff: Omit<StaffMember, "id" | "created_at"> & { password?: string }): Promise<StaffMember> {
     const bizId = staff.business_id || this.state.activeBusinessId;
     const currentBiz = this.state.businesses.find((b) => b.id === bizId) || this.getActiveBusiness();
     const isTrial = currentBiz?.subscription_status === "trialing";
@@ -536,6 +536,7 @@ export class AppStore {
             phone: staff.phone,
             role: staff.role,
             business_id: bizId,
+            password: staff.password,
           }),
         });
         if (res.ok) {

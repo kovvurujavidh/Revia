@@ -64,7 +64,7 @@ export default function ProfilePage() {
 
   const founderUpiId = platformSettings?.upi_id || DEFAULT_FOUNDER_UPI.upi_id;
   const founderUpiName = platformSettings?.upi_name || DEFAULT_FOUNDER_UPI.upi_name;
-  const supportPhone = platformSettings?.support_whatsapp || "919876543210";
+  const supportPhone = platformSettings?.support_whatsapp || "917670860094";
 
   const handleOpenUpiModal = (plan: any) => {
     setSelectedPlanForUpi(plan);
@@ -179,13 +179,12 @@ export default function ProfilePage() {
             <div className="flex items-center gap-2">
               <h2 className="text-lg font-bold text-[#111439]">{activeBusiness.name}</h2>
               <span
-                className={`rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider ${
-                  activeBusiness.subscription_status === "trialing"
+                className={`rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider ${activeBusiness.subscription_status === "trialing"
                     ? "bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20"
                     : activeBusiness.subscription_status === "active"
-                    ? "bg-[#16A34A]/10 text-[#16A34A] border border-[#16A34A]/20"
-                    : "bg-[#EF4444]/10 text-[#EF4444] border border-[#EF4444]/20"
-                }`}
+                      ? "bg-[#16A34A]/10 text-[#16A34A] border border-[#16A34A]/20"
+                      : "bg-[#EF4444]/10 text-[#EF4444] border border-[#EF4444]/20"
+                  }`}
               >
                 {activeBusiness.subscription_status === "trialing"
                   ? `Free Trial (${trialDaysRemaining}d left)`
@@ -196,8 +195,8 @@ export default function ProfilePage() {
               {activeBusiness.subscription_status === "trialing"
                 ? `You have ${trialDaysRemaining} days remaining in your unrestricted 14‑day trial.`
                 : activeBusiness.subscription_status === "active"
-                ? `Active subscription on the ${activeBusiness.subscription_plan} tier with unlimited return triggers.`
-                : "Your trial has expired. You are currently in read‑only mode."}
+                  ? `Active subscription on the ${activeBusiness.subscription_plan} tier with unlimited return triggers.`
+                  : "Your trial has expired. You are currently in read‑only mode."}
             </p>
           </div>
 
@@ -247,21 +246,19 @@ export default function ProfilePage() {
           <div className="inline-flex items-center gap-1 rounded-xl bg-[#F8F8F9] p-1 border border-[#EAECF0] shadow-none mt-2">
             <button
               onClick={() => setBillingCycle("monthly")}
-              className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer ${
-                billingCycle === "monthly"
+              className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer ${billingCycle === "monthly"
                   ? "brand-gradient text-white shadow-md shadow-purple-500/20"
                   : "text-[#667085] hover:text-[#111439]"
-              }`}
+                }`}
             >
               Monthly Billing
             </button>
             <button
               onClick={() => setBillingCycle("yearly")}
-              className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer ${
-                billingCycle === "yearly"
+              className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer ${billingCycle === "yearly"
                   ? "brand-gradient text-white shadow-md shadow-purple-500/20"
                   : "text-[#667085] hover:text-[#111439]"
-              }`}
+                }`}
             >
               Yearly (Save 20%)
             </button>
@@ -282,9 +279,8 @@ export default function ProfilePage() {
             return (
               <div
                 key={plan.id}
-                className={`brand-card p-6 flex flex-col justify-between relative transition-all ${
-                  plan.is_popular ? "border-[#6C4DFF] shadow-md shadow-purple-500/10" : ""
-                }`}
+                className={`brand-card p-6 flex flex-col justify-between relative transition-all ${plan.is_popular ? "border-[#6C4DFF] shadow-md shadow-purple-500/10" : ""
+                  }`}
               >
                 {plan.is_popular && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full brand-gradient text-white btn-interactive px-3 py-0.5 text-[10px] font-black uppercase tracking-wider shadow-xs">
@@ -318,13 +314,12 @@ export default function ProfilePage() {
                   <button
                     disabled={isCurrent}
                     onClick={() => handleOpenUpiModal(plan)}
-                    className={`w-full py-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
-                      isCurrent
+                    className={`w-full py-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${isCurrent
                         ? "bg-[#F8F8F9] text-[#94A3B8] cursor-not-allowed"
                         : plan.is_popular
-                        ? "brand-gradient text-white btn-interactive shadow-md shadow-purple-500/20 hover:opacity-95"
-                        : "bg-[#111439] text-white hover:bg-[#1a1d4a]"
-                    }`}
+                          ? "brand-gradient text-white btn-interactive shadow-md shadow-purple-500/20 hover:opacity-95"
+                          : "bg-[#111439] text-white hover:bg-[#1a1d4a]"
+                      }`}
                   >
                     {isCurrent ? (
                       <span>Current Active Plan</span>
@@ -390,13 +385,12 @@ export default function ProfilePage() {
                     </td>
                     <td className="py-3 px-3">
                       <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                          p.status === "approved"
+                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${p.status === "approved"
                             ? "bg-[#16A34A]/10 text-[#16A34A] border border-[#16A34A]/20"
                             : p.status === "pending"
-                            ? "bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20"
-                            : "bg-[#EF4444]/10 text-[#EF4444] border border-[#EF4444]/20"
-                        }`}
+                              ? "bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20"
+                              : "bg-[#EF4444]/10 text-[#EF4444] border border-[#EF4444]/20"
+                          }`}
                       >
                         {p.status}
                       </span>

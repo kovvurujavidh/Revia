@@ -23,6 +23,8 @@ import {
   Lock,
   ArrowRight,
   Phone,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 
 export default function SettingsPage() {
@@ -57,6 +59,8 @@ export default function SettingsPage() {
   const [newStaffPhone, setNewStaffPhone] = useState("");
   const [newStaffEmail, setNewStaffEmail] = useState("");
   const [newStaffRole, setNewStaffRole] = useState<"manager" | "staff">("staff");
+  const [newStaffPassword, setNewStaffPassword] = useState("");
+  const [showStaffPassword, setShowStaffPassword] = useState(false);
   const [isAddingStaff, setIsAddingStaff] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -135,6 +139,12 @@ export default function SettingsPage() {
       return;
     }
 
+    if (!newStaffPassword.trim() || newStaffPassword.length < 6) {
+      setDataToast("Password must be at least 6 characters. This will be the staff member's login password.");
+      setTimeout(() => setDataToast(null), 3500);
+      return;
+    }
+
     if (newStaffRole === "staff" && currentStaffCount >= staffLimit) {
       setDataToast(`Plan Limit: ${isTrial ? "Free Trial" : plan} allows max ${staffLimit} staff member(s). Please upgrade to add more.`);
       setTimeout(() => setDataToast(null), 4000);
@@ -156,14 +166,16 @@ export default function SettingsPage() {
         role: newStaffRole,
         status: "active",
         business_id: activeBusiness.id,
+        password: newStaffPassword,
       });
 
       setNewStaffName("");
       setNewStaffEmail("");
       setNewStaffPhone("");
+      setNewStaffPassword("");
       setShowInviteModal(false);
-      setDataToast(`Staff member linked! They can now log in via Staff Login with phone ${newStaffPhone.trim()}`);
-      setTimeout(() => setDataToast(null), 3500);
+      setDataToast(`Staff member added! They can now log in via Staff Login with email ${newStaffEmail.trim() || `${newStaffPhone.replace(/[^0-9]/g, "")}@staff.revia.app`}`);
+      setTimeout(() => setDataToast(null), 4000);
     } catch (err: any) {
       setDataToast(err.message || "Failed to add staff member.");
       setTimeout(() => setDataToast(null), 4000);
@@ -446,8 +458,8 @@ export default function SettingsPage() {
 
           {/* Invite Modal */}
           {showInviteModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#111439]/60 backdrop-blur-xs p-4 animate-fade-in">
-              <div className="w-full max-w-md rounded-2xl border border-[#EAECF0] bg-[#FFFFFF] p-6 shadow-2xl space-y-4">
+            <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-[#111439]/60 backdrop-blur-xs sm:p-4 animate-fade-in">
+              <div className="w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl border border-[#EAECF0] bg-[#FFFFFF] p-5 sm:p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
                 <div className="flex items-center justify-between border-b border-[#EAECF0] pb-3">
                   <div>
                     <h3 className="text-sm font-bold text-[#111439]">Add New Team Member</h3>
@@ -457,7 +469,7 @@ export default function SettingsPage() {
                   </div>
                   <button
                     onClick={() => setShowInviteModal(false)}
-                    className="text-xs font-bold text-[#667085] hover:text-[#111439] cursor-pointer"
+                    className="text-xs font-bold text-[#667085] hover:text-[#111439] cursor-pointer p-1"
                   >
                     ✕
                   </button>
@@ -507,6 +519,34 @@ export default function SettingsPage() {
                       onChange={(e) => setNewStaffEmail(e.target.value)}
                       className="w-full rounded-xl border border-[#EAECF0] bg-[#F8F8F9] px-3 py-2 text-xs font-medium text-[#111439] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#6C4DFF] focus:bg-[#FFFFFF] transition-colors"
                     />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-[#111439] mb-1 flex items-center gap-1">
+                      <Lock className="h-3 w-3 text-[#6C4DFF]" />
+                      <span>Login Password *</span>
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showStaffPassword ? "text" : "password"}
+                        required
+                        minLength={6}
+                        placeholder="At least 6 characters"
+                        value={newStaffPassword}
+                        onChange={(e) => setNewStaffPassword(e.target.value)}
+                        className="w-full rounded-xl border border-[#EAECF0] bg-[#F8F8F9] px-3 py-2 pr-9 text-xs font-medium text-[#111439] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#6C4DFF] focus:bg-[#FFFFFF] transition-colors"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowStaffPassword(!showStaffPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#111439]"
+                      >
+                        {showStaffPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                      </button>
+                    </div>
+                    <p className="text-[10px] text-[#667085] mt-1">
+                      The staff member will use this password to log in via &ldquo;Staff Login&rdquo;.
+                    </p>
                   </div>
 
                   <div>

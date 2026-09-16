@@ -271,9 +271,9 @@ export default function LoginPage() {
 
   if (showForgot) {
     return (
-      <div className="min-h-screen bg-[#F8F8F9] flex flex-col items-center justify-center px-4">
+      <div className="min-h-screen bg-[#F8F8F9] flex flex-col items-center justify-center px-4 py-8">
         <div className="relative w-full max-w-sm animate-fade-in">
-          <div className="text-center mb-8">
+          <div className="text-center mb-6 sm:mb-8">
             <Link href="/" className="inline-flex items-center gap-2.5 mb-6">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl brand-gradient text-white shadow-lg shadow-purple-500/20">
                 <Zap className="h-5 w-5" />
@@ -281,7 +281,7 @@ export default function LoginPage() {
               <span className="text-xl font-black tracking-tight text-[#111439]">Revia</span>
             </Link>
             <h1 className="text-2xl font-black text-[#111439]">Reset Password</h1>
-            <p className="text-sm text-[#667085] mt-2 font-medium">Enter your email and we&apos;ll send you a secure reset link.</p>
+            <p className="text-xs sm:text-sm text-[#667085] mt-2 font-medium">Enter your email and we&apos;ll send you a secure reset link.</p>
           </div>
 
           <div className="brand-card p-8 shadow-xl">
@@ -333,7 +333,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F8F9] flex flex-col items-center justify-center px-4">
+    <div className="min-h-screen bg-[#F8F8F9] flex flex-col items-center justify-center px-4 py-8">
       <div className="relative w-full max-w-sm animate-fade-in">
         {/* Header */}
         <div className="text-center mb-8">

@@ -42,7 +42,7 @@ export function AppLayoutWrapper({ children }: { children: React.ReactNode }) {
 
       {/* Trial Expiry / Warning Top Bar for App pages */}
       {!isPublicPage && isTrialActive && trialDaysRemaining <= 4 && (
-        <div className="bg-[#F59E0B] px-4 py-2 text-center text-xs font-bold text-white flex items-center justify-center gap-2 sticky top-0 z-50 shadow-xs">
+        <div className="bg-[#F59E0B] px-4 py-2 text-center text-xs font-bold text-white flex items-center justify-center gap-2 sticky top-0 z-30 shadow-xs">
           <Clock className="h-4 w-4 animate-bounce" />
           <span>Your 14-day free trial expires in {trialDaysRemaining} days! Upgrade now to keep all retention features.</span>
           <Link
@@ -55,7 +55,7 @@ export function AppLayoutWrapper({ children }: { children: React.ReactNode }) {
       )}
 
       {!isPublicPage && isReadOnly && (
-        <div className="bg-[#EF4444] px-4 py-2 text-center text-xs font-bold text-white flex items-center justify-center gap-2 sticky top-0 z-50 shadow-xs">
+        <div className="bg-[#EF4444] px-4 py-2 text-center text-xs font-bold text-white flex items-center justify-center gap-2 sticky top-0 z-30 shadow-xs">
           <AlertTriangle className="h-4 w-4" />
           <span>Your free trial has expired. You are currently in safe read-only mode. Upgrade to continue adding visits & sending messages.</span>
           <Link

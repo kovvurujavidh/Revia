@@ -12,11 +12,18 @@ export async function POST(req: NextRequest) {
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || supabaseAnonKey;
 
-    const { name, email, phone, role, business_id } = await req.json();
+    const { name, email, phone, role, business_id, password } = await req.json();
 
     if (!name || !phone || !role || !business_id) {
       return NextResponse.json(
         { error: "Name, phone, role, and business_id are required." },
+        { status: 400 }
+      );
+    }
+
+    if (!password || password.length < 6) {
+      return NextResponse.json(
+        { error: "Password must be at least 6 characters." },
         { status: 400 }
       );
     }
@@ -35,11 +42,12 @@ export async function POST(req: NextRequest) {
 
     const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
 
-    // 1. Try to create the auth user
+    // 1. Try to create the auth user with password
     let userId: string;
     const { data: authData, error: authError } =
       await supabaseAdmin.auth.admin.createUser({
         email: cleanEmail,
+        password: password,
         email_confirm: true,
         user_metadata: {
           full_name: name.trim(),

@@ -175,6 +175,40 @@ export default function AdminPage() {
       b.phone.includes(searchTerm)
   );
 
+  // Helper: Calculate days remaining for a business subscription
+  const getSubscriptionDaysLeft = (biz: typeof businesses[0]): number => {
+    const endDate = biz.trial_end_date ? new Date(biz.trial_end_date) : null;
+    if (!endDate) return 0;
+    const now = new Date();
+    const diff = endDate.getTime() - now.getTime();
+    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+  };
+
+  const getSubscriptionBadge = (biz: typeof businesses[0]) => {
+    const daysLeft = getSubscriptionDaysLeft(biz);
+    const status = biz.subscription_status;
+
+    if (biz.is_suspended) {
+      return { color: "bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/20", label: "Suspended", days: null };
+    }
+    if (status === "active") {
+      return { color: "bg-[#16A34A]/10 text-[#16A34A] border-[#16A34A]/20", label: "Active", days: daysLeft };
+    }
+    if (status === "trialing") {
+      if (daysLeft <= 0) return { color: "bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/20", label: "Trial Expired", days: 0 };
+      if (daysLeft <= 3) return { color: "bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/20", label: "Trial", days: daysLeft };
+      if (daysLeft <= 7) return { color: "bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B]/20", label: "Trial", days: daysLeft };
+      return { color: "bg-[#3B82F6]/10 text-[#3B82F6] border-[#3B82F6]/20", label: "Trial", days: daysLeft };
+    }
+    if (status === "expired") {
+      return { color: "bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/20", label: "Expired", days: 0 };
+    }
+    if (status === "past_due") {
+      return { color: "bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B]/20", label: "Past Due", days: daysLeft };
+    }
+    return { color: "bg-[#667085]/10 text-[#667085] border-[#667085]/20", label: status, days: daysLeft };
+  };
+
   const handleApprovePayment = async (paymentId: string) => {
     await approveSubscriptionPayment(paymentId, "manual_founder");
     setToastMsg("Payment verified and plan activated successfully!");
@@ -631,87 +665,106 @@ export default function AdminPage() {
                 <thead>
                   <tr className="border-b border-[#EAECF0] text-[#667085] font-bold uppercase tracking-wider text-[10px]">
                     <th className="py-3 px-3">Business Name</th>
-                    <th className="py-3 px-3">Industry</th>
-                    <th className="py-3 px-3">Contact</th>
-                    <th className="py-3 px-3">Plan Tier</th>
+                    <th className="py-3 px-3 hidden sm:table-cell">Industry</th>
+                    <th className="py-3 px-3 hidden md:table-cell">Contact</th>
+                    <th className="py-3 px-3">Plan</th>
                     <th className="py-3 px-3">Status</th>
-                    <th className="py-3 px-3 text-right">Quick Actions</th>
+                    <th className="py-3 px-3">Days Left</th>
+                    <th className="py-3 px-3 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#EAECF0]">
-                  {filteredBusinesses.map((biz) => (
-                    <tr key={biz.id} className="hover:bg-[#F8F8F9]/60 transition-colors">
-                      <td className="py-3.5 px-3">
-                        <div className="font-bold text-[#111439]">{biz.name}</div>
-                        <div className="text-[11px] text-[#667085]">
-                          Owner: {biz.owner_name} ({biz.owner_email})
-                        </div>
-                      </td>
-                      <td className="py-3.5 px-3 capitalize text-[#667085]">
-                        {biz.industry.replace("_", " ")}
-                      </td>
-                      <td className="py-3.5 px-3 text-[#667085]">{biz.phone}</td>
-                      <td className="py-3.5 px-3">
-                        <select
-                          value={biz.subscription_plan}
-                          onChange={(e) =>
-                            handleChangePlan(
-                              biz.id,
-                              e.target.value as SubscriptionPlanId,
-                              biz.subscription_status
-                            )
-                          }
-                          className="rounded-lg border border-[#EAECF0] bg-[#FFFFFF] px-2 py-1 text-xs font-bold text-[#111439] uppercase focus:border-[#6C4DFF] focus:outline-none"
-                        >
-                          <option value="starter">Starter</option>
-                          <option value="growth">Growth</option>
-                          <option value="pro">Pro</option>
-                        </select>
-                      </td>
-                      <td className="py-3.5 px-3">
-                        <span
-                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                            biz.subscription_status === "active"
-                              ? "bg-[#16A34A]/10 text-[#16A34A] border border-[#16A34A]/20"
-                              : biz.subscription_status === "trialing"
-                              ? "bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20"
-                              : "bg-[#EF4444]/10 text-[#EF4444] border border-[#EF4444]/20"
-                          }`}
-                        >
-                          {biz.subscription_status}
-                        </span>
-                      </td>
-                      <td className="py-3.5 px-3 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <button
-                            onClick={() => handleExtendTrial(biz.id, 14)}
-                            className="flex items-center gap-1 px-2 py-1 rounded-lg border border-[#EAECF0] bg-[#FFFFFF] hover:bg-[#F1F1F4] text-[#111439] text-[11px] font-bold transition-colors cursor-pointer"
-                            title="Extend trial by +14 days"
+                  {filteredBusinesses.map((biz) => {
+                    const badge = getSubscriptionBadge(biz);
+                    const daysLeft = getSubscriptionDaysLeft(biz);
+                    return (
+                      <tr key={biz.id} className="hover:bg-[#F8F8F9]/60 transition-colors">
+                        <td className="py-3.5 px-3">
+                          <div className="font-bold text-[#111439]">{biz.name}</div>
+                          <div className="text-[11px] text-[#667085] sm:hidden capitalize">
+                            {biz.industry.replace("_", " ")}
+                          </div>
+                          <div className="text-[11px] text-[#667085]">
+                            Owner: {biz.owner_name}
+                          </div>
+                        </td>
+                        <td className="py-3.5 px-3 capitalize text-[#667085] hidden sm:table-cell">
+                          {biz.industry.replace("_", " ")}
+                        </td>
+                        <td className="py-3.5 px-3 text-[#667085] hidden md:table-cell">{biz.phone}</td>
+                        <td className="py-3.5 px-3">
+                          <select
+                            value={biz.subscription_plan}
+                            onChange={(e) =>
+                              handleChangePlan(
+                                biz.id,
+                                e.target.value as SubscriptionPlanId,
+                                biz.subscription_status
+                              )
+                            }
+                            className="rounded-lg border border-[#EAECF0] bg-[#FFFFFF] px-2 py-1 text-xs font-bold text-[#111439] uppercase focus:border-[#6C4DFF] focus:outline-none"
                           >
-                            <Gift className="h-3 w-3 text-[#6C4DFF]" />
-                            <span>+14d</span>
-                          </button>
-                          <button
-                            onClick={() => handleToggleSuspend(biz.id)}
-                            className={`px-2 py-1 rounded-lg text-[11px] font-bold transition-colors cursor-pointer ${
-                              biz.is_suspended
-                                ? "bg-[#16A34A]/10 text-[#16A34A] hover:bg-[#16A34A]/20"
-                                : "bg-[#EF4444]/10 text-[#EF4444] hover:bg-[#EF4444]/20"
-                            }`}
+                            <option value="starter">Starter</option>
+                            <option value="growth">Growth</option>
+                            <option value="pro">Pro</option>
+                          </select>
+                        </td>
+                        <td className="py-3.5 px-3">
+                          <span
+                            className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${badge.color}`}
                           >
-                            {biz.is_suspended ? "Unsuspend" : "Suspend"}
-                          </button>
-                          <button
-                            onClick={() => handleSwitchToTenant(biz.id)}
-                            className="flex items-center gap-1 px-2.5 py-1 rounded-lg brand-gradient text-white text-[11px] font-bold shadow-xs hover:opacity-90 transition-opacity cursor-pointer"
-                          >
-                            <span>Open</span>
-                            <ArrowRight className="h-3 w-3" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                            {badge.label}
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-3">
+                          {badge.days !== null ? (
+                            <div className="flex items-center gap-1.5">
+                              <span className={`text-sm font-black tabular-nums ${
+                                daysLeft <= 0 ? "text-[#EF4444]" :
+                                daysLeft <= 3 ? "text-[#EF4444]" :
+                                daysLeft <= 7 ? "text-[#F59E0B]" :
+                                "text-[#111439]"
+                              }`}>
+                                {daysLeft}
+                              </span>
+                              <span className="text-[10px] text-[#667085] font-medium">days</span>
+                            </div>
+                          ) : (
+                            <span className="text-[10px] text-[#EF4444] font-bold">N/A</span>
+                          )}
+                        </td>
+                        <td className="py-3.5 px-3 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              onClick={() => handleExtendTrial(biz.id, 14)}
+                              className="flex items-center gap-1 px-2 py-1 rounded-lg border border-[#EAECF0] bg-[#FFFFFF] hover:bg-[#F1F1F4] text-[#111439] text-[11px] font-bold transition-colors cursor-pointer"
+                              title="Extend trial by +14 days"
+                            >
+                              <Gift className="h-3 w-3 text-[#6C4DFF]" />
+                              <span className="hidden sm:inline">+14d</span>
+                            </button>
+                            <button
+                              onClick={() => handleToggleSuspend(biz.id)}
+                              className={`px-2 py-1 rounded-lg text-[11px] font-bold transition-colors cursor-pointer ${
+                                biz.is_suspended
+                                  ? "bg-[#16A34A]/10 text-[#16A34A] hover:bg-[#16A34A]/20"
+                                  : "bg-[#EF4444]/10 text-[#EF4444] hover:bg-[#EF4444]/20"
+                              }`}
+                            >
+                              {biz.is_suspended ? "Unsuspend" : "Suspend"}
+                            </button>
+                            <button
+                              onClick={() => handleSwitchToTenant(biz.id)}
+                              className="flex items-center gap-1 px-2.5 py-1 rounded-lg brand-gradient text-white text-[11px] font-bold shadow-xs hover:opacity-90 transition-opacity cursor-pointer"
+                            >
+                              <span>Open</span>
+                              <ArrowRight className="h-3 w-3" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
