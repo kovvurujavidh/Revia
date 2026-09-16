@@ -92,6 +92,7 @@ export async function POST(req: NextRequest) {
         email: cleanEmail,
         full_name: name.trim(),
         role,
+        phone: cleanPhone,
       })
       .select()
       .single();

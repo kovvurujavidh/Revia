@@ -60,7 +60,7 @@ export default function StaffLoginPage() {
     try {
       const supabase = getSupabase();
 
-      // Search in users table for any staff or manager with matching phone & name
+      // Search in users table for any staff or manager with matching phone
       const { data: usersData, error: usersErr } = await supabase
         .from("users")
         .select("*")
@@ -72,17 +72,22 @@ export default function StaffLoginPage() {
 
       let matchedUser = (usersData || []).find((u: any) => {
         const uPhoneDigits = normalizePhone(u.phone || "");
-        const nameMatches =
-          u.full_name?.toLowerCase().includes(cleanName.toLowerCase()) ||
-          cleanName.toLowerCase().includes(u.full_name?.toLowerCase() || "");
-
-        // Exact 10-digit suffix match or full digits match
+        
+        // Phone must match (exact or last 10 digits)
         const phoneMatches =
           uPhoneDigits === cleanDigits ||
           (cleanDigits.length >= 10 && uPhoneDigits.endsWith(cleanDigits.slice(-10))) ||
           (uPhoneDigits.length >= 10 && cleanDigits.endsWith(uPhoneDigits.slice(-10)));
 
-        return nameMatches && phoneMatches;
+        if (!phoneMatches) return false;
+
+        // If phone matches, name is flexible (partial match OK)
+        const nameMatches =
+          !cleanName ||
+          u.full_name?.toLowerCase().includes(cleanName.toLowerCase()) ||
+          cleanName.toLowerCase().includes(u.full_name?.toLowerCase() || "");
+
+        return nameMatches;
       });
 
       // Fallback check against active businesses if owner added them

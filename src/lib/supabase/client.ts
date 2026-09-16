@@ -15,27 +15,3 @@ export function getSupabase(): SupabaseClient {
   }
   return supabaseInstance;
 }
-
-export async function signInWithGooglePopup() {
-  const supabase = getSupabase();
-  try {
-    const redirectTo =
-      typeof window !== "undefined"
-        ? `${window.location.origin}/auth/callback`
-        : undefined;
-
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        queryParams: {
-          access_type: "offline",
-          prompt: "consent",
-        },
-        redirectTo,
-      },
-    });
-    return { data, error };
-  } catch (err: any) {
-    return { data: null, error: err };
-  }
-}
