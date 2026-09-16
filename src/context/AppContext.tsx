@@ -1,7 +1,7 @@
 // Importers/Callers: Root layout in src/app/layout.tsx, all app pages, navigation headers, and components.
 // Affected API: AppContext provider state, authentication state currentUser, staff login, store sync, unified email & Google login sync, UPI subscription payments, platform core settings.
 // Data Schemas: AppContextType, User, Business, StaffMember, SubscriptionPaymentRecord, PlatformCoreSettings from src/lib/types.ts.
-// User's Verbatim Instruction: "SAVE THIS AND RUN THIS TELL ME TO SEE"
+// User's Verbatim Instruction: "There is a problem I seen When I use my Gmail Google for login I don't get directly logged into Existent account in Website Say that's the normal big company do right if we log in using Google with existing email It should be login into our Website with our data right Fix And push it to Github"
 
 "use client";
 
@@ -129,15 +129,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     return () => unsubscribe();
   }, [syncFromStore]);
 
-  // Load data on mount - check for existing Supabase session
+  // Load data on mount - check for existing Supabase session & auto-reconcile Google OAuth accounts
   useEffect(() => {
     const supabase = getSupabase();
 
     const resolveUserProfile = async (sessionUser: any) => {
       const cleanEmail = sessionUser.email?.toLowerCase().trim() || "";
-      const userName = sessionUser.user_metadata?.full_name || sessionUser.user_metadata?.name || cleanEmail.split("@")[0];
+      const userName =
+        sessionUser.user_metadata?.full_name ||
+        sessionUser.user_metadata?.name ||
+        cleanEmail.split("@")[0];
 
-      // 1. Direct lookup by auth user ID
+      // 1. Check direct lookup by auth user ID
       const { data: profile } = await supabase
         .from("users")
         .select("*")
@@ -147,74 +150,47 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (profile?.business_id) {
         setCurrentUser({
           id: profile.id,
-          email: profile.email,
-          full_name: profile.full_name,
-          role: profile.role,
+          email: profile.email || cleanEmail,
+          full_name: profile.full_name || userName,
+          role: profile.role || "owner",
           business_id: profile.business_id,
           avatar_url: profile.avatar_url,
-          created_at: profile.created_at,
+          created_at: profile.created_at || new Date().toISOString(),
         });
         await store.loadForBusiness(profile.business_id);
         return true;
       }
 
-      // 2. Email-based user linking (for Google + Email/Password unified data)
+      // 2. Big-Tech Automatic Account Reconciliation (Google OAuth + Email linking)
       if (cleanEmail) {
-        const { data: userByEmail } = await supabase
-          .from("users")
-          .select("*")
-          .ilike("email", cleanEmail)
-          .limit(1)
-          .maybeSingle();
-
-        if (userByEmail?.business_id) {
-          await supabase.from("users").upsert({
-            id: sessionUser.id,
-            business_id: userByEmail.business_id,
-            email: cleanEmail,
-            full_name: userName || userByEmail.full_name,
-            role: userByEmail.role || "owner",
+        try {
+          const syncRes = await fetch("/api/auth/sync-profile", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              userId: sessionUser.id,
+              email: cleanEmail,
+              fullName: userName,
+            }),
           });
 
-          setCurrentUser({
-            id: sessionUser.id,
-            email: cleanEmail,
-            full_name: userName || userByEmail.full_name,
-            role: userByEmail.role || "owner",
-            business_id: userByEmail.business_id,
-            created_at: userByEmail.created_at || new Date().toISOString(),
-          });
-          await store.loadForBusiness(userByEmail.business_id);
-          return true;
-        }
-
-        // 3. Business owner_email lookup
-        const { data: matchedBiz } = await supabase
-          .from("businesses")
-          .select("*")
-          .ilike("owner_email", cleanEmail)
-          .limit(1)
-          .maybeSingle();
-
-        if (matchedBiz) {
-          await supabase.from("users").upsert({
-            id: sessionUser.id,
-            business_id: matchedBiz.id,
-            email: cleanEmail,
-            full_name: userName || matchedBiz.owner_name || "Owner",
-            role: "owner",
-          });
-
-          setCurrentUser({
-            id: sessionUser.id,
-            email: cleanEmail,
-            full_name: userName || matchedBiz.owner_name || "Owner",
-            role: "owner",
-            business_id: matchedBiz.id,
-            created_at: new Date().toISOString(),
-          });
-          await store.loadForBusiness(matchedBiz.id);
-          return true;
+          if (syncRes.ok) {
+            const syncData = await syncRes.json();
+            if (syncData.linked && syncData.business_id) {
+              setCurrentUser({
+                id: sessionUser.id,
+                email: cleanEmail,
+                full_name: syncData.user?.full_name || userName,
+                role: syncData.user?.role || "owner",
+                business_id: syncData.business_id,
+                created_at: syncData.user?.created_at || new Date().toISOString(),
+              });
+              await store.loadForBusiness(syncData.business_id);
+              return true;
+            }
+          }
+        } catch (syncErr) {
+          console.error("Account sync error:", syncErr);
         }
       }
 
@@ -231,7 +207,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             await store.loadAllBusinesses();
           }
         } else {
-          // No session - load all businesses (for phone-based login)
+          // No session - load businesses
           await store.loadAllBusinesses();
         }
       } catch (e) {
@@ -248,9 +224,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
     initAuth();
 
-    // Listen for auth changes
+    // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === "SIGNED_IN" && session?.user) {
+      if ((event === "SIGNED_IN" || event === "USER_UPDATED" || event === "INITIAL_SESSION") && session?.user) {
         await resolveUserProfile(session.user);
       } else if (event === "SIGNED_OUT") {
         store.resetState();
