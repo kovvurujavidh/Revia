@@ -108,7 +108,7 @@ export function parsePGResident(customer: Customer, visits: Visit[]): ParsedPGRe
       ? "half_monthly"
       : "monthly");
 
-  const rentAmount = Number(meta.rent_amount) || Number(customer.avg_bill) || 6500;
+  const rentAmount = Number(meta.rent_amount) || Number(customer.avg_bill) || 5000;
   const roomNumber = meta.room_number || (customer.favorite_items?.[0] ? customer.favorite_items[0].replace("Room ", "") : "101");
   const bedNumber = meta.bed_number || (customer.favorite_items?.[1] ? customer.favorite_items[1].replace("Bed ", "") : "A");
 

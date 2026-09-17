@@ -49,7 +49,7 @@ export function PGDashboard() {
   // Form State for Add Resident
   const [newResidentName, setNewResidentName] = useState("");
   const [newResidentPhone, setNewResidentPhone] = useState("");
-  const [newResidentRent, setNewResidentRent] = useState("6500");
+  const [newResidentRent, setNewResidentRent] = useState("5000");
   const [newResidentPlan, setNewResidentPlan] = useState<"monthly" | "half_monthly" | "yearly">("monthly");
   const [newResidentRoom, setNewResidentRoom] = useState("101");
   const [newResidentBed, setNewResidentBed] = useState("A");
@@ -113,7 +113,7 @@ export function PGDashboard() {
 
     const metaString = serializePGMetadata({
       payment_plan: newResidentPlan,
-      rent_amount: Number(newResidentRent) || 6500,
+      rent_amount: Number(newResidentRent) || 5000,
       room_number: newResidentRoom.trim(),
       bed_number: newResidentBed.trim(),
       joining_date: newResidentJoining,
@@ -129,7 +129,7 @@ export function PGDashboard() {
       segment: "new",
       total_visits: 0,
       total_spend: 0,
-      avg_bill: Number(newResidentRent) || 6500,
+      avg_bill: Number(newResidentRent) || 5000,
       avg_visit_interval_days: 30,
       first_visit_date: new Date(newResidentJoining).toISOString(),
       last_visit_date: new Date(newResidentJoining).toISOString(),
