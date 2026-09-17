@@ -49,6 +49,7 @@ import {
   CheckCheck,
   Loader2,
   Trash2,
+  Key,
 } from "lucide-react";
 
 export default function AdminPage() {
@@ -76,6 +77,13 @@ export default function AdminPage() {
   >("subscriptions");
   const [searchTerm, setSearchTerm] = useState("");
   const [toastMsg, setToastMsg] = useState<string | null>(null);
+
+  // Reset Password State
+  const [resetPasswordBizId, setResetPasswordBizId] = useState<string | null>(null);
+  const [resetPasswordEmail, setResetPasswordEmail] = useState("");
+  const [resetPasswordValue, setResetPasswordValue] = useState("");
+  const [resetPasswordLoading, setResetPasswordLoading] = useState(false);
+  const [showResetPasswordModal, setShowResetPasswordModal] = useState(false);
 
   // SMS / Bank Statement Auto-Reconcile State
   const [showSmsReconciler, setShowSmsReconciler] = useState(false);
@@ -275,6 +283,32 @@ export default function AdminPage() {
   const handleToggleSuspend = (busId: string) => {
     adminToggleSuspend(busId);
     setToastMsg(`Toggled account status for ${businesses.find((b) => b.id === busId)?.name}`);
+    setTimeout(() => setToastMsg(null), 4000);
+  };
+
+  const handleResetPassword = async () => {
+    if (!resetPasswordBizId || !resetPasswordValue || resetPasswordValue.length < 6) return;
+    setResetPasswordLoading(true);
+    try {
+      // Find the auth user by email
+      const res = await fetch("/api/admin/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: resetPasswordBizId, newPassword: resetPasswordValue }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setToastMsg("Password updated successfully!");
+        setShowResetPasswordModal(false);
+        setResetPasswordValue("");
+        setResetPasswordBizId(null);
+      } else {
+        setToastMsg(`Error: ${data.error}`);
+      }
+    } catch {
+      setToastMsg("Failed to reset password");
+    }
+    setResetPasswordLoading(false);
     setTimeout(() => setToastMsg(null), 4000);
   };
 
@@ -518,6 +552,7 @@ export default function AdminPage() {
                       </div>
                       <div className="flex items-center gap-1.5">
                         <button onClick={() => handleExtendTrial(biz.id)} className="flex items-center gap-0.5 px-2 py-1 rounded-md border border-white/10 text-[10px] font-bold text-white/60 hover:text-white"><Gift className="h-3 w-3" /> +14d</button>
+                        <button onClick={() => { setResetPasswordBizId(biz.id); setResetPasswordEmail(biz.owner_email || ""); setResetPasswordValue(""); setShowResetPasswordModal(true); }} className="flex items-center gap-0.5 px-2 py-1 rounded-md border border-white/10 text-[10px] font-bold text-white/60 hover:text-white"><Key className="h-3 w-3" /> Pw</button>
                         <button onClick={() => handleToggleSuspend(biz.id)} className={`px-2 py-1 rounded-md text-[10px] font-bold ${biz.is_suspended ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>{biz.is_suspended ? "Unsuspend" : "Suspend"}</button>
                         <button onClick={() => handleSwitchToTenant(biz.id)} className="flex items-center gap-0.5 px-2 py-1 rounded-md bg-[#6C4DFF] text-white text-[10px] font-bold"><span>Open</span><ArrowRight className="h-3 w-3" /></button>
                       </div>
@@ -689,6 +724,23 @@ export default function AdminPage() {
               <button onClick={handleFullReset} disabled={isFullResetting} className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-red-600 text-white text-[11px] font-bold hover:bg-red-700 cursor-pointer disabled:opacity-50">
                 {isFullResetting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
                 {isFullResetting ? "Resetting..." : "Full Reset"}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Reset Password Modal */}
+        {showResetPasswordModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+            <div className="w-full max-w-sm rounded-2xl bg-[#1A1D27] border border-white/10 p-5 space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-bold text-white flex items-center gap-2"><Key className="h-4 w-4 text-[#6C4DFF]" /> Reset Password</h3>
+                <button onClick={() => { setShowResetPasswordModal(false); setResetPasswordValue(""); }} className="text-white/40 hover:text-white"><X className="h-4 w-4" /></button>
+              </div>
+              <div className="text-[10px] text-white/40">For: <span className="text-white/70 font-bold">{resetPasswordEmail || businesses.find(b => b.id === resetPasswordBizId)?.owner_email}</span></div>
+              <input type="text" placeholder="Enter new password (min 6 chars)" value={resetPasswordValue} onChange={(e) => setResetPasswordValue(e.target.value)} className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-xs text-white placeholder-white/30 focus:border-[#6C4DFF] focus:outline-none" />
+              <button onClick={handleResetPassword} disabled={resetPasswordLoading || resetPasswordValue.length < 6} className="w-full py-2.5 rounded-xl bg-[#6C4DFF] text-white text-xs font-bold flex items-center justify-center gap-2 hover:opacity-90 disabled:opacity-40 transition-all">
+                {resetPasswordLoading ? <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Updating...</> : "Update Password"}
               </button>
             </div>
           </div>
