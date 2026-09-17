@@ -99,7 +99,7 @@ export function AppHeader({ onOpenQR, onToggleMobileMenu }: AppHeaderProps) {
           </button>
 
           {isBizDropdownOpen && (
-            <div className="absolute left-0 mt-2 w-64 rounded-xl border border-[#EAECF0] bg-[#FFFFFF] p-2 shadow-[0_10px_30px_-5px_rgba(17,20,57,0.1)] z-50 animate-scale-in origin-top-left">
+            <div className="absolute left-0 mt-2 w-56 sm:w-64 rounded-xl border border-[#EAECF0] bg-[#FFFFFF] p-2 shadow-[0_10px_30px_-5px_rgba(17,20,57,0.1)] z-50 animate-scale-in origin-top-left">
               <p className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#94A3B8]">
                 Switch Business
               </p>

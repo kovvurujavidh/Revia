@@ -154,166 +154,138 @@ export default function OpportunitiesPage() {
   };
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 animate-fade-in">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl sm:text-3xl font-black text-[#111439] tracking-tight">Retention Action Center</h1>
-            <span className="rounded-full bg-[#EF4444]/10 border border-[#EF4444]/25 px-2.5 py-0.5 text-xs font-bold text-[#EF4444] tabular-nums">
-              {pendingOpportunities.length} Pending Actions
-            </span>
-          </div>
-          <p className="text-xs sm:text-sm text-[#667085] mt-1 font-medium">
-            Prioritized retention actions with 1-click personalized WhatsApp offers.
-          </p>
-        </div>
-      </div>
-
-      {/* Filter Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2">
-        <button
-          onClick={() => setActiveTab("all")}
-          className={`rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer btn-interactive whitespace-nowrap ${
-            activeTab === "all"
-              ? "brand-gradient text-white shadow-md shadow-purple-500/20"
-              : "bg-[#F8F8F9] text-[#667085] border border-[#EAECF0] hover:bg-[#F1F1F4] hover:text-[#111439]"
-          }`}
-        >
-          All Actions ({pendingOpportunities.length})
-        </button>
-        <button
-          onClick={() => setActiveTab("at_risk")}
-          className={`rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer btn-interactive whitespace-nowrap ${
-            activeTab === "at_risk"
-              ? "bg-[#EF4444] text-white shadow-md shadow-red-500/20"
-              : "bg-[#F8F8F9] text-[#667085] border border-[#EAECF0] hover:bg-[#F1F1F4] hover:text-[#111439]"
-          }`}
-        >
-          At-Risk Regulars
-        </button>
-        <button
-          onClick={() => setActiveTab("inactive_winback")}
-          className={`rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer btn-interactive whitespace-nowrap ${
-            activeTab === "inactive_winback"
-              ? "bg-[#F59E0B] text-white shadow-md shadow-amber-500/20"
-              : "bg-[#F8F8F9] text-[#667085] border border-[#EAECF0] hover:bg-[#F1F1F4] hover:text-[#111439]"
-          }`}
-        >
-          Win-Back Inactive
-        </button>
-        <button
-          onClick={() => setActiveTab("vip_appreciation")}
-          className={`rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer btn-interactive whitespace-nowrap ${
-            activeTab === "vip_appreciation"
-              ? "bg-[#6C4DFF] text-white shadow-md shadow-purple-500/20"
-              : "bg-[#F8F8F9] text-[#667085] border border-[#EAECF0] hover:bg-[#F1F1F4] hover:text-[#111439]"
-          }`}
-        >
-          VIP Retention
-        </button>
-        <button
-          onClick={() => setActiveTab("new_customer_retention")}
-          className={`rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer btn-interactive whitespace-nowrap ${
-            activeTab === "new_customer_retention"
-              ? "bg-[#16A34A] text-white shadow-md shadow-emerald-500/20"
-              : "bg-[#F8F8F9] text-[#667085] border border-[#EAECF0] hover:bg-[#F1F1F4] hover:text-[#111439]"
-          }`}
-        >
-          2nd-Visit Conversion
-        </button>
-      </div>
-
-      {/* Opportunities List */}
-      {filteredOpportunities.length === 0 ? (
-        <div className="brand-card p-12 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#16A34A]/10 border border-[#16A34A]/25 text-[#16A34A] mb-4">
-            <CheckCircle2 className="h-8 w-8" />
-          </div>
-          <h2 className="text-lg font-bold text-[#111439]">No pending actions in this category!</h2>
-          <p className="text-xs text-[#667085] mt-1 max-w-md mx-auto">
-            You are completely caught up. When customers miss their expected visit rhythm, new opportunities will automatically show up here.
-          </p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {filteredOpportunities.map((opp) => {
-            const customer = customers.find((c) => c.id === opp.customer_id);
-            const badge = getBadgeDetails(opp.type);
-            const BadgeIcon = badge.icon;
-
-            return (
-              <div
-                key={opp.id}
-                className="brand-card brand-card-hover p-5 sm:p-6 flex flex-col justify-between transition-all duration-200"
-              >
-                <div>
-                  <div className="flex items-start justify-between gap-3 mb-3">
-                    <span
-                      className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-bold ${badge.color}`}
-                    >
-                      <BadgeIcon className="h-3.5 w-3.5" />
-                      <span>{badge.label}</span>
+    <div className="min-h-screen bg-[#F4F5F7] animate-fade-in">
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-[#EAECF0]">
+        <div className="px-4 sm:px-6 lg:px-8 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#EF4444]/10 border border-[#EF4444]/20 text-[#EF4444] shrink-0">
+                <Sparkles className="h-4.5 w-4.5" />
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <h1 className="text-base sm:text-lg font-black text-[#111439] tracking-tight truncate">Actions</h1>
+                  {pendingOpportunities.length > 0 && (
+                    <span className="rounded-full bg-[#EF4444]/10 border border-[#EF4444]/25 px-2 py-0.5 text-[10px] font-bold text-[#EF4444] tabular-nums shrink-0">
+                      {pendingOpportunities.length}
                     </span>
-
-                    <span className="rounded-lg bg-[#FFFFFF] px-2.5 py-1 text-xs font-black text-[#111439] border border-[#EAECF0] tabular-nums shadow-xs">
-                      ₹{opp.potential_revenue?.toLocaleString()} at stake
-                    </span>
-                  </div>
-
-                  <h3 className="text-base font-bold text-[#111439]">
-                    {customer ? customer.name : opp.customer_name || "Customer"}{" "}
-                    <span className="text-xs text-[#667085] font-normal tabular-nums">
-                      ({customer?.phone || opp.customer_phone})
-                    </span>
-                  </h3>
-
-                  <p className="text-xs text-[#667085] mt-1.5 leading-relaxed font-medium">
-                    {opp.reason}
-                  </p>
-
-                  <div className="mt-3.5 rounded-xl bg-[#F8F8F9] p-3.5 border border-[#EAECF0]">
-                    <p className="text-[11px] font-bold text-[#6C4DFF] uppercase tracking-wider">
-                      Suggested Action:
-                    </p>
-                    <p className="text-xs font-semibold text-[#111439] mt-0.5 leading-relaxed">
-                      {opp.recommended_action}
-                    </p>
-                  </div>
+                  )}
                 </div>
+                <p className="text-[10px] text-[#667085] font-medium hidden sm:block">Retention actions with 1-click WhatsApp</p>
+              </div>
+            </div>
+          </div>
+        </div>
 
-                {/* Actions Footer */}
-                <div className="mt-5 pt-4 border-t border-[#EAECF0] flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2">
+        {/* Filter Tabs - Scrollable */}
+        <div className="px-4 sm:px-6 lg:px-8">
+          <div className="flex gap-1.5 overflow-x-auto pb-3 -mb-px scrollbar-hide">
+            {[
+              { key: "all" as const, label: "All", color: "brand-gradient", count: pendingOpportunities.length },
+              { key: "at_risk" as const, label: "At Risk", color: "bg-[#EF4444]", count: pendingOpportunities.filter(o => o.type === "at_risk").length },
+              { key: "inactive_winback" as const, label: "Win-Back", color: "bg-[#F59E0B]", count: pendingOpportunities.filter(o => o.type === "inactive_winback").length },
+              { key: "vip_appreciation" as const, label: "VIP", color: "bg-[#6C4DFF]", count: pendingOpportunities.filter(o => o.type === "vip_appreciation").length },
+              { key: "new_customer_retention" as const, label: "2nd Visit", color: "bg-[#16A34A]", count: pendingOpportunities.filter(o => o.type === "new_customer_retention").length },
+            ].map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-bold whitespace-nowrap transition-all shrink-0 ${
+                  activeTab === tab.key
+                    ? `${tab.color} text-white shadow-sm`
+                    : "bg-white text-[#667085] border border-[#EAECF0] hover:border-[#D0D5DD]"
+                }`}
+              >
+                {tab.label}
+                <span className={`text-[9px] px-1 py-0.5 rounded-full ${activeTab === tab.key ? "bg-white/20" : "bg-[#F4F5F7]"}`}>
+                  {tab.count}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="px-4 sm:px-6 lg:px-8 py-4 space-y-3 max-w-7xl mx-auto">
+        {/* Opportunities List */}
+        {filteredOpportunities.length === 0 ? (
+          <div className="bg-white rounded-2xl border border-[#EAECF0] p-8 sm:p-12 text-center shadow-xs">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#16A34A]/10 border border-[#16A34A]/25 text-[#16A34A] mb-3">
+              <CheckCircle2 className="h-7 w-7" />
+            </div>
+            <h2 className="text-sm sm:text-base font-bold text-[#111439]">All caught up!</h2>
+            <p className="text-xs text-[#667085] mt-1 max-w-sm mx-auto">
+              No pending actions. New opportunities appear when customers miss their visit rhythm.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {filteredOpportunities.map((opp) => {
+              const customer = customers.find((c) => c.id === opp.customer_id);
+              const badge = getBadgeDetails(opp.type);
+              const BadgeIcon = badge.icon;
+
+              return (
+                <div
+                  key={opp.id}
+                  className="bg-white rounded-2xl border border-[#EAECF0] p-4 shadow-xs transition-all"
+                >
+                  {/* Top: Badge + Revenue */}
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <span className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[10px] font-bold ${badge.color}`}>
+                      <BadgeIcon className="h-3 w-3" />
+                      {badge.label}
+                    </span>
+                    {opp.potential_revenue && (
+                      <span className="text-[11px] font-bold text-[#111439] tabular-nums">
+                        ₹{opp.potential_revenue.toLocaleString()}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Customer Info */}
+                  <h3 className="text-sm font-bold text-[#111439]">
+                    {customer ? customer.name : opp.customer_name || "Customer"}
+                  </h3>
+                  <p className="text-[11px] text-[#667085] mt-0.5">{opp.reason}</p>
+
+                  {/* Suggested Action */}
+                  <div className="mt-2.5 rounded-xl bg-[#F4F5F7] px-3 py-2">
+                    <p className="text-[10px] font-bold text-[#6C4DFF] uppercase tracking-wider">Suggested:</p>
+                    <p className="text-[11px] font-semibold text-[#111439] mt-0.5">{opp.recommended_action}</p>
+                  </div>
+
+                  {/* Action Buttons - Full Width Touch Targets */}
+                  <div className="mt-3 grid grid-cols-3 gap-2">
                     <button
                       onClick={() => resolveOpportunity(opp.id, "dismissed")}
-                      className="rounded-xl border border-[#EAECF0] bg-[#FFFFFF] p-2.5 text-[#94A3B8] hover:bg-[#F8F8F9] hover:text-[#EF4444] hover:border-[#EF4444]/30 transition-all btn-interactive shadow-xs"
-                      title="Dismiss"
+                      className="flex items-center justify-center gap-1 rounded-xl border border-[#EAECF0] bg-white py-2.5 text-[11px] font-bold text-[#94A3B8] hover:bg-red-50 hover:text-[#EF4444] hover:border-[#EF4444]/30 transition-all"
                     >
-                      <XCircle className="h-4 w-4" />
+                      <XCircle className="h-3.5 w-3.5" />
+                      Skip
                     </button>
                     <button
                       onClick={() => resolveOpportunity(opp.id, "contacted")}
-                      className="rounded-xl border border-[#EAECF0] bg-[#FFFFFF] p-2.5 text-[#94A3B8] hover:bg-[#F8F8F9] hover:text-[#16A34A] hover:border-[#16A34A]/30 transition-all btn-interactive shadow-xs"
-                      title="Mark as Handled"
+                      className="flex items-center justify-center gap-1 rounded-xl border border-[#EAECF0] bg-white py-2.5 text-[11px] font-bold text-[#94A3B8] hover:bg-emerald-50 hover:text-[#16A34A] hover:border-[#16A34A]/30 transition-all"
                     >
-                      <CheckCircle2 className="h-4 w-4" />
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                      Done
+                    </button>
+                    <button
+                      onClick={() => handleSendWhatsApp(opp)}
+                      className="flex items-center justify-center gap-1 rounded-xl bg-[#25D366] py-2.5 text-[11px] font-bold text-white shadow-sm hover:brightness-105 transition-all"
+                    >
+                      <MessageCircle className="h-3.5 w-3.5" />
+                      WhatsApp
                     </button>
                   </div>
-
-                  <button
-                    onClick={() => handleSendWhatsApp(opp)}
-                    className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-[#25D366] py-2.5 text-xs font-bold text-white shadow-md shadow-[#25D366]/20 hover:brightness-105 transition-all btn-interactive"
-                  >
-                    <MessageCircle className="h-4 w-4" />
-                    <span>Send 1-Click WhatsApp</span>
-                  </button>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

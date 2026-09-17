@@ -457,7 +457,7 @@ export default function ProfilePage() {
                       <div className="rounded-xl border border-[#EAECF0] bg-white p-2.5 flex items-center justify-between gap-2">
                         <div className="min-w-0">
                           <span className="text-[9px] font-bold uppercase text-[#94A3B8] block">Phone Number</span>
-                          <span className="text-xs font-black font-mono text-[#111439] truncate block">+{supportPhone}</span>
+                          <span className="text-xs font-black font-mono text-[#111439] truncate block">+{supportPhone.slice(0, 2)} {supportPhone.slice(2, 7)} {supportPhone.slice(7)}</span>
                         </div>
                         <a
                           href={`https://wa.me/${supportPhone}`}

@@ -119,6 +119,18 @@ export default function SettingsPage() {
 
   const handleSaveProfile = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // If business name changed, ask for confirmation
+    if (businessName !== activeBusiness.name) {
+      const confirmed = window.confirm(
+        `Are you sure you want to change the business name from "${activeBusiness.name}" to "${businessName}"?`
+      );
+      if (!confirmed) {
+        setBusinessName(activeBusiness.name);
+        return;
+      }
+    }
+
     updateBusiness({
       name: businessName,
       industry: category as any,

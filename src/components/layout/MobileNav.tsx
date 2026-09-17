@@ -139,40 +139,40 @@ export function MobileNav({ onOpenQR }: { onOpenQR?: () => void }) {
 
       {/* Main Mobile Bottom Bar */}
       <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#FFFFFF]/95 backdrop-blur-xl border-t border-[#EAECF0] md:hidden pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.04)]">
-        <div className={`grid ${isStaff ? "grid-cols-2" : "grid-cols-5"} items-center px-2 py-1.5`}>
+        <div className={`grid ${isStaff ? "grid-cols-2" : "grid-cols-5"} items-center px-1 sm:px-2 py-1.5`}>
           {!isStaff && (
             <Link
               href="/dashboard"
-              className={`flex flex-col items-center py-1 rounded-xl text-[10px] font-bold transition-colors ${
+              className={`flex flex-col items-center py-1 rounded-xl text-[9px] sm:text-[10px] font-bold transition-colors min-w-0 ${
                 pathname === "/dashboard"
                   ? "text-[#6C4DFF]"
                   : "text-[#667085] hover:text-[#111439]"
               }`}
             >
-              <LayoutDashboard className="h-4 w-4 mb-0.5" />
-              <span>Dashboard</span>
+              <LayoutDashboard className="h-4 w-4 mb-0.5 shrink-0" />
+              <span className="truncate w-full text-center">Home</span>
             </Link>
           )}
 
           {!isStaff && (
             <Link
               href="/customers"
-              className={`flex flex-col items-center py-1 rounded-xl text-[10px] font-bold transition-colors ${
+              className={`flex flex-col items-center py-1 rounded-xl text-[9px] sm:text-[10px] font-bold transition-colors min-w-0 ${
                 pathname === "/customers"
                   ? "text-[#6C4DFF]"
                   : "text-[#667085] hover:text-[#111439]"
               }`}
             >
-              <Users className="h-4 w-4 mb-0.5" />
-              <span>{getCustomerLabel()}</span>
+              <Users className="h-4 w-4 mb-0.5 shrink-0" />
+              <span className="truncate w-full text-center">{getCustomerLabel()}</span>
             </Link>
           )}
 
           {/* Centered Add Visit Highlight Button */}
-          <div className="flex justify-center -mt-3">
+          <div className="flex justify-center -mt-2">
             <Link
               href="/add-visit"
-              className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-[#6C4DFF] to-[#3B82F6] text-white shadow-lg shadow-purple-500/30 active:scale-95 transition-transform"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#6C4DFF] to-[#3B82F6] text-white shadow-lg shadow-purple-500/30 active:scale-95 transition-transform"
               title="Add Visit"
             >
               <PlusCircle className="h-5 w-5" />
@@ -182,44 +182,44 @@ export function MobileNav({ onOpenQR }: { onOpenQR?: () => void }) {
           {!isStaff && isSalon && (
             <Link
               href="/analytics"
-              className={`flex flex-col items-center py-1 rounded-xl text-[10px] font-bold transition-colors ${
+              className={`flex flex-col items-center py-1 rounded-xl text-[9px] sm:text-[10px] font-bold transition-colors min-w-0 ${
                 pathname === "/analytics"
                   ? "text-[#6C4DFF]"
                   : "text-[#667085] hover:text-[#111439]"
               }`}
             >
-              <TrendingUp className="h-4 w-4 mb-0.5" />
-              <span>Analytics</span>
+              <TrendingUp className="h-4 w-4 mb-0.5 shrink-0" />
+              <span className="truncate w-full text-center">Reports</span>
             </Link>
           )}
 
           {!isStaff && !isSalon && (
             <Link
               href="/opportunities"
-              className={`relative flex flex-col items-center py-1 rounded-xl text-[10px] font-bold transition-colors ${
+              className={`relative flex flex-col items-center py-1 rounded-xl text-[9px] sm:text-[10px] font-bold transition-colors min-w-0 ${
                 pathname === "/opportunities"
                   ? "text-[#6C4DFF]"
                   : "text-[#667085] hover:text-[#111439]"
               }`}
             >
               <div className="relative">
-                <Megaphone className="h-4 w-4 mb-0.5" />
+                <Megaphone className="h-4 w-4 mb-0.5 shrink-0" />
                 {pendingOpportunitiesCount > 0 && (
-                  <span className="absolute -top-1 -right-2 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-[#EF4444] px-1 text-[8px] font-bold text-white tabular-nums">
-                    {pendingOpportunitiesCount}
+                  <span className="absolute -top-1 -right-2.5 flex h-3.5 min-w-[14px] items-center justify-center rounded-full bg-[#EF4444] px-0.5 text-[7px] font-bold text-white tabular-nums">
+                    {pendingOpportunitiesCount > 99 ? "99+" : pendingOpportunitiesCount}
                   </span>
                 )}
               </div>
-              <span>Action</span>
+              <span className="truncate w-full text-center">Actions</span>
             </Link>
           )}
 
           <button
             onClick={() => setIsMoreOpen(true)}
-            className="flex flex-col items-center py-1 rounded-xl text-[10px] font-bold text-[#667085] hover:text-[#111439]"
+            className="flex flex-col items-center py-1 rounded-xl text-[9px] sm:text-[10px] font-bold text-[#667085] hover:text-[#111439] min-w-0"
           >
-            <Menu className="h-4 w-4 mb-0.5" />
-            <span>More</span>
+            <Menu className="h-4 w-4 mb-0.5 shrink-0" />
+            <span className="truncate w-full text-center">More</span>
           </button>
         </div>
       </nav>

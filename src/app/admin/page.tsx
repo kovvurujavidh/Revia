@@ -100,7 +100,7 @@ export default function AdminPage() {
     platformSettings?.support_email || "support@revia.app"
   );
   const [supportWhatsappInput, setSupportWhatsappInput] = useState(
-    platformSettings?.support_whatsapp || "919876543210"
+    platformSettings?.support_whatsapp || "917670860094"
   );
   const [autoVerificationMode, setAutoVerificationMode] = useState<
     "manual_approval" | "provisional_instant_access"

@@ -211,13 +211,21 @@ function ResetPasswordForm() {
             </div>
             <h1 className="text-lg font-black text-[#111439]">Link Expired or Invalid</h1>
             <p className="text-xs text-[#667085] leading-relaxed">{error}</p>
-            <Link
-              href="/auth/login"
-              className="w-full flex items-center justify-center gap-2 rounded-xl brand-gradient py-3 text-xs font-bold text-white shadow-md shadow-purple-500/20 hover:opacity-95 transition-all btn-interactive"
-            >
-              <span>Back to Sign In</span>
-              <ArrowRight className="h-4 w-4" />
-            </Link>
+            <div className="space-y-2.5 pt-2">
+              <Link
+                href="/auth/login"
+                className="w-full flex items-center justify-center gap-2 rounded-xl brand-gradient py-3 text-xs font-bold text-white shadow-md shadow-purple-500/20 hover:opacity-95 transition-all btn-interactive"
+              >
+                <span>Back to Sign In</span>
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                href="/auth/login"
+                className="w-full flex items-center justify-center gap-2 rounded-xl border border-[#EAECF0] bg-white py-3 text-xs font-bold text-[#6C4DFF] hover:bg-[#6C4DFF]/5 transition-all"
+              >
+                Request New Reset Link
+              </Link>
+            </div>
           </div>
         </div>
       </div>
@@ -311,6 +319,24 @@ function ResetPasswordForm() {
                       {err}
                     </p>
                   ))}
+                </div>
+              )}
+              {newPassword.length > 0 && passwordErrors.length === 0 && (
+                <div className="mt-1.5 flex items-center gap-1.5">
+                  <div className="flex-1 h-1.5 rounded-full bg-[#EAECF0] overflow-hidden">
+                    <div className={`h-full rounded-full transition-all duration-300 ${
+                      newPassword.length >= 12 ? "w-full bg-[#16A34A]" :
+                      newPassword.length >= 8 ? "w-2/3 bg-[#F59E0B]" :
+                      "w-1/3 bg-[#EF4444]"
+                    }`} />
+                  </div>
+                  <span className={`text-[10px] font-bold ${
+                    newPassword.length >= 12 ? "text-[#16A34A]" :
+                    newPassword.length >= 8 ? "text-[#F59E0B]" :
+                    "text-[#EF4444]"
+                  }`}>
+                    {newPassword.length >= 12 ? "Strong" : newPassword.length >= 8 ? "Good" : "Weak"}
+                  </span>
                 </div>
               )}
             </div>

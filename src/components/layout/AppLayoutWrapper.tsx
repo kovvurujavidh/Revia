@@ -42,27 +42,27 @@ export function AppLayoutWrapper({ children }: { children: React.ReactNode }) {
 
       {/* Trial Expiry / Warning Top Bar for App pages */}
       {!isPublicPage && isTrialActive && trialDaysRemaining <= 4 && (
-        <div className="bg-[#F59E0B] px-4 py-2 text-center text-xs font-bold text-white flex items-center justify-center gap-2 sticky top-0 z-30 shadow-xs">
-          <Clock className="h-4 w-4 animate-bounce" />
-          <span>Your 14-day free trial expires in {trialDaysRemaining} days! Upgrade now to keep all retention features.</span>
+        <div className="bg-[#F59E0B] px-3 sm:px-4 py-2 text-center text-xs font-bold text-white flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 sticky top-0 z-30 shadow-xs">
+          <Clock className="h-4 w-4 animate-bounce shrink-0" />
+          <span className="min-w-0">Trial expires in {trialDaysRemaining} days!</span>
           <Link
             href="/profile"
-            className="rounded-full bg-white px-2.5 py-0.5 text-xs font-bold text-[#F59E0B] hover:bg-yellow-50 transition-colors ml-2"
+            className="rounded-full bg-white px-2.5 py-0.5 text-xs font-bold text-[#F59E0B] hover:bg-yellow-50 transition-colors shrink-0"
           >
-            Upgrade Now
+            Upgrade
           </Link>
         </div>
       )}
 
       {!isPublicPage && isReadOnly && (
-        <div className="bg-[#EF4444] px-4 py-2 text-center text-xs font-bold text-white flex items-center justify-center gap-2 sticky top-0 z-30 shadow-xs">
-          <AlertTriangle className="h-4 w-4" />
-          <span>Your free trial has expired. You are currently in safe read-only mode. Upgrade to continue adding visits & sending messages.</span>
+        <div className="bg-[#EF4444] px-3 sm:px-4 py-2 text-center text-xs font-bold text-white flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 sticky top-0 z-30 shadow-xs">
+          <AlertTriangle className="h-4 w-4 shrink-0" />
+          <span className="min-w-0">Trial expired. Read-only mode.</span>
           <Link
             href="/profile"
-            className="rounded-full bg-white px-2.5 py-0.5 text-xs font-bold text-[#EF4444] hover:bg-red-50 transition-colors ml-2 inline-flex items-center gap-1"
+            className="rounded-full bg-white px-2.5 py-0.5 text-xs font-bold text-[#EF4444] hover:bg-red-50 transition-colors shrink-0 inline-flex items-center gap-1"
           >
-            <span>Activate Subscription</span>
+            <span>Activate</span>
             <ArrowRight className="h-3 w-3" />
           </Link>
         </div>

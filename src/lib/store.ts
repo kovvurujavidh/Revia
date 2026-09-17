@@ -28,7 +28,7 @@ export const DEFAULT_PLATFORM_SETTINGS: PlatformCoreSettings = {
   default_trial_days: 14,
   announcement_banner: "Welcome to Revia! Boost repeat customer visits with AI-powered WhatsApp comeback triggers.",
   support_email: "support@revia.app",
-  support_whatsapp: "919876543210",
+  support_whatsapp: "917670860094",
   auto_verification_mode: "manual_approval",
 };
 

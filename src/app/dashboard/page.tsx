@@ -38,6 +38,9 @@ export default function DashboardPage() {
   const [isAddStaffOpen, setIsAddStaffOpen] = useState(false);
   const [staffName, setStaffName] = useState("");
   const [staffPhone, setStaffPhone] = useState("");
+  const [staffEmail, setStaffEmail] = useState("");
+  const [staffPassword, setStaffPassword] = useState("");
+  const [showStaffPassword, setShowStaffPassword] = useState(false);
   const [staffRole, setStaffRole] = useState<"staff" | "manager">("staff");
   const [staffSuccessMsg, setStaffSuccessMsg] = useState<string | null>(null);
 
@@ -49,25 +52,31 @@ export default function DashboardPage() {
 
   const handleAddStaffSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!staffName.trim() || !staffPhone.trim()) return;
+    if (!staffName.trim() || !staffPhone.trim() || !staffPassword.trim()) return;
+    if (staffPassword.trim().length < 6) return;
+
+    const staffEmailClean = staffEmail.trim() || `${staffPhone.trim().replace(/[^0-9]/g, "")}@staff.revia.app`;
 
     addStaffMember({
       name: staffName.trim(),
       phone: staffPhone.trim(),
-      email: `${staffName.trim().toLowerCase().replace(/\s+/g, ".")}@${activeBusiness.name.toLowerCase().replace(/[^a-z0-9]/g, "")}.com`,
+      email: staffEmailClean,
       role: staffRole,
       status: "active",
       business_id: activeBusiness.id,
-    });
+      password: staffPassword.trim(),
+    } as any);
 
-    setStaffSuccessMsg(`Staff member ${staffName} added! They can now log in at /auth/login with ${staffPhone}.`);
+    setStaffSuccessMsg(`${staffName} added! Login email: ${staffEmailClean}`);
     setStaffName("");
     setStaffPhone("");
+    setStaffEmail("");
+    setStaffPassword("");
 
     setTimeout(() => {
       setStaffSuccessMsg(null);
       setIsAddStaffOpen(false);
-    }, 2800);
+    }, 3500);
   };
 
   return (
@@ -197,21 +206,58 @@ export default function DashboardPage() {
 
                 <div>
                   <label className="block text-xs font-bold text-[#667085] uppercase tracking-wider mb-1.5">
-                    Staff Mobile Number (For Login &amp; OTP) *
+                    Mobile Number *
                   </label>
                   <div className="relative">
                     <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#94A3B8]" />
                     <input
                       type="tel"
                       required
-                      placeholder="+91 98201 XXXXX"
+                      placeholder="98201 XXXXX"
                       value={staffPhone}
                       onChange={(e) => setStaffPhone(e.target.value)}
                       className="w-full rounded-xl border border-[#EAECF0] bg-[#F8F8F9] pl-10 pr-3.5 py-2.5 text-xs font-medium text-[#111439] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#6C4DFF] focus:bg-[#FFFFFF] transition-colors"
                     />
                   </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-[#667085] uppercase tracking-wider mb-1.5">
+                    Email Address <span className="text-[#94A3B8] font-normal lowercase">(optional - auto-generated if blank)</span>
+                  </label>
+                  <input
+                    type="email"
+                    placeholder="e.g. rahul@staff.revia.app"
+                    value={staffEmail}
+                    onChange={(e) => setStaffEmail(e.target.value)}
+                    className="w-full rounded-xl border border-[#EAECF0] bg-[#F8F8F9] px-3.5 py-2.5 text-xs font-medium text-[#111439] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#6C4DFF] focus:bg-[#FFFFFF] transition-colors"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-[#667085] uppercase tracking-wider mb-1.5">
+                    Login Password *
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showStaffPassword ? "text" : "password"}
+                      required
+                      minLength={6}
+                      placeholder="Min 6 characters"
+                      value={staffPassword}
+                      onChange={(e) => setStaffPassword(e.target.value)}
+                      className="w-full rounded-xl border border-[#EAECF0] bg-[#F8F8F9] px-3.5 pr-10 py-2.5 text-xs font-medium text-[#111439] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#6C4DFF] focus:bg-[#FFFFFF] transition-colors"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowStaffPassword(!showStaffPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#667085] transition-colors cursor-pointer"
+                    >
+                      {showStaffPassword ? "Hide" : "Show"}
+                    </button>
+                  </div>
                   <p className="text-[10px] text-[#667085] mt-1">
-                    Staff will enter this mobile number on the login page to access visit entry.
+                    Staff will use email + password to log in at /auth/staff-login
                   </p>
                 </div>
 
@@ -225,7 +271,7 @@ export default function DashboardPage() {
                     className="w-full rounded-xl border border-[#EAECF0] bg-[#FFFFFF] px-3.5 py-2.5 text-xs font-medium text-[#111439] focus:outline-none focus:border-[#6C4DFF] transition-colors"
                   >
                     <option value="staff">Staff / Cashier (Visit Data Entry Only)</option>
-                    <option value="manager">Manager (Visits + WhatsApp Messages)</option>
+                    <option value="manager">Manager (Full Dashboard Access)</option>
                   </select>
                 </div>
 
@@ -241,7 +287,7 @@ export default function DashboardPage() {
                     type="submit"
                     className="flex-1 rounded-xl brand-gradient py-2.5 text-xs font-bold text-white shadow-md shadow-purple-500/20 hover:shadow-purple-500/35 hover:opacity-95 transition-all btn-interactive cursor-pointer"
                   >
-                    Link &amp; Add Staff
+                    Add Staff Member
                   </button>
                 </div>
               </form>
@@ -264,13 +310,13 @@ export default function DashboardPage() {
         <>
           {/* Welcome & Quick Action Header */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-2xl sm:text-3xl font-black text-[#111439] tracking-tight">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-[#111439] tracking-tight min-w-0 truncate">
                   {activeBusiness?.name}
                 </h1>
-                <span className="inline-flex items-center gap-1 rounded-full bg-[#6C4DFF]/10 border border-[#6C4DFF]/20 px-2.5 py-0.5 text-[10px] font-bold text-[#6C4DFF]">
-                  <Sparkles className="h-3 w-3" /> Live Store
+                <span className="inline-flex items-center gap-1 rounded-full bg-[#6C4DFF]/10 border border-[#6C4DFF]/20 px-2 py-0.5 text-[10px] font-bold text-[#6C4DFF] shrink-0">
+                  <Sparkles className="h-3 w-3" /> Live
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-[#667085] mt-1 font-medium">
@@ -278,11 +324,11 @@ export default function DashboardPage() {
               </p>
             </div>
 
-            {/* Quick Action Shortcuts */}
-            <div className="flex flex-wrap items-center gap-2.5">
+            {/* Quick Action Shortcuts - Horizontal Scroll on Mobile */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 w-full sm:w-auto scrollbar-hide">
               <button
                 onClick={() => setIsAddStaffOpen(true)}
-                className="flex items-center gap-2 rounded-xl border border-[#EAECF0] bg-[#FFFFFF] px-3.5 py-2 text-xs font-bold text-[#111439] hover:bg-[#F8F8F9] hover:border-[#D0D5DD] transition-all shadow-xs btn-interactive cursor-pointer"
+                className="flex items-center gap-1.5 rounded-xl border border-[#EAECF0] bg-[#FFFFFF] px-3 py-2 text-[11px] sm:text-xs font-bold text-[#111439] hover:bg-[#F8F8F9] hover:border-[#D0D5DD] transition-all shadow-xs btn-interactive cursor-pointer shrink-0 whitespace-nowrap"
               >
                 <UserPlus className="h-3.5 w-3.5 text-[#3B82F6]" />
                 <span>Add Staff</span>
@@ -290,15 +336,15 @@ export default function DashboardPage() {
 
               <button
                 onClick={() => setIsQROpen(true)}
-                className="flex items-center gap-2 rounded-xl border border-[#EAECF0] bg-[#FFFFFF] px-3.5 py-2 text-xs font-bold text-[#111439] hover:bg-[#F8F8F9] hover:border-[#D0D5DD] transition-all shadow-xs btn-interactive cursor-pointer"
+                className="flex items-center gap-1.5 rounded-xl border border-[#EAECF0] bg-[#FFFFFF] px-3 py-2 text-[11px] sm:text-xs font-bold text-[#111439] hover:bg-[#F8F8F9] hover:border-[#D0D5DD] transition-all shadow-xs btn-interactive cursor-pointer shrink-0 whitespace-nowrap"
               >
                 <QrCode className="h-3.5 w-3.5 text-[#6C4DFF]" />
-                <span>Counter QR</span>
+                <span>QR</span>
               </button>
 
               <button
                 onClick={() => window.location.reload()}
-                className="flex items-center gap-2 rounded-xl border border-[#EAECF0] bg-[#FFFFFF] px-3.5 py-2 text-xs font-bold text-[#667085] hover:bg-[#F8F8F9] hover:border-[#D0D5DD] hover:text-[#111439] transition-all shadow-xs btn-interactive cursor-pointer"
+                className="flex items-center gap-1.5 rounded-xl border border-[#EAECF0] bg-[#FFFFFF] px-3 py-2 text-[11px] sm:text-xs font-bold text-[#667085] hover:bg-[#F8F8F9] hover:border-[#D0D5DD] hover:text-[#111439] transition-all shadow-xs btn-interactive cursor-pointer shrink-0 whitespace-nowrap"
               >
                 <RefreshCw className="h-3.5 w-3.5" />
                 <span>Refresh</span>
@@ -306,10 +352,10 @@ export default function DashboardPage() {
 
               <Link
                 href="/opportunities"
-                className="relative flex items-center gap-2 rounded-xl border border-[#EAECF0] bg-[#FFFFFF] px-3.5 py-2 text-xs font-bold text-[#111439] hover:bg-[#F8F8F9] hover:border-[#D0D5DD] transition-all shadow-xs btn-interactive"
+                className="relative flex items-center gap-1.5 rounded-xl border border-[#EAECF0] bg-[#FFFFFF] px-3 py-2 text-[11px] sm:text-xs font-bold text-[#111439] hover:bg-[#F8F8F9] hover:border-[#D0D5DD] transition-all shadow-xs btn-interactive shrink-0 whitespace-nowrap"
               >
                 <Megaphone className="h-3.5 w-3.5 text-[#EF4444]" />
-                <span>Opportunities</span>
+                <span>Actions</span>
                 {pendingOpportunitiesCount > 0 && (
                   <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-[#EF4444] px-1 text-[9px] font-bold text-white tabular-nums">
                     {pendingOpportunitiesCount}
@@ -319,10 +365,10 @@ export default function DashboardPage() {
 
               <Link
                 href="/add-visit"
-                className="flex items-center gap-1.5 rounded-xl brand-gradient px-4 py-2 text-xs font-bold text-white shadow-md shadow-purple-500/25 hover:shadow-purple-500/40 hover:opacity-95 transition-all btn-interactive"
+                className="flex items-center gap-1.5 rounded-xl brand-gradient px-3 sm:px-4 py-2 text-[11px] sm:text-xs font-bold text-white shadow-md shadow-purple-500/25 hover:shadow-purple-500/40 hover:opacity-95 transition-all btn-interactive shrink-0 whitespace-nowrap"
               >
                 <PlusCircle className="h-4 w-4" />
-                <span>Add Visit (5s)</span>
+                <span>Quick Entry</span>
               </Link>
             </div>
           </div>
