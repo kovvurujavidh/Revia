@@ -33,7 +33,8 @@ export function AppLayoutWrapper({ children }: { children: React.ReactNode }) {
     pathname === "/" ||
     pathname?.startsWith("/join") ||
     pathname?.startsWith("/auth") ||
-    pathname?.startsWith("/onboarding");
+    pathname?.startsWith("/onboarding") ||
+    pathname?.startsWith("/admin");
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F8F8F9]">

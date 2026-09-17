@@ -55,6 +55,8 @@ export default function AdminPage() {
   const router = useRouter();
   const {
     businesses,
+    customers,
+    visits,
     adminUpdateSubscription,
     adminExtendTrial,
     adminToggleSuspend,
@@ -152,14 +154,20 @@ export default function AdminPage() {
   const expiredBusinesses = businesses.filter(
     (b) => b.subscription_status === "expired"
   ).length;
+  const suspendedBusinesses = businesses.filter((b) => b.is_suspended).length;
 
   const pendingPayments = (subscriptionPayments || []).filter((p) => p.status === "pending");
   const approvedPayments = (subscriptionPayments || []).filter((p) => p.status === "approved");
   const totalPaidRevenue = approvedPayments.reduce((acc, p) => acc + (p.amount_inr || 0), 0);
 
   // Platform Analytics Math
-  const totalPlatformMRR = activePaidBusinesses * 799 + (totalBusinesses > 3 ? 1200 : 0);
+  const totalPlatformMRR = activePaidBusinesses * 799;
   const totalProjectedARR = totalPlatformMRR * 12;
+  const totalCustomers = customers?.length || 0;
+  const totalVisits = visits?.length || 0;
+  const conversionRate = totalBusinesses > 0 ? Math.round((activePaidBusinesses / totalBusinesses) * 100) : 0;
+  const trialConversion = totalBusinesses > 0 ? Math.round((trialBusinesses / totalBusinesses) * 100) : 0;
+  const churnRate = totalBusinesses > 0 ? Math.round(((expiredBusinesses + suspendedBusinesses) / totalBusinesses) * 100) : 0;
 
   // Industry Vertical Breakdown
   const industryCounts: Record<string, number> = {};
@@ -332,774 +340,360 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-8 animate-fade-in">
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl sm:text-3xl font-black text-[#111439] tracking-tight">
-              Founder &amp; Platform Admin Panel
-            </h1>
-            <span className="rounded-full bg-[#16A34A]/10 border border-[#16A34A]/25 px-2.5 py-0.5 text-xs font-bold text-[#16A34A] flex items-center gap-1">
-              <ShieldCheck className="h-3 w-3" /> Founder Mode Active
-            </span>
-          </div>
-          <p className="text-xs sm:text-sm text-[#667085] mt-1 font-medium">
-            Manage client subscriptions, verify UPI scanner payments, run bank statement auto-reconciliation, and configure platform settings.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-1.5 rounded-xl border border-[#EAECF0] bg-[#F8F8F9] px-3.5 py-2 text-xs font-bold text-[#111439] hover:bg-[#F1F1F4] transition-colors"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            <span>Store Dashboard</span>
-          </Link>
-          <button
-            onClick={handleLockAdmin}
-            className="flex items-center gap-1.5 rounded-xl bg-[#111439] px-3.5 py-2 text-xs font-bold text-white hover:bg-[#1a1d4a] transition-colors cursor-pointer"
-            title="Lock Founder Admin Session"
-          >
-            <Lock className="h-3.5 w-3.5" />
-            <span>Log Out Admin</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Toast Notification */}
-      {toastMsg && (
-        <div className="rounded-2xl border border-[#16A34A]/30 bg-[#16A34A]/10 p-4 text-xs font-bold text-[#16A34A] flex items-center gap-2 animate-fade-in">
-          <CheckCircle className="h-4 w-4" />
-          <span>{toastMsg}</span>
-        </div>
-      )}
-
-      {/* KPI Overview */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="brand-card p-5 border-l-4 border-l-[#6C4DFF]">
-          <div className="flex items-center justify-between mb-2 text-[#667085]">
-            <h3 className="text-xs font-bold uppercase tracking-wider">Total Businesses</h3>
-            <Building className="h-4 w-4 text-[#6C4DFF]" />
-          </div>
-          <div className="text-2xl font-black text-[#111439]">{totalBusinesses}</div>
-          <div className="text-[11px] text-[#667085] mt-1">
-            {activePaidBusinesses} active • {trialBusinesses} in trial
-          </div>
-        </div>
-
-        <div className="brand-card p-5 border-l-4 border-l-[#F59E0B]">
-          <div className="flex items-center justify-between mb-2 text-[#667085]">
-            <h3 className="text-xs font-bold uppercase tracking-wider">Pending UPI Approvals</h3>
-            <QrCode className="h-4 w-4 text-[#F59E0B]" />
-          </div>
-          <div className="text-2xl font-black text-[#F59E0B]">{pendingPayments.length}</div>
-          <div className="text-[11px] text-[#667085] mt-1">Awaiting your verification</div>
-        </div>
-
-        <div className="brand-card p-5 border-l-4 border-l-[#16A34A]">
-          <div className="flex items-center justify-between mb-2 text-[#667085]">
-            <h3 className="text-xs font-bold uppercase tracking-wider">Collected Revenue</h3>
-            <DollarSign className="h-4 w-4 text-[#16A34A]" />
-          </div>
-          <div className="text-2xl font-black text-[#16A34A]">₹{totalPaidRevenue}</div>
-          <div className="text-[11px] text-[#667085] mt-1">From approved UPI payments</div>
-        </div>
-
-        <div className="brand-card p-5 border-l-4 border-l-[#3B82F6]">
-          <div className="flex items-center justify-between mb-2 text-[#667085]">
-            <h3 className="text-xs font-bold uppercase tracking-wider">Projected MRR</h3>
-            <TrendingUp className="h-4 w-4 text-[#3B82F6]" />
-          </div>
-          <div className="text-2xl font-black text-[#111439]">₹{totalPlatformMRR}</div>
-          <div className="text-[11px] text-[#667085] mt-1">₹{totalProjectedARR} ARR Run-Rate</div>
-        </div>
-      </div>
-
-      {/* Tab Navigation */}
-      <div className="flex items-center gap-2 border-b border-[#EAECF0] pb-2 overflow-x-auto">
-        <button
-          onClick={() => setActiveTab("subscriptions")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-            activeTab === "subscriptions"
-              ? "brand-gradient text-white shadow-md shadow-purple-500/20"
-              : "text-[#667085] hover:text-[#111439] hover:bg-[#F8F8F9]"
-          }`}
-        >
-          <CreditCard className="h-4 w-4" />
-          <span>Subscriptions &amp; UPI Payments</span>
-          {pendingPayments.length > 0 && (
-            <span className="ml-1 px-1.5 py-0.5 rounded-full bg-[#EF4444] text-white text-[10px] font-black">
-              {pendingPayments.length}
-            </span>
-          )}
-        </button>
-
-        <button
-          onClick={() => setActiveTab("tenants")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-            activeTab === "tenants"
-              ? "brand-gradient text-white shadow-md shadow-purple-500/20"
-              : "text-[#667085] hover:text-[#111439] hover:bg-[#F8F8F9]"
-          }`}
-        >
-          <Users className="h-4 w-4" />
-          <span>Client Businesses ({totalBusinesses})</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("settings")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-            activeTab === "settings"
-              ? "brand-gradient text-white shadow-md shadow-purple-500/20"
-              : "text-[#667085] hover:text-[#111439] hover:bg-[#F8F8F9]"
-          }`}
-        >
-          <Sliders className="h-4 w-4" />
-          <span>Core Website Settings</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("analytics")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-            activeTab === "analytics"
-              ? "brand-gradient text-white shadow-md shadow-purple-500/20"
-              : "text-[#667085] hover:text-[#111439] hover:bg-[#F8F8F9]"
-          }`}
-        >
-          <BarChart3 className="h-4 w-4" />
-          <span>Platform Growth Analytics</span>
-        </button>
-      </div>
-
-      {/* TAB 1: SUBSCRIPTIONS & UPI PAYMENTS */}
-      {activeTab === "subscriptions" && (
-        <div className="space-y-6">
-          {/* Bank SMS / Statement Auto-Reconciliation Tool (What Big Companies Do) */}
-          <div className="brand-card p-6 border-2 border-[#6C4DFF]/20 bg-gradient-to-br from-white to-[#6C4DFF]/5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="space-y-1">
-                <div className="inline-flex items-center gap-1.5 rounded-full bg-[#6C4DFF]/10 text-[#6C4DFF] px-2.5 py-0.5 text-[11px] font-bold">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  <span>Enterprise Auto-Reconciliation Engine</span>
-                </div>
-                <h3 className="text-sm font-black text-[#111439]">
-                  Instant Auto-Verify via Bank SMS / Statement Paste
-                </h3>
-                <p className="text-xs text-[#667085]">
-                  Paste your bank credit SMS alert or statement snippet. The AI matcher extracts the 12-digit UTR and activates matching subscriptions instantly!
-                </p>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setShowSmsReconciler(!showSmsReconciler)}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl brand-gradient text-white text-xs font-bold shadow-xs hover:opacity-95 cursor-pointer whitespace-nowrap"
-              >
-                <Wand2 className="h-3.5 w-3.5" />
-                <span>{showSmsReconciler ? "Hide Auto-Matcher" : "Open Auto-Matcher"}</span>
-              </button>
+    <div className="min-h-screen bg-[#0F1117] animate-fade-in">
+      {/* Admin Top Bar */}
+      <div className="sticky top-0 z-50 bg-[#0F1117]/95 backdrop-blur-xl border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#6C4DFF] text-white">
+              <ShieldCheck className="h-4 w-4" />
             </div>
-
-            {showSmsReconciler && (
-              <form onSubmit={handleRunAutoReconciliation} className="mt-4 pt-4 border-t border-[#EAECF0] space-y-3 animate-fade-in">
-                <textarea
-                  rows={3}
-                  value={smsInputText}
-                  onChange={(e) => setSmsInputText(e.target.value)}
-                  placeholder={`Paste your bank SMS alert here, for example:\n"Axis Bank: Rs 799.00 credited to a/c ... from UPI/427891238912/GPay..."`}
-                  className="w-full rounded-xl border border-[#EAECF0] bg-[#FFFFFF] p-3 text-xs font-mono text-[#111439] placeholder-[#94A3B8] focus:border-[#6C4DFF] focus:outline-none transition-colors"
-                />
-
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] text-[#667085]">
-                    Supports SMS formats from Axis, HDFC, ICICI, SBI, Kotak, Paytm, and Google Pay.
-                  </span>
-                  <button
-                    type="submit"
-                    disabled={isReconciling || !smsInputText.trim()}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#16A34A] hover:bg-emerald-600 text-white font-bold text-xs transition-colors cursor-pointer disabled:opacity-50"
-                  >
-                    <CheckCheck className="h-3.5 w-3.5" />
-                    <span>{isReconciling ? "Extracting & Matching..." : "Auto-Verify & Activate"}</span>
-                  </button>
-                </div>
-
-                {reconcileResult && (
-                  <div className="p-3 rounded-xl bg-[#FFFFFF] border border-[#EAECF0] text-xs space-y-1 mt-2">
-                    <p className="font-bold text-[#111439]">
-                      Found {reconcileResult.parsedRecords.length} UTR reference(s) in text. Matched &amp; activated {reconcileResult.matchedCount} pending subscription order(s).
-                    </p>
-                    {reconcileResult.parsedRecords.map((rec, i) => (
-                      <div key={i} className="text-[11px] text-[#667085] flex items-center gap-2">
-                        <span className="font-mono font-bold text-[#6C4DFF]">{rec.utr}</span>
-                        {rec.amount && <span>(₹{rec.amount})</span>}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </form>
-            )}
-          </div>
-
-          {/* Main Subscriptions Queue Table */}
-          <div className="brand-card p-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-[#EAECF0]">
-              <div>
-                <h2 className="text-base font-black text-[#111439]">
-                  Live Client Payment &amp; UTR Verification Queue
-                </h2>
-                <p className="text-xs text-[#667085]">
-                  Review client UPI scanner submissions and approve to activate their paid plan.
-                </p>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-[#667085]">
-                  Active Founder UPI: <strong className="text-[#6C4DFF]">{platformSettings?.upi_id || DEFAULT_FOUNDER_UPI.upi_id}</strong>
-                </span>
-              </div>
-            </div>
-
-            {(subscriptionPayments || []).length === 0 ? (
-              <div className="text-center py-12 text-xs text-[#667085] space-y-2">
-                <QrCode className="h-8 w-8 text-[#94A3B8] mx-auto" />
-                <p className="font-bold text-[#111439]">No UPI payment submissions yet</p>
-                <p>When users scan your QR code and submit their UTR number, requests will appear here for 1-click verification.</p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
-                  <thead>
-                    <tr className="border-b border-[#EAECF0] text-[#667085] font-bold uppercase tracking-wider text-[10px]">
-                      <th className="py-3 px-3">Date</th>
-                      <th className="py-3 px-3">Business</th>
-                      <th className="py-3 px-3">Plan / Cycle</th>
-                      <th className="py-3 px-3">Amount</th>
-                      <th className="py-3 px-3">12-Digit UTR Number</th>
-                      <th className="py-3 px-3">Verification Method</th>
-                      <th className="py-3 px-3">Status</th>
-                      <th className="py-3 px-3 text-right">Founder Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#EAECF0]">
-                    {(subscriptionPayments || []).map((payment) => (
-                      <tr key={payment.id} className="hover:bg-[#F8F8F9]/60 transition-colors">
-                        <td className="py-3.5 px-3 text-[#667085]">
-                          {new Date(payment.created_at).toLocaleDateString("en-IN", {
-                            day: "numeric",
-                            month: "short",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </td>
-                        <td className="py-3.5 px-3">
-                          <span className="font-bold text-[#111439] block">
-                            {payment.business_name || payment.business_id}
-                          </span>
-                          <span className="text-[11px] text-[#667085]">
-                            {payment.owner_email || "Client"}
-                          </span>
-                        </td>
-                        <td className="py-3.5 px-3 uppercase font-bold text-[#111439]">
-                          {payment.plan_id} ({payment.billing_cycle})
-                        </td>
-                        <td className="py-3.5 px-3 font-black text-[#16A34A] text-sm">
-                          ₹{payment.amount_inr}
-                        </td>
-                        <td className="py-3.5 px-3">
-                          <code className="bg-[#6C4DFF]/10 text-[#6C4DFF] px-2 py-1 rounded font-mono font-bold text-xs tracking-wider">
-                            {payment.utr_reference}
-                          </code>
-                        </td>
-                        <td className="py-3.5 px-3">
-                          <span className="text-[10px] text-[#667085] font-semibold">
-                            {payment.verification_method === "auto_sms_matched"
-                              ? "⚡ Bank SMS Auto-Matched"
-                              : payment.verification_method === "provisional_auto"
-                              ? "🚀 Instant Provisional"
-                              : "👤 Founder Manual"}
-                          </span>
-                        </td>
-                        <td className="py-3.5 px-3">
-                          <span
-                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                              payment.status === "approved"
-                                ? "bg-[#16A34A]/10 text-[#16A34A] border border-[#16A34A]/20"
-                                : payment.status === "pending"
-                                ? "bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20"
-                                : "bg-[#EF4444]/10 text-[#EF4444] border border-[#EF4444]/20"
-                            }`}
-                          >
-                            {payment.status}
-                          </span>
-                        </td>
-                        <td className="py-3.5 px-3 text-right">
-                          {payment.status === "pending" ? (
-                            <div className="flex items-center justify-end gap-2">
-                              <button
-                                onClick={() => handleApprovePayment(payment.id)}
-                                className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#16A34A] hover:bg-emerald-600 text-white font-bold text-xs transition-colors cursor-pointer shadow-xs"
-                                title="Approve payment & activate subscription"
-                              >
-                                <Check className="h-3.5 w-3.5" />
-                                <span>Verify &amp; Activate</span>
-                              </button>
-                              <button
-                                onClick={() => handleRejectPayment(payment.id)}
-                                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#EF4444]/10 hover:bg-[#EF4444]/20 text-[#EF4444] font-bold text-xs transition-colors cursor-pointer"
-                                title="Reject payment"
-                              >
-                                <X className="h-3.5 w-3.5" />
-                                <span>Reject</span>
-                              </button>
-                            </div>
-                          ) : (
-                            <span className="text-[11px] text-[#94A3B8] font-medium">
-                              {payment.approved_at ? "Activated" : "Processed"}
-                            </span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* TAB 2: CLIENT BUSINESSES & TENANT ACCOUNTS */}
-      {activeTab === "tenants" && (
-        <div className="space-y-6">
-          <div className="brand-card p-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-[#EAECF0]">
-              <div>
-                <h2 className="text-base font-black text-[#111439]">
-                  All Registered Businesses &amp; Workspaces
-                </h2>
-                <p className="text-xs text-[#667085]">
-                  Manage tenant subscription plans, extend free trials, toggle suspension, or switch into their dashboard.
-                </p>
-              </div>
-
-              <div className="relative w-full sm:w-64">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#94A3B8]" />
-                <input
-                  type="text"
-                  placeholder="Search by name, industry, phone..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full rounded-xl border border-[#EAECF0] bg-[#F8F8F9] pl-9 pr-3 py-2 text-xs text-[#111439] focus:bg-[#FFFFFF] focus:border-[#6C4DFF] focus:outline-none transition-colors"
-                />
-              </div>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="border-b border-[#EAECF0] text-[#667085] font-bold uppercase tracking-wider text-[10px]">
-                    <th className="py-3 px-3">Business Name</th>
-                    <th className="py-3 px-3 hidden sm:table-cell">Industry</th>
-                    <th className="py-3 px-3 hidden md:table-cell">Contact</th>
-                    <th className="py-3 px-3">Plan</th>
-                    <th className="py-3 px-3">Status</th>
-                    <th className="py-3 px-3">Days Left</th>
-                    <th className="py-3 px-3 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#EAECF0]">
-                  {filteredBusinesses.map((biz) => {
-                    const badge = getSubscriptionBadge(biz);
-                    const daysLeft = getSubscriptionDaysLeft(biz);
-                    return (
-                      <tr key={biz.id} className="hover:bg-[#F8F8F9]/60 transition-colors">
-                        <td className="py-3.5 px-3">
-                          <div className="font-bold text-[#111439]">{biz.name}</div>
-                          <div className="text-[11px] text-[#667085] sm:hidden capitalize">
-                            {biz.industry.replace("_", " ")}
-                          </div>
-                          <div className="text-[11px] text-[#667085]">
-                            Owner: {biz.owner_name}
-                          </div>
-                        </td>
-                        <td className="py-3.5 px-3 capitalize text-[#667085] hidden sm:table-cell">
-                          {biz.industry.replace("_", " ")}
-                        </td>
-                        <td className="py-3.5 px-3 text-[#667085] hidden md:table-cell">{biz.phone}</td>
-                        <td className="py-3.5 px-3">
-                          <select
-                            value={biz.subscription_plan}
-                            onChange={(e) =>
-                              handleChangePlan(
-                                biz.id,
-                                e.target.value as SubscriptionPlanId,
-                                biz.subscription_status
-                              )
-                            }
-                            className="rounded-lg border border-[#EAECF0] bg-[#FFFFFF] px-2 py-1 text-xs font-bold text-[#111439] uppercase focus:border-[#6C4DFF] focus:outline-none"
-                          >
-                            <option value="starter">Starter</option>
-                            <option value="growth">Growth</option>
-                            <option value="pro">Pro</option>
-                          </select>
-                        </td>
-                        <td className="py-3.5 px-3">
-                          <span
-                            className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${badge.color}`}
-                          >
-                            {badge.label}
-                          </span>
-                        </td>
-                        <td className="py-3.5 px-3">
-                          {badge.days !== null ? (
-                            <div className="flex items-center gap-1.5">
-                              <span className={`text-sm font-black tabular-nums ${
-                                daysLeft <= 0 ? "text-[#EF4444]" :
-                                daysLeft <= 3 ? "text-[#EF4444]" :
-                                daysLeft <= 7 ? "text-[#F59E0B]" :
-                                "text-[#111439]"
-                              }`}>
-                                {daysLeft}
-                              </span>
-                              <span className="text-[10px] text-[#667085] font-medium">days</span>
-                            </div>
-                          ) : (
-                            <span className="text-[10px] text-[#EF4444] font-bold">N/A</span>
-                          )}
-                        </td>
-                        <td className="py-3.5 px-3 text-right">
-                          <div className="flex items-center justify-end gap-1.5">
-                            <button
-                              onClick={() => handleExtendTrial(biz.id, 14)}
-                              className="flex items-center gap-1 px-2 py-1 rounded-lg border border-[#EAECF0] bg-[#FFFFFF] hover:bg-[#F1F1F4] text-[#111439] text-[11px] font-bold transition-colors cursor-pointer"
-                              title="Extend trial by +14 days"
-                            >
-                              <Gift className="h-3 w-3 text-[#6C4DFF]" />
-                              <span className="hidden sm:inline">+14d</span>
-                            </button>
-                            <button
-                              onClick={() => handleToggleSuspend(biz.id)}
-                              className={`px-2 py-1 rounded-lg text-[11px] font-bold transition-colors cursor-pointer ${
-                                biz.is_suspended
-                                  ? "bg-[#16A34A]/10 text-[#16A34A] hover:bg-[#16A34A]/20"
-                                  : "bg-[#EF4444]/10 text-[#EF4444] hover:bg-[#EF4444]/20"
-                              }`}
-                            >
-                              {biz.is_suspended ? "Unsuspend" : "Suspend"}
-                            </button>
-                            <button
-                              onClick={() => handleSwitchToTenant(biz.id)}
-                              className="flex items-center gap-1 px-2.5 py-1 rounded-lg brand-gradient text-white text-[11px] font-bold shadow-xs hover:opacity-90 transition-opacity cursor-pointer"
-                            >
-                              <span>Open</span>
-                              <ArrowRight className="h-3 w-3" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+            <div>
+              <h1 className="text-sm font-black text-white tracking-tight">Revia Admin</h1>
+              <p className="text-[10px] text-white/50 font-medium">Platform Control Panel</p>
             </div>
           </div>
-        </div>
-      )}
-
-      {/* TAB 3: CORE WEBSITE & PLATFORM SETTINGS */}
-      {activeTab === "settings" && (
-        <div className="space-y-6 max-w-4xl">
-          <form onSubmit={handleSavePlatformSettings} className="brand-card p-6 sm:p-8 space-y-6">
-            <div className="border-b border-[#EAECF0] pb-4">
-              <h2 className="text-base font-black text-[#111439]">
-                Core Platform &amp; Website Configuration
-              </h2>
-              <p className="text-xs text-[#667085] mt-0.5">
-                These settings directly manipulate the live platform, payment scanner routing, and global user experience.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Founder UPI ID */}
-              <div>
-                <label className="block text-xs font-bold text-[#111439] uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                  <QrCode className="h-3.5 w-3.5 text-[#6C4DFF]" />
-                  <span>Founder UPI ID for Payments *</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={upiIdInput}
-                  onChange={(e) => setUpiIdInput(e.target.value)}
-                  placeholder="e.g. javidhkovvuru143@axl"
-                  className="w-full rounded-xl border border-[#EAECF0] bg-[#F8F8F9] px-3.5 py-2.5 text-xs font-mono font-bold text-[#111439] focus:bg-[#FFFFFF] focus:border-[#6C4DFF] focus:outline-none transition-colors"
-                />
-                <p className="text-[10px] text-[#667085] mt-1">
-                  All subscription QR scanners generated on the site will credit directly to this UPI ID.
-                </p>
-              </div>
-
-              {/* Founder UPI Display Name */}
-              <div>
-                <label className="block text-xs font-bold text-[#111439] uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                  <Building className="h-3.5 w-3.5 text-[#6C4DFF]" />
-                  <span>UPI Receiver Display Name *</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={upiNameInput}
-                  onChange={(e) => setUpiNameInput(e.target.value)}
-                  placeholder="e.g. Javidh Kovvuru (Revia)"
-                  className="w-full rounded-xl border border-[#EAECF0] bg-[#F8F8F9] px-3.5 py-2.5 text-xs font-bold text-[#111439] focus:bg-[#FFFFFF] focus:border-[#6C4DFF] focus:outline-none transition-colors"
-                />
-              </div>
-
-              {/* Verification Mode (Big Companies Architecture) */}
-              <div className="md:col-span-2">
-                <label className="block text-xs font-bold text-[#111439] uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                  <ShieldCheck className="h-3.5 w-3.5 text-[#6C4DFF]" />
-                  <span>Subscription Verification Policy (How Big SaaS Companies Operate)</span>
-                </label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1">
-                  <label
-                    onClick={() => setAutoVerificationMode("manual_approval")}
-                    className={`p-3.5 rounded-xl border-2 cursor-pointer transition-all ${
-                      autoVerificationMode === "manual_approval"
-                        ? "border-[#6C4DFF] bg-[#6C4DFF]/5"
-                        : "border-[#EAECF0] bg-[#F8F8F9] hover:bg-white"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        name="autoVerificationMode"
-                        checked={autoVerificationMode === "manual_approval"}
-                        onChange={() => setAutoVerificationMode("manual_approval")}
-                        className="text-[#6C4DFF]"
-                      />
-                      <span className="text-xs font-bold text-[#111439]">Manual &amp; SMS Matcher Mode (Recommended)</span>
-                    </div>
-                    <p className="text-[11px] text-[#667085] mt-1.5 pl-5">
-                      Client submits UTR → remains pending until you click &quot;Verify &amp; Activate&quot; or paste your Bank SMS in the 1-click Auto-Matcher.
-                    </p>
-                  </label>
-
-                  <label
-                    onClick={() => setAutoVerificationMode("provisional_instant_access")}
-                    className={`p-3.5 rounded-xl border-2 cursor-pointer transition-all ${
-                      autoVerificationMode === "provisional_instant_access"
-                        ? "border-[#6C4DFF] bg-[#6C4DFF]/5"
-                        : "border-[#EAECF0] bg-[#F8F8F9] hover:bg-white"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        name="autoVerificationMode"
-                        checked={autoVerificationMode === "provisional_instant_access"}
-                        onChange={() => setAutoVerificationMode("provisional_instant_access")}
-                        className="text-[#6C4DFF]"
-                      />
-                      <span className="text-xs font-bold text-[#111439]">Provisional Instant Access (Enterprise)</span>
-                    </div>
-                    <p className="text-[11px] text-[#667085] mt-1.5 pl-5">
-                      Client gets instant upgrade upon submitting valid 12-digit UTR. Founder can audit and reject invalid submissions anytime.
-                    </p>
-                  </label>
-                </div>
-              </div>
-
-              {/* Default Free Trial Days */}
-              <div>
-                <label className="block text-xs font-bold text-[#111439] uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                  <Calendar className="h-3.5 w-3.5 text-[#6C4DFF]" />
-                  <span>Default Free Trial Duration (Days) *</span>
-                </label>
-                <input
-                  type="number"
-                  required
-                  min={1}
-                  max={90}
-                  value={trialDaysInput}
-                  onChange={(e) => setTrialDaysInput(Number(e.target.value))}
-                  className="w-full rounded-xl border border-[#EAECF0] bg-[#F8F8F9] px-3.5 py-2.5 text-xs font-bold text-[#111439] focus:bg-[#FFFFFF] focus:border-[#6C4DFF] focus:outline-none transition-colors"
-                />
-                <p className="text-[10px] text-[#667085] mt-1">
-                  New users signing up will automatically receive this trial length.
-                </p>
-              </div>
-
-              {/* Support Email */}
-              <div>
-                <label className="block text-xs font-bold text-[#111439] uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                  <Mail className="h-3.5 w-3.5 text-[#6C4DFF]" />
-                  <span>Support Email Address *</span>
-                </label>
-                <input
-                  type="email"
-                  required
-                  value={supportEmailInput}
-                  onChange={(e) => setSupportEmailInput(e.target.value)}
-                  placeholder="support@revia.app"
-                  className="w-full rounded-xl border border-[#EAECF0] bg-[#F8F8F9] px-3.5 py-2.5 text-xs font-bold text-[#111439] focus:bg-[#FFFFFF] focus:border-[#6C4DFF] focus:outline-none transition-colors"
-                />
-              </div>
-
-              {/* Support WhatsApp */}
-              <div className="md:col-span-2">
-                <label className="block text-xs font-bold text-[#111439] uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                  <Smartphone className="h-3.5 w-3.5 text-[#16A34A]" />
-                  <span>Support WhatsApp Contact Number (with country code) *</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={supportWhatsappInput}
-                  onChange={(e) => setSupportWhatsappInput(e.target.value)}
-                  placeholder="919876543210"
-                  className="w-full rounded-xl border border-[#EAECF0] bg-[#F8F8F9] px-3.5 py-2.5 text-xs font-bold text-[#111439] focus:bg-[#FFFFFF] focus:border-[#6C4DFF] focus:outline-none transition-colors"
-                />
-              </div>
-
-              {/* Global Announcement Banner */}
-              <div className="md:col-span-2">
-                <label className="block text-xs font-bold text-[#111439] uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                  <Bell className="h-3.5 w-3.5 text-[#F59E0B]" />
-                  <span>Global Platform Announcement Banner</span>
-                </label>
-                <textarea
-                  rows={2}
-                  value={announcementInput}
-                  onChange={(e) => setAnnouncementInput(e.target.value)}
-                  placeholder="Broadcast message to all business dashboards..."
-                  className="w-full rounded-xl border border-[#EAECF0] bg-[#F8F8F9] px-3.5 py-2.5 text-xs font-medium text-[#111439] focus:bg-[#FFFFFF] focus:border-[#6C4DFF] focus:outline-none transition-colors"
-                />
-              </div>
-            </div>
-
-            <div className="pt-4 border-t border-[#EAECF0] flex justify-end">
-              <button
-                type="submit"
-                disabled={isSavingSettings}
-                className="flex items-center gap-2 px-6 py-3 rounded-xl brand-gradient text-white text-xs font-bold shadow-md shadow-purple-500/20 hover:opacity-95 transition-all cursor-pointer btn-interactive"
-              >
-                <Save className="h-4 w-4" />
-                <span>Save Core Settings</span>
-              </button>
-            </div>
-          </form>
-
-          {/* DANGER ZONE: Full Reset */}
-          <div className="rounded-2xl border-2 border-dashed border-[#EF4444]/30 bg-[#EF4444]/5 p-6 space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#EF4444]/10 text-[#EF4444]">
-                <AlertTriangle className="h-5 w-5" />
-              </div>
-              <div>
-                <h3 className="text-sm font-black text-[#EF4444]">Danger Zone</h3>
-                <p className="text-[11px] text-[#667085]">Irreversible action. Deletes ALL data and ALL user accounts.</p>
-              </div>
-            </div>
-            <button
-              onClick={handleFullReset}
-              disabled={isFullResetting}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#EF4444] text-white text-xs font-bold hover:bg-[#DC2626] transition-all cursor-pointer disabled:opacity-50"
+          <div className="flex items-center gap-2">
+            <Link
+              href="/dashboard"
+              className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-bold text-white/70 hover:bg-white/10 hover:text-white transition-colors"
             >
-              {isFullResetting ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Resetting Everything...</span>
-                </>
-              ) : (
-                <>
-                  <Trash2 className="h-4 w-4" />
-                  <span>Full Reset: Delete All Users & Data</span>
-                </>
-              )}
+              <ArrowLeft className="h-3 w-3" />
+              <span>Store</span>
+            </Link>
+            <button
+              onClick={handleLockAdmin}
+              className="flex items-center gap-1.5 rounded-lg bg-white/10 px-3 py-1.5 text-[11px] font-bold text-white hover:bg-white/20 transition-colors cursor-pointer"
+            >
+              <Lock className="h-3 w-3" />
+              <span>Logout</span>
             </button>
-            <p className="text-[10px] text-[#94A3B8]">
-              This will delete all auth users, all businesses, all customers, all visits, and all WhatsApp data. You will need to sign up again from scratch.
-            </p>
           </div>
         </div>
-      )}
+      </div>
 
-      {/* TAB 4: PLATFORM GROWTH ANALYTICS */}
-      {activeTab === "analytics" && (
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Industry Breakdown */}
-            <div className="brand-card p-6">
-              <div className="flex items-center justify-between mb-4 border-b border-[#EAECF0] pb-3">
-                <div className="flex items-center gap-2">
-                  <PieChart className="h-5 w-5 text-[#6C4DFF]" />
-                  <h2 className="text-sm font-bold text-[#111439]">
-                    Businesses by Industry Vertical
-                  </h2>
-                </div>
+      <div className="max-w-7xl mx-auto px-4 py-4 space-y-4">
+        {/* Tabs */}
+        <div className="flex gap-1 bg-white/5 p-1 rounded-xl overflow-x-auto">
+          {([
+            { key: "subscriptions" as const, label: "Payments", icon: CreditCard },
+            { key: "tenants" as const, label: "Tenants", icon: Building },
+            { key: "analytics" as const, label: "Analytics", icon: BarChart3 },
+            { key: "settings" as const, label: "Settings", icon: Settings },
+          ]).map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
+                activeTab === tab.key
+                  ? "bg-[#6C4DFF] text-white"
+                  : "text-white/40 hover:text-white hover:bg-white/5"
+              }`}
+            >
+              <tab.icon className="h-3.5 w-3.5" /> {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Toast */}
+        {toastMsg && (
+          <div className="rounded-xl border border-green-500/30 bg-green-500/10 p-3 text-xs font-bold text-green-400 flex items-center gap-2">
+            <CheckCircle className="h-4 w-4" /> {toastMsg}
+          </div>
+        )}
+
+        {/* KPIs */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {[
+            { label: "Businesses", value: totalBusinesses, sub: `${activePaidBusinesses} paid`, icon: Building, color: "#6C4DFF" },
+            { label: "Revenue", value: `₹${totalPaidRevenue.toLocaleString()}`, sub: `${approvedPayments.length} approved`, icon: DollarSign, color: "#16A34A" },
+            { label: "MRR", value: `₹${totalPlatformMRR.toLocaleString()}`, sub: `₹${totalProjectedARR.toLocaleString()} ARR`, icon: TrendingUp, color: "#3B82F6" },
+            { label: "Pending", value: pendingPayments.length, sub: "Awaiting approval", icon: QrCode, color: "#F59E0B" },
+          ].map((kpi) => (
+            <div key={kpi.label} className="rounded-xl bg-white/5 border border-white/10 p-3 sm:p-4">
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-white/40">{kpi.label}</span>
+                <kpi.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" style={{ color: kpi.color }} />
               </div>
+              <div className="text-lg sm:text-xl font-black text-white">{kpi.value}</div>
+              <div className="text-[9px] sm:text-[10px] text-white/30">{kpi.sub}</div>
+            </div>
+          ))}
+        </div>
 
-              <div className="space-y-3">
-                {industriesList.map((item) => (
-                  <div key={item.industry} className="space-y-1">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-bold text-[#111439] capitalize">{item.industry}</span>
-                      <span className="text-[#667085] font-semibold">
-                        {item.count} stores ({item.percentage}%)
-                      </span>
+        {/* TAB: SUBSCRIPTIONS */}
+        {activeTab === "subscriptions" && (
+          <div className="space-y-3">
+            <div className="rounded-xl bg-white/5 border border-white/10 p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <div className="inline-flex items-center gap-1 rounded-full bg-purple-500/20 text-purple-300 px-2 py-0.5 text-[9px] font-bold">
+                    <Sparkles className="h-2.5 w-2.5" /> AUTO-MATCHER
+                  </div>
+                  <h3 className="text-xs font-bold text-white mt-1.5">Bank SMS / UTR Auto-Verifier</h3>
+                </div>
+                <button onClick={() => setShowSmsReconciler(!showSmsReconciler)} className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#6C4DFF] text-white text-[11px] font-bold cursor-pointer">
+                  <Wand2 className="h-3 w-3" /> {showSmsReconciler ? "Hide" : "Open"}
+                </button>
+              </div>
+              {showSmsReconciler && (
+                <form onSubmit={handleRunAutoReconciliation} className="space-y-2">
+                  <textarea rows={2} value={smsInputText} onChange={(e) => setSmsInputText(e.target.value)} placeholder="Paste bank SMS here..." className="w-full rounded-lg border border-white/10 bg-white/5 p-2.5 text-xs font-mono text-white placeholder-white/30 focus:border-[#6C4DFF] focus:outline-none" />
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] text-white/30">Axis, HDFC, ICICI, SBI, GPay</span>
+                    <button type="submit" disabled={isReconciling || !smsInputText.trim()} className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-green-600 text-white text-[11px] font-bold disabled:opacity-50">
+                      <CheckCheck className="h-3 w-3" /> {isReconciling ? "Matching..." : "Verify"}
+                    </button>
+                  </div>
+                  {reconcileResult && <div className="p-2 rounded-lg bg-white/5 text-[10px] text-white/60">Matched {reconcileResult.matchedCount} payment(s)</div>}
+                </form>
+              )}
+            </div>
+
+            <div className="rounded-xl bg-white/5 border border-white/10 overflow-hidden">
+              <div className="p-3 border-b border-white/10">
+                <h3 className="text-xs font-bold text-white">Payment Queue</h3>
+                <p className="text-[10px] text-white/30">{pendingPayments.length} pending</p>
+              </div>
+              {(subscriptionPayments || []).length === 0 ? (
+                <div className="p-8 text-center"><QrCode className="h-6 w-6 text-white/20 mx-auto mb-2" /><p className="text-[10px] text-white/30">No payments yet</p></div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead><tr className="border-b border-white/10 text-white/30 font-bold uppercase text-[9px]">
+                      <th className="py-2 px-3">Date</th><th className="py-2 px-3">Business</th><th className="py-2 px-3">Amount</th><th className="py-2 px-3">UTR</th><th className="py-2 px-3">Status</th><th className="py-2 px-3 text-right">Action</th>
+                    </tr></thead>
+                    <tbody className="divide-y divide-white/5">
+                      {(subscriptionPayments || []).map((p) => (
+                        <tr key={p.id} className="hover:bg-white/5">
+                          <td className="py-2 px-3 text-white/50">{new Date(p.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</td>
+                          <td className="py-2 px-3"><span className="font-bold text-white">{p.business_name || p.business_id}</span></td>
+                          <td className="py-2 px-3 font-black text-green-400">₹{p.amount_inr}</td>
+                          <td className="py-2 px-3"><code className="bg-purple-500/20 text-purple-300 px-1.5 py-0.5 rounded font-mono text-[10px]">{p.utr_reference}</code></td>
+                          <td className="py-2 px-3"><span className={`px-1.5 py-0.5 rounded-full text-[9px] font-bold ${p.status === "approved" ? "bg-green-500/20 text-green-400" : p.status === "pending" ? "bg-amber-500/20 text-amber-400" : "bg-red-500/20 text-red-400"}`}>{p.status}</span></td>
+                          <td className="py-2 px-3 text-right">
+                            {p.status === "pending" ? (
+                              <div className="flex items-center justify-end gap-1">
+                                <button onClick={() => handleApprovePayment(p.id)} className="px-2 py-1 rounded-md bg-green-600 text-white text-[10px] font-bold"><Check className="h-3 w-3 inline" /></button>
+                                <button onClick={() => handleRejectPayment(p.id)} className="px-2 py-1 rounded-md bg-red-500/20 text-red-400 text-[10px] font-bold"><X className="h-3 w-3 inline" /></button>
+                              </div>
+                            ) : <span className="text-[9px] text-white/20">Done</span>}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* TAB: TENANTS */}
+        {activeTab === "tenants" && (
+          <div className="space-y-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/30" />
+              <input type="text" placeholder="Search businesses..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full rounded-xl border border-white/10 bg-white/5 pl-9 pr-3 py-2.5 text-xs text-white placeholder-white/30 focus:border-[#6C4DFF] focus:outline-none" />
+            </div>
+            <div className="space-y-2">
+              {filteredBusinesses.length === 0 ? (
+                <div className="rounded-xl bg-white/5 border border-white/10 p-8 text-center"><p className="text-xs text-white/30">No businesses found</p></div>
+              ) : filteredBusinesses.map((biz) => {
+                const badge = getSubscriptionBadge(biz);
+                const daysLeft = getSubscriptionDaysLeft(biz);
+                return (
+                  <div key={biz.id} className="rounded-xl bg-white/5 border border-white/10 p-3 sm:p-4">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <div className="font-bold text-white text-sm truncate">{biz.name}</div>
+                        <div className="text-[10px] text-white/40 capitalize">{biz.industry.replace("_", " ")} · {biz.owner_name}</div>
+                      </div>
+                      <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold shrink-0 ${badge.color}`}>{badge.label}</span>
                     </div>
-                    <div className="w-full bg-[#F8F8F9] rounded-full h-2 overflow-hidden">
-                      <div
-                        className="h-2 rounded-full brand-gradient text-white"
-                        style={{ width: `${item.percentage}%` }}
-                      />
+                    <div className="flex items-center justify-between mt-3">
+                      <div className="flex items-center gap-1.5">
+                        {badge.days !== null && <span className={`text-sm font-black ${daysLeft <= 3 ? "text-red-400" : daysLeft <= 7 ? "text-amber-400" : "text-white"}`}>{daysLeft}</span>}
+                        {badge.days !== null && <span className="text-[9px] text-white/30">days</span>}
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <button onClick={() => handleExtendTrial(biz.id)} className="flex items-center gap-0.5 px-2 py-1 rounded-md border border-white/10 text-[10px] font-bold text-white/60 hover:text-white"><Gift className="h-3 w-3" /> +14d</button>
+                        <button onClick={() => handleToggleSuspend(biz.id)} className={`px-2 py-1 rounded-md text-[10px] font-bold ${biz.is_suspended ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>{biz.is_suspended ? "Unsuspend" : "Suspend"}</button>
+                        <button onClick={() => handleSwitchToTenant(biz.id)} className="flex items-center gap-0.5 px-2 py-1 rounded-md bg-[#6C4DFF] text-white text-[10px] font-bold"><span>Open</span><ArrowRight className="h-3 w-3" /></button>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 mt-2">
+                      <select value={biz.subscription_plan} onChange={(e) => handleChangePlan(biz.id, e.target.value as SubscriptionPlanId, biz.subscription_status)} className="rounded-md border border-white/10 bg-white/5 px-2 py-1 text-[10px] font-bold text-white uppercase focus:border-[#6C4DFF] focus:outline-none">
+                        <option value="starter">Starter</option><option value="growth">Growth</option><option value="pro">Pro</option>
+                      </select>
+                      <span className="text-[10px] text-white/30">{biz.phone}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* TAB: ANALYTICS */}
+        {activeTab === "analytics" && (
+          <div className="space-y-3">
+            {/* Revenue Overview */}
+            <div className="rounded-xl bg-white/5 border border-white/10 p-4">
+              <h3 className="text-xs font-bold text-white mb-3 flex items-center gap-1.5"><DollarSign className="h-3.5 w-3.5 text-green-400" /> Revenue Overview</h3>
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { label: "Total Collected", value: `₹${totalPaidRevenue.toLocaleString()}`, color: "text-green-400" },
+                  { label: "Monthly Recurring", value: `₹${totalPlatformMRR.toLocaleString()}`, color: "text-blue-400" },
+                  { label: "Annual Run-Rate", value: `₹${totalProjectedARR.toLocaleString()}`, color: "text-purple-400" },
+                  { label: "Avg Per Business", value: `₹${totalBusinesses > 0 ? Math.round(totalPaidRevenue / totalBusinesses).toLocaleString() : 0}`, color: "text-amber-400" },
+                ].map((item) => (
+                  <div key={item.label} className="p-2.5 rounded-lg bg-white/5">
+                    <span className="text-[9px] font-bold uppercase text-white/30 block">{item.label}</span>
+                    <span className={`text-base font-black ${item.color}`}>{item.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Conversion Funnel */}
+            <div className="rounded-xl bg-white/5 border border-white/10 p-4">
+              <h3 className="text-xs font-bold text-white mb-3 flex items-center gap-1.5"><BarChart3 className="h-3.5 w-3.5 text-blue-400" /> Conversion Funnel</h3>
+              <div className="space-y-2">
+                {[
+                  { label: "Total Signups", value: totalBusinesses, pct: 100, color: "#6C4DFF" },
+                  { label: "Active Paid", value: activePaidBusinesses, pct: conversionRate, color: "#16A34A" },
+                  { label: "In Trial", value: trialBusinesses, pct: trialConversion, color: "#3B82F6" },
+                  { label: "Expired / Churned", value: expiredBusinesses + suspendedBusinesses, pct: churnRate, color: "#EF4444" },
+                ].map((item) => (
+                  <div key={item.label} className="space-y-1">
+                    <div className="flex items-center justify-between text-[10px]">
+                      <span className="font-bold text-white/70">{item.label}</span>
+                      <span className="text-white/40">{item.value} ({item.pct}%)</span>
+                    </div>
+                    <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
+                      <div className="h-full rounded-full transition-all" style={{ width: `${Math.max(item.pct, 2)}%`, backgroundColor: item.color }} />
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Platform Health */}
-            <div className="brand-card p-6 space-y-4">
-              <div className="flex items-center justify-between border-b border-[#EAECF0] pb-3">
-                <div className="flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-[#16A34A]" />
-                  <h2 className="text-sm font-bold text-[#111439]">Platform Health &amp; Retention</h2>
+            {/* Churn & Health */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-xl bg-white/5 border border-white/10 p-3">
+                <span className="text-[9px] font-bold uppercase text-white/30 block">Churn Rate</span>
+                <span className={`text-xl font-black ${churnRate > 20 ? "text-red-400" : churnRate > 10 ? "text-amber-400" : "text-green-400"}`}>{churnRate}%</span>
+                <span className="text-[9px] text-white/20 block">{expiredBusinesses + suspendedBusinesses} lost</span>
+              </div>
+              <div className="rounded-xl bg-white/5 border border-white/10 p-3">
+                <span className="text-[9px] font-bold uppercase text-white/30 block">Trial→Paid</span>
+                <span className="text-xl font-black text-blue-400">{conversionRate}%</span>
+                <span className="text-[9px] text-white/20 block">{activePaidBusinesses} converted</span>
+              </div>
+            </div>
+
+            {/* Industry Breakdown */}
+            {industriesList.length > 0 && (
+              <div className="rounded-xl bg-white/5 border border-white/10 p-4">
+                <h3 className="text-xs font-bold text-white mb-3 flex items-center gap-1.5"><PieChart className="h-3.5 w-3.5 text-purple-400" /> Industry Breakdown</h3>
+                <div className="space-y-2">
+                  {industriesList.map((item) => (
+                    <div key={item.industry} className="space-y-1">
+                      <div className="flex items-center justify-between text-[10px]">
+                        <span className="font-bold text-white/70 capitalize">{item.industry}</span>
+                        <span className="text-white/40">{item.count} ({item.percentage}%)</span>
+                      </div>
+                      <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
+                        <div className="h-full rounded-full bg-[#6C4DFF]" style={{ width: `${item.percentage}%` }} />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
+            )}
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 rounded-xl bg-[#F8F8F9] border border-[#EAECF0]">
-                  <span className="text-[10px] font-bold uppercase text-[#667085] block">
-                    Paid Conversion Rate
-                  </span>
-                  <span className="text-xl font-black text-[#111439]">
-                    {totalBusinesses > 0
-                      ? Math.round((activePaidBusinesses / totalBusinesses) * 100)
-                      : 0}
-                    %
-                  </span>
-                </div>
-                <div className="p-4 rounded-xl bg-[#F8F8F9] border border-[#EAECF0]">
-                  <span className="text-[10px] font-bold uppercase text-[#667085] block">
-                    Active Trial Rate
-                  </span>
-                  <span className="text-xl font-black text-[#111439]">
-                    {totalBusinesses > 0
-                      ? Math.round((trialBusinesses / totalBusinesses) * 100)
-                      : 0}
-                    %
-                  </span>
-                </div>
+            {/* Platform Activity */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-xl bg-white/5 border border-white/10 p-3">
+                <span className="text-[9px] font-bold uppercase text-white/30 block">Customers Tracked</span>
+                <span className="text-xl font-black text-white">{totalCustomers}</span>
+              </div>
+              <div className="rounded-xl bg-white/5 border border-white/10 p-3">
+                <span className="text-[9px] font-bold uppercase text-white/30 block">Total Visits</span>
+                <span className="text-xl font-black text-white">{totalVisits}</span>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+
+        {/* TAB: SETTINGS */}
+        {activeTab === "settings" && (
+          <div className="space-y-3 max-w-3xl">
+            <form onSubmit={handleSavePlatformSettings} className="rounded-xl bg-white/5 border border-white/10 p-4 space-y-4">
+              <h3 className="text-xs font-bold text-white flex items-center gap-1.5"><Settings className="h-3.5 w-3.5 text-purple-400" /> Platform Configuration</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[10px] font-bold text-white/50 uppercase mb-1">UPI ID *</label>
+                  <input type="text" required value={upiIdInput} onChange={(e) => setUpiIdInput(e.target.value)} className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-mono text-white focus:border-[#6C4DFF] focus:outline-none" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-white/50 uppercase mb-1">UPI Name *</label>
+                  <input type="text" required value={upiNameInput} onChange={(e) => setUpiNameInput(e.target.value)} className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white focus:border-[#6C4DFF] focus:outline-none" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-white/50 uppercase mb-1">Trial Days *</label>
+                  <input type="number" required min={1} max={90} value={trialDaysInput} onChange={(e) => setTrialDaysInput(Number(e.target.value))} className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white focus:border-[#6C4DFF] focus:outline-none" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-white/50 uppercase mb-1">Support Email *</label>
+                  <input type="email" required value={supportEmailInput} onChange={(e) => setSupportEmailInput(e.target.value)} className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white focus:border-[#6C4DFF] focus:outline-none" />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="block text-[10px] font-bold text-white/50 uppercase mb-1">Support WhatsApp *</label>
+                  <input type="text" required value={supportWhatsappInput} onChange={(e) => setSupportWhatsappInput(e.target.value)} className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white focus:border-[#6C4DFF] focus:outline-none" />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="block text-[10px] font-bold text-white/50 uppercase mb-1">Verification Mode</label>
+                  <div className="grid grid-cols-2 gap-2 mt-1">
+                    {[
+                      { key: "manual_approval" as const, label: "Manual Approval", desc: "Founder verifies each payment" },
+                      { key: "provisional_instant_access" as const, label: "Instant Access", desc: "Auto-grant on valid UTR" },
+                    ].map((mode) => (
+                      <button type="button" key={mode.key} onClick={() => setAutoVerificationMode(mode.key)} className={`p-2.5 rounded-lg border text-left transition-all ${autoVerificationMode === mode.key ? "border-[#6C4DFF] bg-[#6C4DFF]/10" : "border-white/10 bg-white/5 hover:bg-white/10"}`}>
+                        <span className="text-[10px] font-bold text-white block">{mode.label}</span>
+                        <span className="text-[9px] text-white/30">{mode.desc}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="block text-[10px] font-bold text-white/50 uppercase mb-1">Announcement Banner</label>
+                  <textarea rows={2} value={announcementInput} onChange={(e) => setAnnouncementInput(e.target.value)} placeholder="Broadcast to all dashboards..." className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white placeholder-white/30 focus:border-[#6C4DFF] focus:outline-none" />
+                </div>
+              </div>
+              <div className="flex justify-end">
+                <button type="submit" disabled={isSavingSettings} className="flex items-center gap-2 px-5 py-2 rounded-lg bg-[#6C4DFF] text-white text-xs font-bold hover:bg-[#5B3FE8] transition-colors cursor-pointer disabled:opacity-50">
+                  <Save className="h-3.5 w-3.5" /> Save Settings
+                </button>
+              </div>
+            </form>
+
+            {/* Danger Zone */}
+            <div className="rounded-xl border border-dashed border-red-500/30 bg-red-500/5 p-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4 text-red-400" />
+                <span className="text-xs font-bold text-red-400">Danger Zone</span>
+              </div>
+              <p className="text-[10px] text-white/30">Deletes ALL auth users, businesses, customers, visits, and WhatsApp data.</p>
+              <button onClick={handleFullReset} disabled={isFullResetting} className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-red-600 text-white text-[11px] font-bold hover:bg-red-700 cursor-pointer disabled:opacity-50">
+                {isFullResetting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+                {isFullResetting ? "Resetting..." : "Full Reset"}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
