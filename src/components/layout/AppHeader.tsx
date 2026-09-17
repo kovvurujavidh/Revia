@@ -302,7 +302,7 @@ export function AppHeader({ onOpenQR, onToggleMobileMenu }: AppHeaderProps) {
               <div className="border-t border-[#EAECF0] my-1" />
 
               <Link
-                href="/auth/login"
+                href="/"
                 onClick={() => setIsUserDropdownOpen(false)}
                 className="flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-bold text-[#EF4444] hover:bg-[#EF4444]/10 transition-colors"
               >
