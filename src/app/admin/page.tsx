@@ -47,6 +47,8 @@ import {
   MessageSquare,
   AlertCircle,
   CheckCheck,
+  Loader2,
+  Trash2,
 } from "lucide-react";
 
 export default function AdminPage() {
@@ -106,6 +108,9 @@ export default function AdminPage() {
     "manual_approval" | "provisional_instant_access"
   >(platformSettings?.auto_verification_mode || "manual_approval");
   const [isSavingSettings, setIsSavingSettings] = useState(false);
+
+  // Full Reset State
+  const [isFullResetting, setIsFullResetting] = useState(false);
 
   // Security Check: Only platform superadmin can access this control panel
   if (currentUser.role !== "superadmin") {
@@ -282,6 +287,38 @@ export default function AdminPage() {
     setIsSavingSettings(false);
     setToastMsg("Platform core website settings saved successfully!");
     setTimeout(() => setToastMsg(null), 4000);
+  };
+
+  const handleFullReset = async () => {
+    const confirmed = window.confirm(
+      "⚠️ FULL RESET WARNING ⚠️\n\nThis will permanently delete:\n• ALL user accounts (auth users)\n• ALL businesses\n• ALL customers\n• ALL visits\n• ALL WhatsApp data\n\nThis CANNOT be undone. Are you sure?"
+    );
+    if (!confirmed) return;
+
+    const doubleConfirm = window.confirm(
+      "Are you REALLY sure? Type 'yes' mentally and click OK to proceed with full database reset."
+    );
+    if (!doubleConfirm) return;
+
+    setIsFullResetting(true);
+    try {
+      const res = await fetch("/api/admin/full-reset", { method: "POST" });
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        setToastMsg(`Full reset complete! Deleted ${data.deletedAuthUsers} auth users and cleared all tables.`);
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 2000);
+      } else {
+        setToastMsg("Reset failed: " + (data.error || "Unknown error"));
+      }
+    } catch (err: any) {
+      setToastMsg("Reset failed: " + (err.message || "Network error"));
+    } finally {
+      setIsFullResetting(false);
+      setTimeout(() => setToastMsg(null), 5000);
+    }
   };
 
   const handleSwitchToTenant = (busId: string) => {
@@ -955,6 +992,39 @@ export default function AdminPage() {
               </button>
             </div>
           </form>
+
+          {/* DANGER ZONE: Full Reset */}
+          <div className="rounded-2xl border-2 border-dashed border-[#EF4444]/30 bg-[#EF4444]/5 p-6 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#EF4444]/10 text-[#EF4444]">
+                <AlertTriangle className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="text-sm font-black text-[#EF4444]">Danger Zone</h3>
+                <p className="text-[11px] text-[#667085]">Irreversible action. Deletes ALL data and ALL user accounts.</p>
+              </div>
+            </div>
+            <button
+              onClick={handleFullReset}
+              disabled={isFullResetting}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#EF4444] text-white text-xs font-bold hover:bg-[#DC2626] transition-all cursor-pointer disabled:opacity-50"
+            >
+              {isFullResetting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Resetting Everything...</span>
+                </>
+              ) : (
+                <>
+                  <Trash2 className="h-4 w-4" />
+                  <span>Full Reset: Delete All Users & Data</span>
+                </>
+              )}
+            </button>
+            <p className="text-[10px] text-[#94A3B8]">
+              This will delete all auth users, all businesses, all customers, all visits, and all WhatsApp data. You will need to sign up again from scratch.
+            </p>
+          </div>
         </div>
       )}
 
